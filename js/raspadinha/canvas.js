@@ -7,6 +7,7 @@ let canvas;
 let ctx;
 
 let raspando = false;
+let eventosRegistrados = false;
 
 /* ==========================================================
    INICIAR
@@ -31,25 +32,38 @@ export function iniciarCanvas() {
 
     desenharCamada();
 
-    eventos();
+    if (!eventosRegistrados) {
+
+        eventos();
+
+        eventosRegistrados = true;
+
+    }
 
 }
 
 /* ==========================================================
-   CAMADA CINZA
+   CAMADA DA RASPADINHA
 ========================================================== */
 
 function desenharCamada() {
 
-    ctx.fillStyle = "#C8C8C8";
+    ctx.globalCompositeOperation = "source-over";
 
-    ctx.fillRect(
-
+    ctx.clearRect(
         0,
         0,
         canvas.width,
         canvas.height
+    );
 
+    ctx.fillStyle = "#C8C8C8";
+
+    ctx.fillRect(
+        0,
+        0,
+        canvas.width,
+        canvas.height
     );
 
 }
@@ -60,13 +74,23 @@ function desenharCamada() {
 
 function eventos() {
 
+    /* Mouse */
+
     canvas.addEventListener("mousedown", iniciar);
 
     canvas.addEventListener("mouseup", parar);
 
     canvas.addEventListener("mouseleave", parar);
 
-    canvas.addEventListener("mousemove", mover);
+    canvas.addEventListener("mousemove", moverMouse);
+
+    /* Touch */
+
+    canvas.addEventListener("touchstart", iniciarTouch);
+
+    canvas.addEventListener("touchmove", moverTouch);
+
+    canvas.addEventListener("touchend", parar);
 
 }
 
@@ -80,13 +104,25 @@ function iniciar() {
 
 }
 
+function iniciarTouch(e) {
+
+    e.preventDefault();
+
+    raspando = true;
+
+}
+
 function parar() {
 
     raspando = false;
 
 }
 
-function mover(e) {
+/* ==========================================================
+   MOUSE
+========================================================== */
+
+function moverMouse(e) {
 
     if (!raspando) return;
 
@@ -95,6 +131,28 @@ function mover(e) {
     const x = e.clientX - rect.left;
 
     const y = e.clientY - rect.top;
+
+    raspar(x, y);
+
+}
+
+/* ==========================================================
+   TOUCH
+========================================================== */
+
+function moverTouch(e) {
+
+    if (!raspando) return;
+
+    e.preventDefault();
+
+    const rect = canvas.getBoundingClientRect();
+
+    const toque = e.touches[0];
+
+    const x = toque.clientX - rect.left;
+
+    const y = toque.clientY - rect.top;
 
     raspar(x, y);
 
@@ -111,13 +169,11 @@ function raspar(x, y) {
     ctx.beginPath();
 
     ctx.arc(
-
         x,
         y,
         25,
         0,
         Math.PI * 2
-
     );
 
     ctx.fill();
