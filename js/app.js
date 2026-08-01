@@ -3,6 +3,14 @@
    Aplicação Principal
 ========================================================== */
 
+import {
+
+    iniciarRaspadinha,
+
+    abrirRaspadinha
+
+} from "./raspadinha/raspadinha.js";
+
 import CONFIG from "./config.js";
 import { getDB } from "./firebase/firebase.js";
 
@@ -41,6 +49,14 @@ function escreverStatus(texto) {
 document.addEventListener("DOMContentLoaded", iniciarSistema);
 
 async function iniciarSistema() {
+
+   import {
+
+    iniciarRaspadinha,
+
+    abrirRaspadinha
+
+} from "./raspadinha/raspadinha.js";
 
     escreverStatus("🍀 " + CONFIG.nome);
 
@@ -124,6 +140,6 @@ function abrirRaspadinha() {
 
     escreverStatus("🎁 Botão clicado.");
 
-    alert("A raspadinha será implementada no próximo bloco.");
+    abrirRaspadinha();
 
     }
