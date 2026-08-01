@@ -2,53 +2,54 @@
    RASPADINHA DA AMIZADE 2.0
 ========================================================== */
 
-let modal;
+let modal = null;
+let btnFechar = null;
 
-let btnFechar;
-
-/* ==========================================================
-   INICIAR
-========================================================== */
-
-export function iniciarRaspadinha(){
+export function iniciarRaspadinha() {
 
     modal = document.getElementById("modalRaspadinha");
-
     btnFechar = document.getElementById("btnFecharRaspadinha");
 
-    if(btnFechar){
+    alert("iniciarRaspadinha executou");
 
-        btnFechar.addEventListener(
+    if (!modal) {
+        alert("Modal NÃO encontrado");
+        return;
+    }
 
-            "click",
-
-            fecharRaspadinha
-
-        );
-
+    if (btnFechar) {
+        btnFechar.addEventListener("click", fecharRaspadinha);
     }
 
 }
 
-/* ==========================================================
-   ABRIR
-========================================================== */
+export function abrirRaspadinha() {
 
-export function abrirRaspadinha(){
+    alert("abrirRaspadinha executou");
 
-    if(!modal) return;
+    if (!modal) {
+
+        alert("Modal é NULL");
+
+        modal = document.getElementById("modalRaspadinha");
+
+    }
+
+    if (!modal) {
+
+        alert("Modal continua NULL");
+
+        return;
+
+    }
 
     modal.classList.remove("hidden");
 
 }
 
-/* ==========================================================
-   FECHAR
-========================================================== */
+export function fecharRaspadinha() {
 
-export function fecharRaspadinha(){
-
-    if(!modal) return;
+    if (!modal) return;
 
     modal.classList.add("hidden");
 
