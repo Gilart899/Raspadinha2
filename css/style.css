@@ -191,3 +191,101 @@ main{
     z-index:99999;
 
 }
+
+/* ==========================================================
+   MODAL DA RASPADINHA
+========================================================== */
+
+.hidden{
+
+    display:none;
+
+}
+
+.modal{
+
+    position:fixed;
+
+    top:0;
+
+    left:0;
+
+    width:100%;
+
+    height:100%;
+
+    background:rgba(0,0,0,.75);
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    z-index:9999;
+
+}
+
+.modal.hidden{
+
+    display:none;
+
+}
+
+.janela{
+
+    width:95%;
+
+    max-width:450px;
+
+    background:#ffffff;
+
+    color:#222;
+
+    border-radius:20px;
+
+    padding:25px;
+
+    text-align:center;
+
+    box-shadow:0 15px 40px rgba(0,0,0,.35);
+
+}
+
+#canvasRaspadinha{
+
+    width:100%;
+
+    max-width:380px;
+
+    height:380px;
+
+    background:#cfcfcf;
+
+    border-radius:12px;
+
+    margin:20px auto;
+
+    display:block;
+
+}
+
+#btnFecharRaspadinha{
+
+    border:none;
+
+    background:#d32f2f;
+
+    color:#fff;
+
+    padding:14px 28px;
+
+    border-radius:10px;
+
+    cursor:pointer;
+
+    font-size:16px;
+
+    font-weight:bold;
+
+}
