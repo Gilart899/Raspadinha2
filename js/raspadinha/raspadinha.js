@@ -26,6 +26,18 @@ export function iniciarRaspadinha() {
 
 export function abrirRaspadinha() {
 
+    if (!modal) {
+
+        modal = document.getElementById("modalRaspadinha");
+
+    }
+
+    modal.classList.remove("hidden");
+
+    iniciarCanvas();
+
+}
+
     alert("abrirRaspadinha executou");
 
     if (!modal) {
