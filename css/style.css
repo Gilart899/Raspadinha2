@@ -1,0 +1,163 @@
+/* ==========================================================
+   RASPADINHA DA AMIZADE 2.0
+========================================================== */
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+
+    font-family:Arial,Helvetica,sans-serif;
+
+    background:linear-gradient(180deg,#0B7D2B,#0F9D3D);
+
+    color:#FFF;
+
+    min-height:100vh;
+
+}
+
+.topo{
+
+    text-align:center;
+
+    padding:30px 20px;
+
+}
+
+.logo{
+
+    width:120px;
+
+    margin-bottom:15px;
+
+}
+
+.topo h1{
+
+    font-size:2rem;
+
+    margin-bottom:10px;
+
+}
+
+.topo p{
+
+    font-size:1rem;
+
+    opacity:.9;
+
+}
+
+main{
+
+    width:100%;
+
+    max-width:900px;
+
+    margin:auto;
+
+    padding:20px;
+
+}
+
+.premios{
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    gap:30px;
+
+    flex-wrap:wrap;
+
+    margin-top:30px;
+
+}
+
+.premio{
+
+    width:220px;
+
+    background:#FFFFFF;
+
+    color:#222;
+
+    border-radius:15px;
+
+    padding:20px;
+
+    text-align:center;
+
+    box-shadow:0 10px 25px rgba(0,0,0,.25);
+
+}
+
+.premio img{
+
+    width:150px;
+
+    height:auto;
+
+    margin-bottom:15px;
+
+}
+
+.ou{
+
+    font-size:2rem;
+
+    font-weight:bold;
+
+}
+
+.acao{
+
+    margin-top:50px;
+
+    text-align:center;
+
+}
+
+#btnParticipar{
+
+    border:none;
+
+    background:#FFD700;
+
+    color:#222;
+
+    font-size:1.2rem;
+
+    font-weight:bold;
+
+    padding:18px 40px;
+
+    border-radius:50px;
+
+    cursor:pointer;
+
+    transition:.3s;
+
+}
+
+#btnParticipar:hover{
+
+    transform:scale(1.05);
+
+}
+
+@media(max-width:768px){
+
+    .premios{
+
+        flex-direction:column;
+
+    }
+
+}
