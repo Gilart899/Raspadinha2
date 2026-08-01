@@ -1,21 +1,30 @@
 /* ==========================================================
    RASPADINHA DA AMIZADE 2.0
-   Controle da Janela da Raspadinha
 ========================================================== */
 
-let modal = null;
+let modal;
+
+let btnFechar;
 
 /* ==========================================================
-   INICIALIZAÇÃO
+   INICIAR
 ========================================================== */
 
-export function iniciarRaspadinha() {
+export function iniciarRaspadinha(){
 
     modal = document.getElementById("modalRaspadinha");
 
-    if (!modal) {
+    btnFechar = document.getElementById("btnFecharRaspadinha");
 
-        console.error("Modal da raspadinha não encontrado.");
+    if(btnFechar){
+
+        btnFechar.addEventListener(
+
+            "click",
+
+            fecharRaspadinha
+
+        );
 
     }
 
@@ -25,9 +34,9 @@ export function iniciarRaspadinha() {
    ABRIR
 ========================================================== */
 
-export function abrirRaspadinha() {
+export function abrirRaspadinha(){
 
-    if (!modal) return;
+    if(!modal) return;
 
     modal.classList.remove("hidden");
 
@@ -37,9 +46,9 @@ export function abrirRaspadinha() {
    FECHAR
 ========================================================== */
 
-export function fecharRaspadinha() {
+export function fecharRaspadinha(){
 
-    if (!modal) return;
+    if(!modal) return;
 
     modal.classList.add("hidden");
 
