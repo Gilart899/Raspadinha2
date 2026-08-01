@@ -161,3 +161,33 @@ main{
     }
 
 }
+
+#statusSistema{
+
+    position:fixed;
+
+    left:10px;
+
+    bottom:10px;
+
+    width:320px;
+
+    max-width:90%;
+
+    background:#111;
+
+    color:#00ff66;
+
+    font-size:14px;
+
+    padding:12px;
+
+    border-radius:8px;
+
+    font-family:monospace;
+
+    box-shadow:0 0 10px rgba(0,0,0,.4);
+
+    z-index:99999;
+
+}
