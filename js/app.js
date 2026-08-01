@@ -3,16 +3,13 @@
    Aplicação Principal
 ========================================================== */
 
-import {
-
-    iniciarRaspadinha,
-
-    abrirRaspadinha
-
-} from "./raspadinha/raspadinha.js";
-
 import CONFIG from "./config.js";
 import { getDB } from "./firebase/firebase.js";
+
+import {
+    iniciarRaspadinha,
+    abrirRaspadinha as abrirModalRaspadinha
+} from "./raspadinha/raspadinha.js";
 
 import {
     ref,
@@ -50,14 +47,6 @@ document.addEventListener("DOMContentLoaded", iniciarSistema);
 
 async function iniciarSistema() {
 
-   import {
-
-    iniciarRaspadinha,
-
-    abrirRaspadinha
-
-} from "./raspadinha/raspadinha.js";
-
     escreverStatus("🍀 " + CONFIG.nome);
 
     escreverStatus("📦 Versão " + CONFIG.versao);
@@ -65,6 +54,8 @@ async function iniciarSistema() {
     escreverStatus("🚀 Inicializando...");
 
     await testarFirebase();
+
+    iniciarRaspadinha();
 
     configurarEventos();
 
@@ -122,24 +113,12 @@ function configurarEventos() {
 
     if (!btnParticipar) return;
 
-    btnParticipar.addEventListener(
+    btnParticipar.addEventListener("click", () => {
 
-        "click",
+        escreverStatus("🎁 Botão clicado.");
 
-        abrirRaspadinha
+        abrirModalRaspadinha();
 
-    );
+    });
 
 }
-
-/* ==========================================================
-   BOTÃO
-========================================================== */
-
-function abrirRaspadinha() {
-
-    escreverStatus("🎁 Botão clicado.");
-
-    abrirRaspadinha();
-
-    }
