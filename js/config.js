@@ -3,57 +3,71 @@
    Configurações Gerais
 ========================================================== */
 
-export const CONFIG = {
+const CONFIG = {
 
-    /* ===========================
-       Sistema
-    =========================== */
+    /* ======================================================
+       SISTEMA
+    ====================================================== */
 
-    NOME_SISTEMA: "Raspadinha da Amizade",
+    nome: "Raspadinha da Amizade",
 
-    VERSAO: "2.0.0",
+    versao: "2.0.0",
 
-    MODO_TESTE: true,
+    ambiente: "producao",
 
-    CAMPANHA_ATIVA: true,
+    /* ======================================================
+       CANVAS
+    ====================================================== */
 
-    /* ===========================
-       Raspadinha
-    =========================== */
+    canvas: {
 
-    PORCENTAGEM_REVELAR: 60,
+        largura: 320,
 
-    RAIO_RASPAGEM: 22,
+        altura: 320,
 
-    LARGURA_CANVAS: 320,
+        raio: 22,
 
-    ALTURA_CANVAS: 320,
+        porcentagemRevelar: 60
 
-    /* ===========================
-       Prêmios
-    =========================== */
+    },
 
-    MAX_TENTATIVAS: 1,
+    /* ======================================================
+       ANIMAÇÕES
+    ====================================================== */
 
-    /* ===========================
-       Firebase
-    =========================== */
+    animacoes: {
 
-    DATABASE: {
+        velocidadeTrevos: 1,
 
-        CONFIG: "config",
+        quantidadeConfetes: 120
 
-        PARTICIPANTES: "participantes",
+    },
 
-        TENTATIVAS: "tentativas",
+    /* ======================================================
+       CAMINHOS
+    ====================================================== */
 
-        RESERVAS: "reservas",
+    imagens: {
 
-        VENCEDORES: "vencedores",
+        logo: "img/logo.png",
 
-        PREMIOS: "premios",
+        ferro: "img/ferro.png",
 
-        LOGS: "logs"
+        liquidificador: "img/liquidificador.png",
+
+        perdeu: "img/perdeu.png"
+
+    },
+
+    sons: {
+
+        raspar: "sounds/raspar.mp3",
+
+        vitoria: "sounds/vitoria.mp3",
+
+        derrota: "sounds/perdeu.mp3",
+
+        abertura: "sounds/abertura.mp3"
 
     }
 
