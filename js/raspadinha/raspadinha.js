@@ -5,9 +5,8 @@
 let modal = null;
 let btnFechar = null;
 
-import { iniciarCanvas } from "./canvas.js";
-
 export function iniciarRaspadinha() {
+   import { iniciarCanvas } from "./canvas.js";
 
     modal = document.getElementById("modalRaspadinha");
     btnFechar = document.getElementById("btnFecharRaspadinha");
