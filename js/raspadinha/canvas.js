@@ -16,7 +16,7 @@ let eventosRegistrados = false;
 const imagemCamada = new Image();
 
 // Caminho correto para o GitHub Pages
-imagemCamada.src = "../../img/camada-raspadinha.png";
+imagemCamada.src = "/Raspadinha2/img/camada-raspadinha.png";
 
 /* ==========================================================
    INICIAR
