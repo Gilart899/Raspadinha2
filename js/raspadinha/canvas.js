@@ -10,6 +10,15 @@ let raspando = false;
 let eventosRegistrados = false;
 
 /* ==========================================================
+   IMAGEM DA CAMADA
+========================================================== */
+
+const imagemCamada = new Image();
+
+// Caminho correto para o GitHub Pages
+imagemCamada.src = "../../img/camada-raspadinha.png";
+
+/* ==========================================================
    INICIAR
 ========================================================== */
 
@@ -43,20 +52,21 @@ export function iniciarCanvas() {
 }
 
 /* ==========================================================
-   CAMADA DA RASPADINHA
+   DESENHAR CAMADA
 ========================================================== */
-
-const imagemCamada = new Image();
-
-imagemCamada.src = "img/camada-raspadinha.png";
 
 function desenharCamada() {
 
     ctx.globalCompositeOperation = "source-over";
 
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.clearRect(
+        0,
+        0,
+        canvas.width,
+        canvas.height
+    );
 
-    if (imagemCamada.complete) {
+    if (imagemCamada.complete && imagemCamada.naturalWidth > 0) {
 
         ctx.drawImage(
             imagemCamada,
@@ -68,17 +78,7 @@ function desenharCamada() {
 
     } else {
 
-        imagemCamada.onload = () => {
-
-            ctx.drawImage(
-                imagemCamada,
-                0,
-                0,
-                canvas.width,
-                canvas.height
-            );
-
-        };
+        imagemCamada.onload = desenharCamada;
 
     }
 
