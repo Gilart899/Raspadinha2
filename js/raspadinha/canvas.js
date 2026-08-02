@@ -19,6 +19,14 @@ const imagemCamada = new Image();
 imagemCamada.src = "/Raspadinha2/img/camada-raspadinha.png";
 
 /* ==========================================================
+   IMAGEM DO RESULTADO
+========================================================== */
+
+const imagemResultado = new Image();
+
+imagemResultado.src = "/Raspadinha2/img/perdeu.png";
+
+/* ==========================================================
    INICIAR
 ========================================================== */
 
@@ -57,15 +65,22 @@ export function iniciarCanvas() {
 
 function desenharCamada() {
 
-    ctx.globalCompositeOperation = "source-over";
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    ctx.clearRect(
-        0,
-        0,
-        canvas.width,
-        canvas.height
-    );
+    // Desenha o resultado primeiro
+    if (imagemResultado.complete && imagemResultado.naturalWidth > 0) {
 
+        ctx.drawImage(
+            imagemResultado,
+            0,
+            0,
+            canvas.width,
+            canvas.height
+        );
+
+    }
+
+    // Desenha a camada metálica por cima
     if (imagemCamada.complete && imagemCamada.naturalWidth > 0) {
 
         ctx.drawImage(
