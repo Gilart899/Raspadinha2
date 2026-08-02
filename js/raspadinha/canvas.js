@@ -46,25 +46,41 @@ export function iniciarCanvas() {
    CAMADA DA RASPADINHA
 ========================================================== */
 
+const imagemCamada = new Image();
+
+imagemCamada.src = "img/camada-raspadinha.png";
+
 function desenharCamada() {
 
     ctx.globalCompositeOperation = "source-over";
 
-    ctx.clearRect(
-        0,
-        0,
-        canvas.width,
-        canvas.height
-    );
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    ctx.fillStyle = "#C8C8C8";
+    if (imagemCamada.complete) {
 
-    ctx.fillRect(
-        0,
-        0,
-        canvas.width,
-        canvas.height
-    );
+        ctx.drawImage(
+            imagemCamada,
+            0,
+            0,
+            canvas.width,
+            canvas.height
+        );
+
+    } else {
+
+        imagemCamada.onload = () => {
+
+            ctx.drawImage(
+                imagemCamada,
+                0,
+                0,
+                canvas.width,
+                canvas.height
+            );
+
+        };
+
+    }
 
 }
 
