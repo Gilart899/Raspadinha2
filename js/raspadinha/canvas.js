@@ -1,33 +1,172 @@
-<!-- =====================================================
-     MODAL DA RASPADINHA
-===================================================== -->
+/* ==========================================================
+   RASPADINHA DA AMIZADE 2.0
+   Canvas
+========================================================== */
 
-<div id="modalRaspadinha" class="modal hidden">
+let canvas;
+let ctx;
 
-    <div class="janela">
+let raspando = false;
+let eventosRegistrados = false;
 
-        <h2>🍀 Boa sorte!</h2>
+/* ==========================================================
+   INICIAR
+========================================================== */
 
-        <p>Raspe toda a área para descobrir seu prêmio.</p>
+export function iniciarCanvas() {
 
-        <!-- Área da raspadinha -->
-        <div class="areaRaspadinha">
+    canvas = document.getElementById("canvasRaspadinha");
 
-            <img
-                id="imagemPremio"
-                src="img/perdeu.png"
-                alt="Resultado da raspadinha">
+    if (!canvas) {
+        console.error("Canvas não encontrado.");
+        return;
+    }
 
-            <canvas id="canvasRaspadinha"></canvas>
+    ctx = canvas.getContext("2d");
 
-        </div>
+    canvas.width = 380;
+    canvas.height = 380;
 
-        <button id="btnFecharRaspadinha">
+    desenharCamada();
 
-            Fechar
+    if (!eventosRegistrados) {
+        registrarEventos();
+        eventosRegistrados = true;
+    }
 
-        </button>
+}
 
-    </div>
+/* ==========================================================
+   DESENHAR CAMADA
+========================================================== */
 
-</div>
+function desenharCamada() {
+
+    ctx.globalCompositeOperation = "source-over";
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    ctx.fillStyle = "#C8C8C8";
+
+    ctx.fillRect(
+        0,
+        0,
+        canvas.width,
+        canvas.height
+    );
+
+}
+
+/* ==========================================================
+   EVENTOS
+========================================================== */
+
+function registrarEventos() {
+
+    /* Mouse */
+
+    canvas.addEventListener("mousedown", iniciar);
+
+    canvas.addEventListener("mouseup", parar);
+
+    canvas.addEventListener("mouseleave", parar);
+
+    canvas.addEventListener("mousemove", moverMouse);
+
+    /* Touch */
+
+    canvas.addEventListener("touchstart", iniciarTouch);
+
+    canvas.addEventListener("touchmove", moverTouch);
+
+    canvas.addEventListener("touchend", parar);
+
+}
+
+/* ==========================================================
+   CONTROLE
+========================================================== */
+
+function iniciar() {
+
+    raspando = true;
+
+}
+
+function iniciarTouch(e) {
+
+    e.preventDefault();
+
+    raspando = true;
+
+}
+
+function parar() {
+
+    raspando = false;
+
+}
+
+/* ==========================================================
+   MOUSE
+========================================================== */
+
+function moverMouse(e) {
+
+    if (!raspando) return;
+
+    const rect = canvas.getBoundingClientRect();
+
+    const x = e.clientX - rect.left;
+
+    const y = e.clientY - rect.top;
+
+    raspar(x, y);
+
+}
+
+/* ==========================================================
+   TOUCH
+========================================================== */
+
+function moverTouch(e) {
+
+    if (!raspando) return;
+
+    e.preventDefault();
+
+    const rect = canvas.getBoundingClientRect();
+
+    const toque = e.touches[0];
+
+    const x = toque.clientX - rect.left;
+
+    const y = toque.clientY - rect.top;
+
+    raspar(x, y);
+
+}
+
+/* ==========================================================
+   RASPAR
+========================================================== */
+
+function raspar(x, y) {
+
+    ctx.globalCompositeOperation = "destination-out";
+
+    ctx.beginPath();
+
+    ctx.arc(
+        x,
+        y,
+        25,
+        0,
+        Math.PI * 2
+    );
+
+    ctx.fill();
+
+    ctx.globalCompositeOperation = "source-over";
+
+}
