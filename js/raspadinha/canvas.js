@@ -1,5 +1,5 @@
 /* ==========================================================
-   RASPADINHA DA AMIZADE 2.0
+   RASPADINHA DA AMIZADE 3.0
    Canvas
 ========================================================== */
 
@@ -8,6 +8,10 @@ let ctx;
 
 let raspando = false;
 let eventosRegistrados = false;
+
+const imagemCamada = new Image();
+
+imagemCamada.src = "/Raspadinha2/img/camada-raspadinha.png";
 
 /* ==========================================================
    INICIAR
@@ -18,8 +22,11 @@ export function iniciarCanvas() {
     canvas = document.getElementById("canvasRaspadinha");
 
     if (!canvas) {
+
         console.error("Canvas não encontrado.");
+
         return;
+
     }
 
     ctx = canvas.getContext("2d");
@@ -30,8 +37,11 @@ export function iniciarCanvas() {
     desenharCamada();
 
     if (!eventosRegistrados) {
+
         registrarEventos();
+
         eventosRegistrados = true;
+
     }
 
 }
@@ -42,18 +52,35 @@ export function iniciarCanvas() {
 
 function desenharCamada() {
 
-    ctx.globalCompositeOperation = "source-over";
-
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    ctx.fillStyle = "#C8C8C8";
+    ctx.globalCompositeOperation = "source-over";
 
-    ctx.fillRect(
-        0,
-        0,
-        canvas.width,
-        canvas.height
-    );
+    if (imagemCamada.complete && imagemCamada.naturalWidth > 0) {
+
+        ctx.drawImage(
+            imagemCamada,
+            0,
+            0,
+            canvas.width,
+            canvas.height
+        );
+
+    } else {
+
+        imagemCamada.onload = () => {
+
+            ctx.drawImage(
+                imagemCamada,
+                0,
+                0,
+                canvas.width,
+                canvas.height
+            );
+
+        };
+
+    }
 
 }
 
@@ -63,21 +90,21 @@ function desenharCamada() {
 
 function registrarEventos() {
 
-    /* Mouse */
-
     canvas.addEventListener("mousedown", iniciar);
+
+    canvas.addEventListener("mousemove", moverMouse);
 
     canvas.addEventListener("mouseup", parar);
 
     canvas.addEventListener("mouseleave", parar);
 
-    canvas.addEventListener("mousemove", moverMouse);
+    canvas.addEventListener("touchstart", iniciarTouch, {
+        passive: false
+    });
 
-    /* Touch */
-
-    canvas.addEventListener("touchstart", iniciarTouch);
-
-    canvas.addEventListener("touchmove", moverTouch);
+    canvas.addEventListener("touchmove", moverTouch, {
+        passive: false
+    });
 
     canvas.addEventListener("touchend", parar);
 
@@ -117,11 +144,13 @@ function moverMouse(e) {
 
     const rect = canvas.getBoundingClientRect();
 
-    const x = e.clientX - rect.left;
+    raspar(
 
-    const y = e.clientY - rect.top;
+        e.clientX - rect.left,
 
-    raspar(x, y);
+        e.clientY - rect.top
+
+    );
 
 }
 
@@ -139,11 +168,13 @@ function moverTouch(e) {
 
     const toque = e.touches[0];
 
-    const x = toque.clientX - rect.left;
+    raspar(
 
-    const y = toque.clientY - rect.top;
+        toque.clientX - rect.left,
 
-    raspar(x, y);
+        toque.clientY - rect.top
+
+    );
 
 }
 
