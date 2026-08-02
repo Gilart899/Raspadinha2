@@ -1,17 +1,33 @@
 /* ==========================================================
-   RASPADINHA DA AMIZADE 2.0
+   RASPADINHA DA AMIZADE 3.0
    Resultado
 ========================================================== */
 
 let resultadoAtual = "perdeu";
 
+/* ==========================================================
+   DEFINE O RESULTADO
+========================================================== */
+
 export function definirResultado(resultado) {
+
     resultadoAtual = resultado;
+
 }
 
+/* ==========================================================
+   OBTÉM O RESULTADO
+========================================================== */
+
 export function obterResultado() {
+
     return resultadoAtual;
+
 }
+
+/* ==========================================================
+   CAMINHO DA IMAGEM
+========================================================== */
 
 export function obterImagemResultado() {
 
@@ -25,6 +41,7 @@ export function obterImagemResultado() {
 
         default:
             return "/Raspadinha2/img/perdeu.png";
+
     }
 
 }
