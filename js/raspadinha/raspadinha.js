@@ -1,13 +1,15 @@
 /* ==========================================================
-   RASPADINHA DA AMIZADE 2.0
+   RASPADINHA DA AMIZADE 3.0
    Controle da Raspadinha
 ========================================================== */
 
 import { iniciarCanvas } from "./canvas.js";
 import { realizarSorteio } from "./sorteio.js";
+import { obterImagemResultado } from "./resultado.js";
 
 let modal = null;
 let btnFechar = null;
+let imagemPremio = null;
 
 /* ==========================================================
    INICIAR
@@ -16,7 +18,10 @@ let btnFechar = null;
 export function iniciarRaspadinha() {
 
     modal = document.getElementById("modalRaspadinha");
+
     btnFechar = document.getElementById("btnFecharRaspadinha");
+
+    imagemPremio = document.getElementById("imagemPremio");
 
     if (!modal) {
 
@@ -29,8 +34,11 @@ export function iniciarRaspadinha() {
     if (btnFechar) {
 
         btnFechar.addEventListener(
+
             "click",
+
             fecharRaspadinha
+
         );
 
     }
@@ -43,13 +51,16 @@ export function iniciarRaspadinha() {
 
 export async function abrirRaspadinha() {
 
-    // Escolhe o resultado (por enquanto é teste)
     await realizarSorteio();
 
-    // Abre o modal
+    if (imagemPremio) {
+
+        imagemPremio.src = obterImagemResultado();
+
+    }
+
     modal.classList.remove("hidden");
 
-    // Desenha o prêmio e a camada
     iniciarCanvas();
 
 }
