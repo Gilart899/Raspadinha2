@@ -52,10 +52,10 @@ export async function iniciarCanvas() {
 ========================================================== */
 
 async function carregarImagens() {
+   
+imagemResultado.src = "img/perdeu.png";
 
-    imagemResultado.src = obterImagemResultado();
-
-    imagemCamada.src = "/Raspadinha2/img/camada-raspadinha.png";
+    imagemCamada.src = "img/camada-raspadinha.png";
 
     await Promise.all([
         esperarImagem(imagemResultado),
