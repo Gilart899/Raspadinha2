@@ -11,14 +11,14 @@ let ctx;
 let raspando = false;
 let eventosRegistrados = false;
 
-const imagemCamada = new Image();
 const imagemResultado = new Image();
+const imagemCamada = new Image();
 
 /* ==========================================================
    INICIAR
 ========================================================== */
 
-export function iniciarCanvas() {
+export async function iniciarCanvas() {
 
     canvas = document.getElementById("canvasRaspadinha");
 
@@ -35,7 +35,15 @@ export function iniciarCanvas() {
     canvas.width = 380;
     canvas.height = 380;
 
-    carregarImagens();
+    await carregarImagens();
+
+    if (!eventosRegistrados) {
+
+        registrarEventos();
+
+        eventosRegistrados = true;
+
+    }
 
 }
 
@@ -43,36 +51,26 @@ export function iniciarCanvas() {
    CARREGAR IMAGENS
 ========================================================== */
 
-function carregarImagens() {
+async function carregarImagens() {
 
     imagemResultado.src = obterImagemResultado();
 
     imagemCamada.src = "/Raspadinha2/img/camada-raspadinha.png";
 
-    Promise.all([
-        carregar(imagemResultado),
-        carregar(imagemCamada)
-    ]).then(() => {
+    await Promise.all([
+        esperarImagem(imagemResultado),
+        esperarImagem(imagemCamada)
+    ]);
 
-        desenhar();
-
-        if (!eventosRegistrados) {
-
-            registrarEventos();
-
-            eventosRegistrados = true;
-
-        }
-
-    });
+    desenhar();
 
 }
 
-function carregar(imagem) {
+function esperarImagem(img) {
 
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
 
-        if (imagem.complete && imagem.naturalWidth > 0) {
+        if (img.complete && img.naturalWidth > 0) {
 
             resolve();
 
@@ -80,7 +78,15 @@ function carregar(imagem) {
 
         }
 
-        imagem.onload = resolve;
+        img.onload = () => resolve();
+
+        img.onerror = () => {
+
+            console.error("Erro ao carregar:", img.src);
+
+            reject();
+
+        };
 
     });
 
@@ -92,8 +98,16 @@ function carregar(imagem) {
 
 function desenhar() {
 
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.globalCompositeOperation = "source-over";
 
+    ctx.clearRect(
+        0,
+        0,
+        canvas.width,
+        canvas.height
+    );
+
+    // DESENHA O PRÊMIO
     ctx.drawImage(
         imagemResultado,
         0,
@@ -102,6 +116,7 @@ function desenhar() {
         canvas.height
     );
 
+    // DESENHA A CAMADA METÁLICA
     ctx.drawImage(
         imagemCamada,
         0,
@@ -109,6 +124,10 @@ function desenhar() {
         canvas.width,
         canvas.height
     );
+
+    console.log("Resultado:", imagemResultado.src);
+
+    console.log("Camada:", imagemCamada.src);
 
 }
 
@@ -118,25 +137,35 @@ function desenhar() {
 
 function registrarEventos() {
 
-    canvas.addEventListener("mousedown", () => raspando = true);
+    // Mouse
 
-    canvas.addEventListener("mouseup", () => raspando = false);
+    canvas.addEventListener("mousedown", iniciar);
 
-    canvas.addEventListener("mouseleave", () => raspando = false);
+    canvas.addEventListener("mouseup", parar);
+
+    canvas.addEventListener("mouseleave", parar);
 
     canvas.addEventListener("mousemove", moverMouse);
+
+    // Touch
 
     canvas.addEventListener("touchstart", iniciarTouch);
 
     canvas.addEventListener("touchmove", moverTouch);
 
-    canvas.addEventListener("touchend", () => raspando = false);
+    canvas.addEventListener("touchend", parar);
 
 }
 
 /* ==========================================================
-   TOUCH
+   CONTROLE
 ========================================================== */
+
+function iniciar() {
+
+    raspando = true;
+
+}
 
 function iniciarTouch(e) {
 
@@ -146,23 +175,9 @@ function iniciarTouch(e) {
 
 }
 
-function moverTouch(e) {
+function parar() {
 
-    if (!raspando) return;
-
-    e.preventDefault();
-
-    const rect = canvas.getBoundingClientRect();
-
-    const toque = e.touches[0];
-
-    raspar(
-
-        toque.clientX - rect.left,
-
-        toque.clientY - rect.top
-
-    );
+    raspando = false;
 
 }
 
@@ -187,6 +202,30 @@ function moverMouse(e) {
 }
 
 /* ==========================================================
+   TOUCH
+========================================================== */
+
+function moverTouch(e) {
+
+    if (!raspando) return;
+
+    e.preventDefault();
+
+    const rect = canvas.getBoundingClientRect();
+
+    const toque = e.touches[0];
+
+    raspar(
+
+        toque.clientX - rect.left,
+
+        toque.clientY - rect.top
+
+    );
+
+}
+
+/* ==========================================================
    RASPAR
 ========================================================== */
 
@@ -197,17 +236,11 @@ function raspar(x, y) {
     ctx.beginPath();
 
     ctx.arc(
-
         x,
-
         y,
-
         25,
-
         0,
-
         Math.PI * 2
-
     );
 
     ctx.fill();
