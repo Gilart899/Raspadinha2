@@ -1,8 +1,10 @@
 /* ==========================================================
    RASPADINHA DA AMIZADE 2.0
+   Controle da Raspadinha
 ========================================================== */
 
 import { iniciarCanvas } from "./canvas.js";
+import { realizarSorteio } from "./sorteio.js";
 
 let modal = null;
 let btnFechar = null;
@@ -26,7 +28,10 @@ export function iniciarRaspadinha() {
 
     if (btnFechar) {
 
-        btnFechar.addEventListener("click", fecharRaspadinha);
+        btnFechar.addEventListener(
+            "click",
+            fecharRaspadinha
+        );
 
     }
 
@@ -36,16 +41,15 @@ export function iniciarRaspadinha() {
    ABRIR
 ========================================================== */
 
-export function abrirRaspadinha() {
+export async function abrirRaspadinha() {
 
-    if (!modal) {
+    // Escolhe o resultado (por enquanto é teste)
+    await realizarSorteio();
 
-        modal = document.getElementById("modalRaspadinha");
-
-    }
-
+    // Abre o modal
     modal.classList.remove("hidden");
 
+    // Desenha o prêmio e a camada
     iniciarCanvas();
 
 }
