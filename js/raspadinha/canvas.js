@@ -8,6 +8,9 @@ import { obterImagemResultado } from "./resultado.js";
 let canvas;
 let ctx;
 
+let camadaCanvas;
+let camadaCtx;
+
 let raspando = false;
 let eventosRegistrados = false;
 
@@ -15,9 +18,6 @@ let eventosRegistrados = false;
 const imagemPremio = new Image();
 const imagemCamada = new Image();
 
-// Canvas auxiliar para a camada raspável
-let camadaCanvas;
-let camadaCtx;
 /* ==========================================================
    INICIAR
 ========================================================== */
@@ -27,11 +27,8 @@ export async function iniciarCanvas() {
     canvas = document.getElementById("canvasRaspadinha");
 
     if (!canvas) {
-
         console.error("Canvas não encontrado.");
-
         return;
-
     }
 
     ctx = canvas.getContext("2d");
@@ -70,20 +67,17 @@ async function carregarImagens() {
     imagemCamada.src = "/Raspadinha2/img/camada-raspadinha.png";
 
     await Promise.all([
-
         carregar(imagemPremio),
-
         carregar(imagemCamada)
-
     ]);
 
 }
 
-function carregar(img){
+function carregar(img) {
 
-    return new Promise((resolve,reject)=>{
+    return new Promise((resolve, reject) => {
 
-        if(img.complete && img.naturalWidth>0){
+        if (img.complete && img.naturalWidth > 0) {
 
             resolve();
 
@@ -91,9 +85,9 @@ function carregar(img){
 
         }
 
-        img.onload=resolve;
+        img.onload = resolve;
 
-        img.onerror=reject;
+        img.onerror = reject;
 
     });
 
@@ -103,109 +97,49 @@ function carregar(img){
    DESENHAR
 ========================================================== */
 
-function desenharTudo(){
+function desenharTudo() {
 
     ctx.clearRect(
-
         0,
-
         0,
-
         canvas.width,
-
         canvas.height
-
     );
 
-    // prêmio
+    // Desenha o prêmio
+
     ctx.drawImage(
-
         imagemPremio,
-
         0,
-
         0,
-
         canvas.width,
-
         canvas.height
-
     );
 
-    // camada raspável
+    // Prepara a camada metálica
+
     camadaCtx.clearRect(
-
         0,
-
         0,
-
         canvas.width,
-
         canvas.height
-
     );
 
     camadaCtx.drawImage(
-
         imagemCamada,
-
         0,
-
         0,
-
         canvas.width,
-
         canvas.height
-
     );
+
+    // Coloca a camada por cima
 
     ctx.drawImage(
-
         camadaCanvas,
-
         0,
-
         0
-
     );
-
-}
-
-/* ==========================================================
-   DESENHAR CAMADA
-========================================================== */
-
-function desenharCamada() {
-
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    ctx.globalCompositeOperation = "source-over";
-
-    if (imagemCamada.complete && imagemCamada.naturalWidth > 0) {
-
-        ctx.drawImage(
-            imagemCamada,
-            0,
-            0,
-            canvas.width,
-            canvas.height
-        );
-
-    } else {
-
-        imagemCamada.onload = () => {
-
-            ctx.drawImage(
-                imagemCamada,
-                0,
-                0,
-                canvas.width,
-                canvas.height
-            );
-
-        };
-
-    }
 
 }
 
@@ -215,6 +149,8 @@ function desenharCamada() {
 
 function registrarEventos() {
 
+    // Mouse
+
     canvas.addEventListener("mousedown", iniciar);
 
     canvas.addEventListener("mousemove", moverMouse);
@@ -223,15 +159,24 @@ function registrarEventos() {
 
     canvas.addEventListener("mouseleave", parar);
 
-    canvas.addEventListener("touchstart", iniciarTouch, {
-        passive: false
-    });
+    // Touch
 
-    canvas.addEventListener("touchmove", moverTouch, {
-        passive: false
-    });
+    canvas.addEventListener(
+        "touchstart",
+        iniciarTouch,
+        { passive: false }
+    );
 
-    canvas.addEventListener("touchend", parar);
+    canvas.addEventListener(
+        "touchmove",
+        moverTouch,
+        { passive: false }
+    );
+
+    canvas.addEventListener(
+        "touchend",
+        parar
+    );
 
 }
 
@@ -309,11 +254,13 @@ function moverTouch(e) {
 
 function raspar(x, y) {
 
-    ctx.globalCompositeOperation = "destination-out";
+    // Apaga apenas a camada metálica
 
-    ctx.beginPath();
+    camadaCtx.globalCompositeOperation = "destination-out";
 
-    ctx.arc(
+    camadaCtx.beginPath();
+
+    camadaCtx.arc(
         x,
         y,
         25,
@@ -321,8 +268,35 @@ function raspar(x, y) {
         Math.PI * 2
     );
 
-    ctx.fill();
+    camadaCtx.fill();
 
-    ctx.globalCompositeOperation = "source-over";
+    camadaCtx.globalCompositeOperation = "source-over";
+
+    // Redesenha tudo
+
+    ctx.clearRect(
+        0,
+        0,
+        canvas.width,
+        canvas.height
+    );
+
+    // Prêmio
+
+    ctx.drawImage(
+        imagemPremio,
+        0,
+        0,
+        canvas.width,
+        canvas.height
+    );
+
+    // Camada raspada
+
+    ctx.drawImage(
+        camadaCanvas,
+        0,
+        0
+    );
 
 }
