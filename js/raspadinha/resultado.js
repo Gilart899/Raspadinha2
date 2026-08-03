@@ -1,22 +1,24 @@
 /* ==========================================================
-   RASPADINHA DA AMIZADE 3.0
-   Resultado
+   RIFA SOLIDÁRIA 3.0
+   Controle de Resultado
 ========================================================== */
+
+import { CONFIG } from "../config.js";
 
 let resultadoAtual = "perdeu";
 
 /* ==========================================================
-   DEFINE O RESULTADO
+   DEFINIR RESULTADO
 ========================================================== */
 
-export function definirResultado(resultado) {
+export function definirResultado(idPremio) {
 
-    resultadoAtual = resultado;
+    resultadoAtual = idPremio;
 
 }
 
 /* ==========================================================
-   OBTÉM O RESULTADO
+   OBTER RESULTADO
 ========================================================== */
 
 export function obterResultado() {
@@ -26,22 +28,57 @@ export function obterResultado() {
 }
 
 /* ==========================================================
-   CAMINHO DA IMAGEM
+   OBTER DADOS DO PRÊMIO
+========================================================== */
+
+export function obterPremio() {
+
+    return CONFIG.premios.find(
+
+        premio => premio.id === resultadoAtual
+
+    );
+
+}
+
+/* ==========================================================
+   OBTER IMAGEM
 ========================================================== */
 
 export function obterImagemResultado() {
 
-    switch (resultadoAtual) {
+    const premio = obterPremio();
 
-        case "ferro":
-            return "/Raspadinha2/img/ferro.png";
+    if (!premio) {
 
-        case "liquidificador":
-            return "/Raspadinha2/img/liquidificador.png";
+        return CONFIG.premios.find(
 
-        default:
-            return "/Raspadinha2/img/perdeu.png";
+            p => p.id === "perdeu"
+
+        ).imagem;
 
     }
+
+    return premio.imagem;
+
+}
+
+/* ==========================================================
+   VERIFICAR SE GANHOU
+========================================================== */
+
+export function ganhou() {
+
+    return resultadoAtual !== "perdeu";
+
+}
+
+/* ==========================================================
+   RESETAR
+========================================================== */
+
+export function resetarResultado() {
+
+    resultadoAtual = "perdeu";
 
 }
