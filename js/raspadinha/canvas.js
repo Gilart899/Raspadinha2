@@ -100,6 +100,78 @@ function carregar(img){
 }
 
 /* ==========================================================
+   DESENHAR
+========================================================== */
+
+function desenharTudo(){
+
+    ctx.clearRect(
+
+        0,
+
+        0,
+
+        canvas.width,
+
+        canvas.height
+
+    );
+
+    // prêmio
+    ctx.drawImage(
+
+        imagemPremio,
+
+        0,
+
+        0,
+
+        canvas.width,
+
+        canvas.height
+
+    );
+
+    // camada raspável
+    camadaCtx.clearRect(
+
+        0,
+
+        0,
+
+        canvas.width,
+
+        canvas.height
+
+    );
+
+    camadaCtx.drawImage(
+
+        imagemCamada,
+
+        0,
+
+        0,
+
+        canvas.width,
+
+        canvas.height
+
+    );
+
+    ctx.drawImage(
+
+        camadaCanvas,
+
+        0,
+
+        0
+
+    );
+
+}
+
+/* ==========================================================
    DESENHAR CAMADA
 ========================================================== */
 
