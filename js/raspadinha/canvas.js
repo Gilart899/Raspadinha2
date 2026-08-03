@@ -1,7 +1,9 @@
 /* ==========================================================
    RASPADINHA DA AMIZADE 3.0
-   Canvas
+   Canvas Definitivo
 ========================================================== */
+
+import { obterImagemResultado } from "./resultado.js";
 
 let canvas;
 let ctx;
@@ -9,15 +11,18 @@ let ctx;
 let raspando = false;
 let eventosRegistrados = false;
 
+// Imagens
+const imagemPremio = new Image();
 const imagemCamada = new Image();
 
-imagemCamada.src = "/Raspadinha2/img/camada-raspadinha.png";
-
+// Canvas auxiliar para a camada raspável
+let camadaCanvas;
+let camadaCtx;
 /* ==========================================================
    INICIAR
 ========================================================== */
 
-export function iniciarCanvas() {
+export async function iniciarCanvas() {
 
     canvas = document.getElementById("canvasRaspadinha");
 
@@ -34,7 +39,15 @@ export function iniciarCanvas() {
     canvas.width = 380;
     canvas.height = 380;
 
-    desenharCamada();
+    camadaCanvas = document.createElement("canvas");
+    camadaCanvas.width = canvas.width;
+    camadaCanvas.height = canvas.height;
+
+    camadaCtx = camadaCanvas.getContext("2d");
+
+    await carregarImagens();
+
+    desenharTudo();
 
     if (!eventosRegistrados) {
 
@@ -43,6 +56,46 @@ export function iniciarCanvas() {
         eventosRegistrados = true;
 
     }
+
+}
+
+/* ==========================================================
+   CARREGAR IMAGENS
+========================================================== */
+
+async function carregarImagens() {
+
+    imagemPremio.src = obterImagemResultado();
+
+    imagemCamada.src = "/Raspadinha2/img/camada-raspadinha.png";
+
+    await Promise.all([
+
+        carregar(imagemPremio),
+
+        carregar(imagemCamada)
+
+    ]);
+
+}
+
+function carregar(img){
+
+    return new Promise((resolve,reject)=>{
+
+        if(img.complete && img.naturalWidth>0){
+
+            resolve();
+
+            return;
+
+        }
+
+        img.onload=resolve;
+
+        img.onerror=reject;
+
+    });
 
 }
 
