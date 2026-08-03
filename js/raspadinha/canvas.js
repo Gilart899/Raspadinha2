@@ -1,10 +1,12 @@
 /* ==========================================================
-   RIFA SOLIDÁRIA 3.0
-   Canvas Engine 5.0
+   RASPADINHA DA AMIZADE 3.0
+   Canvas Engine
 ========================================================== */
 
 import { CONFIG } from "../config.js";
-import { obterImagemResultado } from "./resultado.js";
+import {
+    obterImagemResultado
+} from "./resultado.js";
 
 /* ==========================================================
    VARIÁVEIS
@@ -16,11 +18,12 @@ let ctx;
 let camadaCanvas;
 let camadaCtx;
 
-let largura = 0;
-let altura = 0;
+let largura;
+let altura;
 
 let raspando = false;
 let finalizado = false;
+
 let porcentagem = 0;
 
 let eventosRegistrados = false;
@@ -38,11 +41,15 @@ const imagemCamada = new Image();
 
 export async function iniciarCanvas() {
 
-    canvas = document.getElementById("canvasRaspadinha");
+    canvas = document.getElementById(
+        "canvasRaspadinha"
+    );
 
     if (!canvas) {
 
-        console.error("Canvas não encontrado.");
+        console.error(
+            "Canvas não encontrado."
+        );
 
         return;
 
@@ -56,20 +63,18 @@ export async function iniciarCanvas() {
     canvas.width = largura;
     canvas.height = altura;
 
-    camadaCanvas = document.createElement("canvas");
+    camadaCanvas = document.createElement(
+        "canvas"
+    );
 
     camadaCanvas.width = largura;
     camadaCanvas.height = altura;
 
     camadaCtx = camadaCanvas.getContext("2d");
 
-    raspando = false;
-    finalizado = false;
-    porcentagem = 0;
-
     await carregarImagens();
 
-    desenharCamadaInicial();
+    desenharCamada();
 
     atualizarCanvas();
 
@@ -84,71 +89,16 @@ export async function iniciarCanvas() {
 }
 
 /* ==========================================================
-   CARREGAR IMAGENS
+   DESENHAR CAMADA
 ========================================================== */
 
-async function carregarImagens() {
-
-    imagemPremio.src = obterImagemResultado();
-
-    imagemCamada.src = CONFIG.raspadinha.camada;
-
-    await Promise.all([
-
-        carregarImagem(imagemPremio),
-
-        carregarImagem(imagemCamada)
-
-    ]);
-
-}
-
-function carregarImagem(imagem){
-
-    return new Promise((resolve,reject)=>{
-
-        if(imagem.complete && imagem.naturalWidth>0){
-
-            resolve();
-
-            return;
-
-        }
-
-        imagem.onload=()=>resolve();
-
-        imagem.onerror=()=>{
-
-            console.error(
-
-                "Erro ao carregar:",
-
-                imagem.src
-
-            );
-
-            reject();
-
-        };
-
-    });
-
-}
-
-/* ==========================================================
-   CAMADA
-========================================================== */
-
-function desenharCamadaInicial(){
+function desenharCamada() {
 
     camadaCtx.clearRect(
 
         0,
-
         0,
-
         largura,
-
         altura
 
     );
@@ -170,10 +120,10 @@ function desenharCamadaInicial(){
 }
 
 /* ==========================================================
-   REDESENHAR
+   ATUALIZAR CANVAS
 ========================================================== */
 
-function atualizarCanvas(){
+function atualizarCanvas() {
 
     ctx.clearRect(
 
@@ -187,7 +137,7 @@ function atualizarCanvas(){
 
     );
 
-    // prêmio
+    // Desenha o prêmio
 
     ctx.drawImage(
 
@@ -203,34 +153,88 @@ function atualizarCanvas(){
 
     );
 
-    /* ==========================================================
+    // Desenha a camada metálica
+
+    ctx.drawImage(
+
+        camadaCanvas,
+
+        0,
+
+        0
+
+    );
+
+}
+
+/* ==========================================================
    REGISTRAR EVENTOS
 ========================================================== */
 
 function registrarEventos() {
 
     // Mouse
-    canvas.addEventListener("mousedown", iniciarRaspagem);
-    canvas.addEventListener("mousemove", moverMouse);
-    canvas.addEventListener("mouseup", finalizarRaspagem);
-    canvas.addEventListener("mouseleave", finalizarRaspagem);
+
+    canvas.addEventListener(
+
+        "mousedown",
+
+        iniciarRaspagem
+
+    );
+
+    canvas.addEventListener(
+
+        "mousemove",
+
+        moverMouse
+
+    );
+
+    canvas.addEventListener(
+
+        "mouseup",
+
+        finalizarRaspagem
+
+    );
+
+    canvas.addEventListener(
+
+        "mouseleave",
+
+        finalizarRaspagem
+
+    );
 
     // Touch
+
     canvas.addEventListener(
+
         "touchstart",
+
         iniciarTouch,
+
         { passive: false }
+
     );
 
     canvas.addEventListener(
+
         "touchmove",
+
         moverTouch,
+
         { passive: false }
+
     );
 
     canvas.addEventListener(
+
         "touchend",
+
         finalizarRaspagem
+
     );
 
 }
@@ -269,7 +273,7 @@ function finalizarRaspagem() {
 
 function moverMouse(e) {
 
-    if (!raspando) return;
+    if (!raspando || finalizado) return;
 
     const rect = canvas.getBoundingClientRect();
 
@@ -287,7 +291,7 @@ function moverMouse(e) {
 
 function moverTouch(e) {
 
-    if (!raspando) return;
+    if (!raspando || finalizado) return;
 
     e.preventDefault();
 
@@ -337,20 +341,6 @@ function raspar(x, y) {
 
 }
 
-    // camada raspável
-
-    ctx.drawImage(
-
-        camadaCanvas,
-
-        0,
-
-        0
-
-    );
-
-}
-
 /* ==========================================================
    VERIFICAR PORCENTAGEM RASPADA
 ========================================================== */
@@ -359,23 +349,37 @@ function verificarPorcentagem() {
 
     if (finalizado) return;
 
-    const dados = camadaCtx.getImageData(
+    const imagem = camadaCtx.getImageData(
 
         0,
+
         0,
+
         largura,
+
         altura
 
-    ).data;
+    );
 
-    let pixelsTransparentes = 0;
-    const totalPixels = largura * altura;
+    const pixels = imagem.data;
 
-    for (let i = 3; i < dados.length; i += 4) {
+    let transparentes = 0;
 
-        if (dados[i] === 0) {
+    const total = largura * altura;
 
-            pixelsTransparentes++;
+    for (
+
+        let i = 3;
+
+        i < pixels.length;
+
+        i += 4
+
+    ) {
+
+        if (pixels[i] === 0) {
+
+            transparentes++;
 
         }
 
@@ -383,200 +387,19 @@ function verificarPorcentagem() {
 
     porcentagem = Math.round(
 
-        (pixelsTransparentes / totalPixels) * 100
+        (transparentes / total) * 100
 
     );
 
-    // Para testes
-    console.log("Raspado:", porcentagem + "%");
-
     if (
 
-        porcentagem >= CONFIG.raspadinha.porcentagemRevelacao
+        porcentagem >=
+
+        CONFIG.raspadinha.porcentagemRevelacao
 
     ) {
 
         revelarPremio();
-
-    }
-
-}
-
-/* ==========================================================
-   REVELAR PRÊMIO
-========================================================== */
-
-function revelarPremio() {
-
-    if (finalizado) return;
-
-    finalizado = true;
-
-    raspando = false;
-
-    camadaCtx.clearRect(
-
-        0,
-
-        0,
-
-        largura,
-
-        altura
-
-    );
-
-    atualizarCanvas();
-
-    console.log("🎉 Raspadinha concluída!");
-
-    // Aqui serão chamados futuramente:
-    //
-    // tocarSom();
-    // animacaoConfetes();
-    // abrirFormulario();
-    //
-}
-
-/* ==========================================================
-   GETTERS
-========================================================== */
-
-export function obterPorcentagemRaspada() {
-
-    return porcentagem;
-
-}
-
-export function raspadinhaFinalizada() {
-
-    return finalizado;
-
-}
-
-/* ==========================================================
-   FINALIZAÇÃO
-========================================================== */
-
-export function limparCanvas() {
-
-    if (!camadaCtx) return;
-
-    camadaCtx.clearRect(
-
-        0,
-
-        0,
-
-        largura,
-
-        altura
-
-    );
-
-    porcentagem = 0;
-
-    raspando = false;
-
-    finalizado = false;
-
-}
-
-/* ==========================================================
-   REINICIAR RASPADINHA
-========================================================== */
-
-export async function reiniciarCanvas() {
-
-    porcentagem = 0;
-
-    raspando = false;
-
-    finalizado = false;
-
-    await carregarImagens();
-
-    desenharCamadaInicial();
-
-    atualizarCanvas();
-
-}
-
-/* ==========================================================
-   REDIMENSIONAR
-========================================================== */
-
-export function redimensionarCanvas(
-
-    novaLargura,
-
-    novaAltura
-
-) {
-
-    largura = novaLargura;
-
-    altura = novaAltura;
-
-    canvas.width = largura;
-
-    canvas.height = altura;
-
-    camadaCanvas.width = largura;
-
-    camadaCanvas.height = altura;
-
-    desenharCamadaInicial();
-
-    atualizarCanvas();
-
-}
-
-/* ==========================================================
-   STATUS
-========================================================== */
-
-export function obterStatusCanvas() {
-
-    return {
-
-        largura,
-
-        altura,
-
-        raspando,
-
-        porcentagem,
-
-        finalizado
-
-    };
-
-}
-
-/* ==========================================================
-   CALLBACKS (Preparado para integração)
-========================================================== */
-
-let callbackFinalizacao = null;
-
-export function definirCallbackFinalizacao(callback) {
-
-    callbackFinalizacao = callback;
-
-}
-
-function executarCallbackFinalizacao() {
-
-    if (typeof callbackFinalizacao === "function") {
-
-        callbackFinalizacao({
-
-            porcentagem,
-
-            finalizado
-
-        });
 
     }
 
