@@ -1,76 +1,96 @@
 /* ==========================================================
-   RASPADINHA DA AMIZADE 2.0
-   Configurações Gerais
+   RIFA SOLIDÁRIA 3.0
+   Configuração Geral
 ========================================================== */
 
-const CONFIG = {
+export const CONFIG = {
 
-    /* ======================================================
-       SISTEMA
-    ====================================================== */
+    // ======================================================
+    // CAMPANHA
+    // ======================================================
 
-    nome: "Raspadinha da Amizade",
+    campanha: {
 
-    versao: "2.0.0",
+        nome: "Raspadinha da Amizade",
 
-    ambiente: "producao",
+        descricao:
+            "Concorra a prêmios incríveis.",
 
-    /* ======================================================
-       CANVAS
-    ====================================================== */
+        beneficiada: "Dona Bené",
 
-    canvas: {
+        valor: 10.00,
 
-        largura: 320,
-
-        altura: 320,
-
-        raio: 22,
-
-        porcentagemRevelar: 60
+        moeda: "R$"
 
     },
 
-    /* ======================================================
-       ANIMAÇÕES
-    ====================================================== */
+    // ======================================================
+    // RIFA
+    // ======================================================
 
-    animacoes: {
+    rifa: {
 
-        velocidadeTrevos: 1,
+        quantidadeNumeros: 1000,
 
-        quantidadeConfetes: 120
-
-    },
-
-    /* ======================================================
-       CAMINHOS
-    ====================================================== */
-
-    imagens: {
-
-        logo: "img/logo.png",
-
-        ferro: "img/ferro.png",
-
-        liquidificador: "img/liquidificador.png",
-
-        perdeu: "img/perdeu.png"
+        numerosPorCartela: 100
 
     },
 
-    sons: {
+    // ======================================================
+    // PRÊMIOS
+    // ======================================================
 
-        raspar: "sounds/raspar.mp3",
+    premios: [
 
-        vitoria: "sounds/vitoria.mp3",
+        {
+            id: "ferro",
+            nome: "Ferro Elétrico",
+            imagem: "/Raspadinha2/img/ferro.png",
+            quantidade: 1
+        },
 
-        derrota: "sounds/perdeu.mp3",
+        {
+            id: "liquidificador",
+            nome: "Liquidificador",
+            imagem: "/Raspadinha2/img/liquidificador.png",
+            quantidade: 1
+        },
 
-        abertura: "sounds/abertura.mp3"
+        {
+            id: "perdeu",
+            nome: "Não foi desta vez",
+            imagem: "/Raspadinha2/img/perdeu.png",
+            quantidade: 998
+        }
+
+    ],
+
+    // ======================================================
+    // RASPADINHA
+    // ======================================================
+
+    raspadinha: {
+
+        largura: 380,
+
+        altura: 380,
+
+        raioRaspagem: 25,
+
+        porcentagemRevelacao: 70,
+
+        camada: "/Raspadinha2/img/camada-raspadinha.png"
+
+    },
+
+    // ======================================================
+    // FIREBASE
+    // ======================================================
+
+    firebase: {
+
+        campanhaAtiva: "campanha01"
 
     }
 
 };
-
-export default CONFIG;
