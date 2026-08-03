@@ -1,73 +1,17 @@
 /* ==========================================================
-   RIFA SOLIDÁRIA 3.0
-   Configuração Geral
+   RASPADINHA DA AMIZADE 3.0
+   CONFIGURAÇÕES GERAIS
 ========================================================== */
 
 export const CONFIG = {
 
-    // ======================================================
-    // CAMPANHA
-    // ======================================================
-
-    campanha: {
+    sistema: {
 
         nome: "Raspadinha da Amizade",
 
-        descricao:
-            "Concorra a prêmios incríveis.",
-
-        beneficiada: "Dona Bené",
-
-        valor: 10.00,
-
-        moeda: "R$"
+        versao: "3.0"
 
     },
-
-    // ======================================================
-    // RIFA
-    // ======================================================
-
-    rifa: {
-
-        quantidadeNumeros: 1000,
-
-        numerosPorCartela: 100
-
-    },
-
-    // ======================================================
-    // PRÊMIOS
-    // ======================================================
-
-    premios: [
-
-        {
-            id: "ferro",
-            nome: "Ferro Elétrico",
-            imagem: "/Raspadinha2/img/ferro.png",
-            quantidade: 1
-        },
-
-        {
-            id: "liquidificador",
-            nome: "Liquidificador",
-            imagem: "/Raspadinha2/img/liquidificador.png",
-            quantidade: 1
-        },
-
-        {
-            id: "perdeu",
-            nome: "Não foi desta vez",
-            imagem: "/Raspadinha2/img/perdeu.png",
-            quantidade: 998
-        }
-
-    ],
-
-    // ======================================================
-    // RASPADINHA
-    // ======================================================
 
     raspadinha: {
 
@@ -79,17 +23,35 @@ export const CONFIG = {
 
         porcentagemRevelacao: 70,
 
-        camada: "/Raspadinha2/img/camada-raspadinha.png"
+        camada: "img/camada-raspadinha.png"
 
     },
 
-    // ======================================================
-    // FIREBASE
-    // ======================================================
+    premios: {
+
+        perdeu: "img/perdeu.png",
+
+        ferro: "img/ferro.png",
+
+        liquidificador: "img/liquidificador.png"
+
+    },
+
+    sons: {
+
+        raspar: "sounds/raspar.mp3",
+
+        ganhou: "sounds/vitoria.mp3",
+
+        perdeu: "sounds/perdeu.mp3",
+
+        click: "sounds/click.mp3"
+
+    },
 
     firebase: {
 
-        campanhaAtiva: "campanha01"
+        campanha: "Campanha01"
 
     }
 
