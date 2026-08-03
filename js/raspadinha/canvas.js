@@ -1,140 +1,172 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <meta name="theme-color"
+        content="#0B7D2B">
+
+    <meta name="description"
+        content="Raspadinha da Amizade 2.0">
+
+    <title>🍀 Raspadinha da Amizade</title>
+
+    <link rel="stylesheet"
+        href="css/style.css">
+
+</head>
+
+<body>
+
+    <!-- =====================================================
+         CABEÇALHO
+    ====================================================== -->
+
+    <header class="topo">
+
+        <img
+            src="img/logo.png"
+            alt="Logo"
+            class="logo">
+
+        <h1>
+
+            🍀 RASPADINHA DA AMIZADE
+
+        </h1>
+
+        <p>
+
+            Raspe e descubra se você ganhou!
+
+        </p>
+
+    </header>
+
+    <!-- =====================================================
+         PRÊMIOS
+    ====================================================== -->
+
+    <main>
+
+        <section class="premios">
+
+            <div class="premio">
+
+                <img
+                    src="img/ferro.png"
+                    alt="Ferro Elétrico">
+
+                <h2>Ferro Elétrico</h2>
+
+            </div>
+
+            <div class="ou">
+
+                OU
+
+            </div>
+
+            <div class="premio">
+
+                <img
+                    src="img/liquidificador.png"
+                    alt="Liquidificador">
+
+                <h2>Liquidificador</h2>
+
+            </div>
+
+        </section>
+
+        <!-- =====================================================
+             BOTÃO
+        ====================================================== -->
+
+        <section class="acao">
+
+            <button id="btnParticipar">
+
+                🎁 RASPE E CONCORRA
+
+            </button>
+
+        </section>
+
+    </main>
+
+ <!-- =====================================================
+     MODAL DA RASPADINHA
+===================================================== -->
+
+<div id="modalRaspadinha" class="modal hidden">
+
+    <div class="janela">
+
+        <h2>🍀 Boa sorte!</h2>
+
+        <p>Raspe toda a área para descobrir seu prêmio.</p>
+
+      <div class="areaRaspadinha">
+
+    <canvas id="canvasRaspadinha"></canvas>
+
+</div>
+
+        <button id="btnFecharRaspadinha">
+
+            Fechar
+
+        </button>
+
+    </div>
+
+</div>
+    
+    <div id="statusSistema"></div>
+
+    <script type="module"
+        src="js/app.js"></script>
+
+</body>
+
+</html>
+
 /* ==========================================================
-   RASPADINHA DA AMIZADE 3.0
-   Canvas Definitivo
+   DESENHO INICIAL
 ========================================================== */
 
-import { obterImagemResultado } from "./resultado.js";
+function desenharInicial() {
 
-let canvas;
-let ctx;
-
-let camadaCanvas;
-let camadaCtx;
-
-let raspando = false;
-let eventosRegistrados = false;
-
-// Imagens
-const imagemPremio = new Image();
-const imagemCamada = new Image();
-
-/* ==========================================================
-   INICIAR
-========================================================== */
-
-export async function iniciarCanvas() {
-
-    canvas = document.getElementById("canvasRaspadinha");
-
-    if (!canvas) {
-        console.error("Canvas não encontrado.");
-        return;
-    }
-
-    ctx = canvas.getContext("2d");
-
-    canvas.width = 380;
-    canvas.height = 380;
-
-    camadaCanvas = document.createElement("canvas");
-    camadaCanvas.width = canvas.width;
-    camadaCanvas.height = canvas.height;
-
-    camadaCtx = camadaCanvas.getContext("2d");
-
-    await carregarImagens();
-
-    desenharTudo();
-
-    if (!eventosRegistrados) {
-
-        registrarEventos();
-
-        eventosRegistrados = true;
-
-    }
-
-}
-
-/* ==========================================================
-   CARREGAR IMAGENS
-========================================================== */
-
-async function carregarImagens() {
-
-    imagemPremio.src = obterImagemResultado();
-
-    imagemCamada.src = "/Raspadinha2/img/camada-raspadinha.png";
-
-    await Promise.all([
-        carregar(imagemPremio),
-        carregar(imagemCamada)
-    ]);
-
-}
-
-function carregar(img) {
-
-    return new Promise((resolve, reject) => {
-
-        if (img.complete && img.naturalWidth > 0) {
-
-            resolve();
-
-            return;
-
-        }
-
-        img.onload = resolve;
-
-        img.onerror = reject;
-
-    });
-
-}
-
-/* ==========================================================
-   DESENHAR
-========================================================== */
-
-function desenharTudo() {
-
-    ctx.clearRect(
-        0,
-        0,
-        canvas.width,
-        canvas.height
-    );
+    // Limpa o canvas principal
+    ctx.clearRect(0, 0, largura, altura);
 
     // Desenha o prêmio
-
     ctx.drawImage(
-        imagemPremio,
+        premio,
         0,
         0,
-        canvas.width,
-        canvas.height
+        largura,
+        altura
     );
 
     // Prepara a camada metálica
-
-    camadaCtx.clearRect(
-        0,
-        0,
-        canvas.width,
-        canvas.height
-    );
+    camadaCtx.clearRect(0, 0, largura, altura);
 
     camadaCtx.drawImage(
-        imagemCamada,
+        camada,
         0,
         0,
-        canvas.width,
-        canvas.height
+        largura,
+        altura
     );
 
-    // Coloca a camada por cima
-
+    // Coloca a camada sobre o prêmio
     ctx.drawImage(
         camadaCanvas,
         0,
@@ -149,17 +181,17 @@ function desenharTudo() {
 
 function registrarEventos() {
 
-    // Mouse
+    /* Mouse */
 
-    canvas.addEventListener("mousedown", iniciar);
+    canvas.addEventListener("mousedown", iniciarRaspagem);
 
     canvas.addEventListener("mousemove", moverMouse);
 
-    canvas.addEventListener("mouseup", parar);
+    canvas.addEventListener("mouseup", pararRaspagem);
 
-    canvas.addEventListener("mouseleave", parar);
+    canvas.addEventListener("mouseleave", pararRaspagem);
 
-    // Touch
+    /* Touch */
 
     canvas.addEventListener(
         "touchstart",
@@ -175,7 +207,7 @@ function registrarEventos() {
 
     canvas.addEventListener(
         "touchend",
-        parar
+        pararRaspagem
     );
 
 }
@@ -184,9 +216,15 @@ function registrarEventos() {
    CONTROLE
 ========================================================== */
 
-function iniciar() {
+function iniciarRaspagem() {
 
     raspando = true;
+
+}
+
+function pararRaspagem() {
+
+    raspando = false;
 
 }
 
@@ -195,12 +233,6 @@ function iniciarTouch(e) {
     e.preventDefault();
 
     raspando = true;
-
-}
-
-function parar() {
-
-    raspando = false;
 
 }
 
@@ -272,26 +304,99 @@ function raspar(x, y) {
 
     camadaCtx.globalCompositeOperation = "source-over";
 
-    // Redesenha tudo
+    atualizarCanvas();
+
+}
+
+/* ==========================================================
+   REDESENHAR
+========================================================== */
+
+function atualizarCanvas() {
+
+    // Limpa o canvas principal
 
     ctx.clearRect(
         0,
         0,
-        canvas.width,
-        canvas.height
+        largura,
+        altura
     );
 
-    // Prêmio
+    // Desenha novamente o prêmio
 
     ctx.drawImage(
-        imagemPremio,
+        premio,
         0,
         0,
-        canvas.width,
-        canvas.height
+        largura,
+        altura
     );
 
-    // Camada raspada
+    // Desenha a camada metálica já raspada
+
+    ctx.drawImage(
+        camadaCanvas,
+        0,
+        0
+    );
+
+}
+
+/* ==========================================================
+   RASPAR
+========================================================== */
+
+function raspar(x, y) {
+
+    // Apaga apenas a camada metálica
+
+    camadaCtx.globalCompositeOperation = "destination-out";
+
+    camadaCtx.beginPath();
+
+    camadaCtx.arc(
+        x,
+        y,
+        25,
+        0,
+        Math.PI * 2
+    );
+
+    camadaCtx.fill();
+
+    camadaCtx.globalCompositeOperation = "source-over";
+
+    atualizarCanvas();
+
+}
+
+/* ==========================================================
+   REDESENHAR
+========================================================== */
+
+function atualizarCanvas() {
+
+    // Limpa o canvas principal
+
+    ctx.clearRect(
+        0,
+        0,
+        largura,
+        altura
+    );
+
+    // Desenha novamente o prêmio
+
+    ctx.drawImage(
+        premio,
+        0,
+        0,
+        largura,
+        altura
+    );
+
+    // Desenha a camada metálica já raspada
 
     ctx.drawImage(
         camadaCanvas,
