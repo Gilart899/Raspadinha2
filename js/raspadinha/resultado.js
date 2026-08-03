@@ -1,9 +1,13 @@
 /* ==========================================================
-   RIFA SOLIDÁRIA 3.0
-   Controle de Resultado
+   RASPADINHA DA AMIZADE 3.0
+   CONTROLE DO RESULTADO
 ========================================================== */
 
 import { CONFIG } from "../config.js";
+
+/* ==========================================================
+   RESULTADO ATUAL
+========================================================== */
 
 let resultadoAtual = "perdeu";
 
@@ -11,9 +15,9 @@ let resultadoAtual = "perdeu";
    DEFINIR RESULTADO
 ========================================================== */
 
-export function definirResultado(idPremio) {
+export function definirResultado(resultado) {
 
-    resultadoAtual = idPremio;
+    resultadoAtual = resultado;
 
 }
 
@@ -28,16 +32,12 @@ export function obterResultado() {
 }
 
 /* ==========================================================
-   OBTER DADOS DO PRÊMIO
+   VERIFICAR RESULTADO
 ========================================================== */
 
-export function obterPremio() {
+export function ganhouPremio() {
 
-    return CONFIG.premios.find(
-
-        premio => premio.id === resultadoAtual
-
-    );
+    return resultadoAtual !== "perdeu";
 
 }
 
@@ -47,37 +47,29 @@ export function obterPremio() {
 
 export function obterImagemResultado() {
 
-    const premio = obterPremio();
+    switch (resultadoAtual) {
 
-    if (!premio) {
+        case "ferro":
 
-        return CONFIG.premios.find(
+            return CONFIG.premios.ferro;
 
-            p => p.id === "perdeu"
+        case "liquidificador":
 
-        ).imagem;
+            return CONFIG.premios.liquidificador;
+
+        default:
+
+            return CONFIG.premios.perdeu;
 
     }
 
-    return premio.imagem;
-
 }
 
 /* ==========================================================
-   VERIFICAR SE GANHOU
+   REINICIAR
 ========================================================== */
 
-export function ganhou() {
-
-    return resultadoAtual !== "perdeu";
-
-}
-
-/* ==========================================================
-   RESETAR
-========================================================== */
-
-export function resetarResultado() {
+export function limparResultado() {
 
     resultadoAtual = "perdeu";
 
