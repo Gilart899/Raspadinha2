@@ -1,510 +1,695 @@
 /* ==========================================================
-   RASPADINHA DA AMIZADE
-   Canvas Engine 4.0
+   Canvas Engine 5.0
+   Raspadinha Solidária
+   Parte 1/3
 ========================================================== */
 
 import { CONFIG } from "../config.js";
 import { obterImagemResultado } from "./resultado.js";
 
-/* ==========================================================
-   VARIÁVEIS
-========================================================== */
+export default class CanvasEngine {
 
-let canvas = null;
-let ctx = null;
+    constructor(canvasId = "canvasRaspadinha") {
 
-let camadaCanvas = null;
-let camadaCtx = null;
+        this.canvasId = canvasId;
 
-let imagemPremio = null;
-let imagemCamada = null;
+        this.canvas = null;
+        this.ctx = null;
 
-let largura = 380;
-let altura = 380;
+        this.overlayCanvas = null;
+        this.overlayCtx = null;
 
-let raspando = false;
-let finalizado = false;
-let porcentagem = 0;
+        this.width = CONFIG?.raspadinha?.largura || 380;
+        this.height = CONFIG?.raspadinha?.altura || 380;
 
-let eventosRegistrados = false;
+        this.prizeImage = null;
+        this.coverImage = null;
 
-/* ==========================================================
-   INICIALIZAÇÃO
-========================================================== */
+        this.initialized = false;
 
-export async function iniciarCanvas() {
+        this.isDrawing = false;
+        this.isFinished = false;
 
-    canvas = document.getElementById("canvasRaspadinha");
+        this.percent = 0;
 
-    if (!canvas) {
-        throw new Error("Canvas não encontrado.");
-    }
+        this.brushRadius =
+            CONFIG?.raspadinha?.raioRaspagem || 28;
 
-    ctx = canvas.getContext("2d");
-
-    largura = CONFIG?.raspadinha?.largura || 380;
-    altura = CONFIG?.raspadinha?.altura || 380;
-
-    canvas.width = largura;
-    canvas.height = altura;
-
-    camadaCanvas = document.createElement("canvas");
-    camadaCanvas.width = largura;
-    camadaCanvas.height = altura;
-
-    camadaCtx = camadaCanvas.getContext("2d");
-
-    await carregarImagens();
-
-    desenharPremio();
-
-    desenharCamada();
-
-    atualizarCanvas();
-
-    if (!eventosRegistrados) {
-
-        registrarEventos();
-
-        eventosRegistrados = true;
+        this.animationFrame = null;
 
     }
 
-}
+    /* ======================================================
+       INICIAR
+    ====================================================== */
 
-/* ==========================================================
-   CARREGAR IMAGENS
-========================================================== */
+    async iniciar() {
 
-async function carregarImagens() {
+        this.canvas =
+            document.getElementById(this.canvasId);
 
-    imagemPremio = new Image();
+        if (!this.canvas) {
 
-    imagemCamada = new Image();
-
-    imagemPremio.src = obterImagemResultado();
-
-    imagemCamada.src = "img/camada-raspadinha.png";
-
-    await Promise.all([
-
-        carregarImagem(imagemPremio),
-
-        carregarImagem(imagemCamada)
-
-    ]);
-
-}
-
-function carregarImagem(img) {
-
-    return new Promise((resolve, reject) => {
-
-        if (img.complete && img.naturalWidth > 0) {
-
-            resolve();
-
-            return;
+            throw new Error(
+                "Canvas não encontrado."
+            );
 
         }
 
-        img.onload = resolve;
+        this.ctx =
+            this.canvas.getContext("2d");
 
-        img.onerror = reject;
+        this.canvas.width = this.width;
+        this.canvas.height = this.height;
 
-    });
+        this.criarCamada();
 
-}
+        await this.carregarImagens();
 
-/* ==========================================================
-   DESENHAR PRÊMIO
-========================================================== */
+        this.desenharInicial();
 
-function desenharPremio() {
+        this.registrarEventos();
 
-    ctx.clearRect(
+        this.loop();
 
-        0,
+        this.initialized = true;
 
-        0,
+    }
 
-        largura,
+    /* ======================================================
+       CAMADA
+    ====================================================== */
 
-        altura
+    criarCamada() {
 
-    );
+        this.overlayCanvas =
+            document.createElement("canvas");
 
-    ctx.drawImage(
+        this.overlayCanvas.width =
+            this.width;
 
-        imagemPremio,
+        this.overlayCanvas.height =
+            this.height;
 
-        0,
+        this.overlayCtx =
+            this.overlayCanvas.getContext("2d");
 
-        0,
+    }
 
-        largura,
+    /* ======================================================
+       IMAGENS
+    ====================================================== */
 
-        altura
+    async carregarImagens() {
 
-    );
+        this.prizeImage =
+            new Image();
 
-}
+        this.coverImage =
+            new Image();
 
-/* ==========================================================
-   CAMADA RASPÁVEL
-========================================================== */
+        this.prizeImage.src =
+            obterImagemResultado();
 
-function desenharCamada() {
+        this.coverImage.src =
+            "img/camada-raspadinha.png";
 
-    camadaCtx.clearRect(
+        await Promise.all([
 
-        0,
+            this.carregarImagem(
+                this.prizeImage
+            ),
 
-        0,
+            this.carregarImagem(
+                this.coverImage
+            )
 
-        largura,
+        ]);
 
-        altura
+    }
 
-    );
+    carregarImagem(img) {
 
-    camadaCtx.drawImage(
+        return new Promise((resolve, reject) => {
 
-        imagemCamada,
+            if (
+                img.complete &&
+                img.naturalWidth > 0
+            ) {
 
-        0,
+                resolve();
+                return;
 
-        0,
+            }
 
-        largura,
+            img.onload = resolve;
+            img.onerror = reject;
 
-        altura
+        });
 
-    );
+    }
 
-}
+    /* ======================================================
+       DESENHO INICIAL
+    ====================================================== */
 
-/* ==========================================================
-   ATUALIZAR CANVAS
-========================================================== */
+    desenharInicial() {
 
-function atualizarCanvas() {
+        this.ctx.clearRect(
+            0,
+            0,
+            this.width,
+            this.height
+        );
 
-    desenharPremio();
+        this.ctx.drawImage(
 
-    ctx.drawImage(
+            this.prizeImage,
 
-        camadaCanvas,
+            0,
+            0,
 
-        0,
+            this.width,
+            this.height
 
-        0
+        );
 
-    );
+        this.overlayCtx.clearRect(
 
-}
+            0,
+            0,
 
-/* ==========================================================
-   REGISTRAR EVENTOS
-========================================================== */
+            this.width,
+            this.height
 
-function registrarEventos() {
+        );
 
-    canvas.addEventListener("mousedown", iniciarRaspagem);
-    canvas.addEventListener("mousemove", moverMouse);
-    canvas.addEventListener("mouseup", finalizarRaspagem);
-    canvas.addEventListener("mouseleave", finalizarRaspagem);
+        this.overlayCtx.drawImage(
 
-    canvas.addEventListener("touchstart", iniciarTouch, {
-        passive: false
-    });
+            this.coverImage,
 
-    canvas.addEventListener("touchmove", moverTouch, {
-        passive: false
-    });
+            0,
+            0,
 
-    canvas.addEventListener("touchend", finalizarRaspagem);
+            this.width,
+            this.height
 
-}
+        );
 
-/* ==========================================================
-   CONTROLE
-========================================================== */
+        this.renderizar();
 
-function iniciarRaspagem() {
+    }
 
-    if (finalizado) return;
+    /* ======================================================
+       LOOP
+    ====================================================== */
 
-    raspando = true;
+    loop() {
 
-}
+        this.renderizar();
 
-function iniciarTouch(e) {
+        this.animationFrame =
+            requestAnimationFrame(
 
-    if (finalizado) return;
+                () => this.loop()
 
-    e.preventDefault();
+            );
 
-    raspando = true;
+    }
 
-}
+    /* ======================================================
+       RENDERIZAÇÃO
+    ====================================================== */
 
-function finalizarRaspagem() {
+    renderizar() {
 
-    raspando = false;
+        this.ctx.clearRect(
 
-}
+            0,
 
-/* ==========================================================
-   MOUSE
-========================================================== */
+            0,
 
-function moverMouse(e) {
+            this.width,
 
-    if (!raspando || finalizado) return;
+            this.height
 
-    const rect = canvas.getBoundingClientRect();
+        );
 
-    raspar(
+        this.ctx.drawImage(
 
-        e.clientX - rect.left,
+            this.prizeImage,
 
-        e.clientY - rect.top
+            0,
 
-    );
+            0,
 
-}
+            this.width,
 
-/* ==========================================================
-   TOUCH
-========================================================== */
+            this.height
 
-function moverTouch(e) {
+        );
 
-    if (!raspando || finalizado) return;
+        this.ctx.drawImage(
 
-    e.preventDefault();
+            this.overlayCanvas,
 
-    const rect = canvas.getBoundingClientRect();
+            0,
 
-    const toque = e.touches[0];
+            0
 
-    raspar(
+        );
 
-        toque.clientX - rect.left,
+    }
+    
+        /* ======================================================
+       REGISTRAR EVENTOS
+    ====================================================== */
 
-        toque.clientY - rect.top
+    registrarEventos() {
 
-    );
+        this.canvas.addEventListener(
+            "mousedown",
+            this.iniciarMouse.bind(this)
+        );
 
-}
+        this.canvas.addEventListener(
+            "mousemove",
+            this.moverMouse.bind(this)
+        );
 
-/* ==========================================================
-   RASPAR
-========================================================== */
+        window.addEventListener(
+            "mouseup",
+            this.finalizar.bind(this)
+        );
 
-function raspar(x, y) {
+        this.canvas.addEventListener(
+            "touchstart",
+            this.iniciarTouch.bind(this),
+            { passive: false }
+        );
 
-    camadaCtx.globalCompositeOperation = "destination-out";
+        this.canvas.addEventListener(
+            "touchmove",
+            this.moverTouch.bind(this),
+            { passive: false }
+        );
 
-    camadaCtx.beginPath();
+        window.addEventListener(
+            "touchend",
+            this.finalizar.bind(this)
+        );
 
-    camadaCtx.arc(
+    }
 
-        x,
+    /* ======================================================
+       MOUSE
+    ====================================================== */
 
-        y,
+    iniciarMouse(e) {
 
-        CONFIG.raspadinha.raioRaspagem || 25,
+        if (this.isFinished) return;
 
-        0,
+        this.isDrawing = true;
 
-        Math.PI * 2
+        this.rasparEvento(e);
 
-    );
+    }
 
-    camadaCtx.fill();
+    moverMouse(e) {
 
-    camadaCtx.globalCompositeOperation = "source-over";
+        if (!this.isDrawing) return;
 
-    atualizarCanvas();
+        this.rasparEvento(e);
 
-}
+    }
 
-/* ==========================================================
-   REINICIAR
-========================================================== */
+    /* ======================================================
+       TOUCH
+    ====================================================== */
 
-export async function reiniciarCanvas() {
+    iniciarTouch(e) {
 
-    raspando = false;
+        if (this.isFinished) return;
 
-    finalizado = false;
+        e.preventDefault();
 
-    porcentagem = 0;
+        this.isDrawing = true;
 
-    await carregarImagens();
+        this.rasparEvento(e.touches[0]);
 
-    desenharCamada();
+    }
 
-    atualizarCanvas();
+    moverTouch(e) {
 
-}
+        if (!this.isDrawing) return;
 
-/* ==========================================================
-   STATUS
-========================================================== */
+        e.preventDefault();
 
-export function obterStatusCanvas() {
+        this.rasparEvento(e.touches[0]);
 
-    return {
+    }
 
-        largura,
+    /* ======================================================
+       FINALIZAR
+    ====================================================== */
 
-        altura,
+    finalizar() {
 
-        porcentagem,
+        this.isDrawing = false;
 
-        raspando,
+    }
 
-        finalizado
+    /* ======================================================
+       CONVERTER COORDENADAS
+    ====================================================== */
 
-    };
+    obterPosicao(evento) {
 
-}
+        const rect =
+            this.canvas.getBoundingClientRect();
 
-/* ==========================================================
-   CALCULAR PORCENTAGEM RASPADA
-========================================================== */
+        return {
 
-function calcularPorcentagemRaspada() {
+            x: evento.clientX - rect.left,
 
-    const imageData = camadaCtx.getImageData(
-        0,
-        0,
-        largura,
-        altura
-    );
+            y: evento.clientY - rect.top
 
-    const pixels = imageData.data;
+        };
 
-    let transparentes = 0;
+    }
 
-    for (let i = 3; i < pixels.length; i += 4) {
+    /* ======================================================
+       PROCESSAR EVENTO
+    ====================================================== */
 
-        if (pixels[i] === 0) {
-            transparentes++;
+    rasparEvento(evento) {
+
+        const pos =
+            this.obterPosicao(evento);
+
+        this.raspar(
+
+            pos.x,
+
+            pos.y
+
+        );
+
+    }
+
+    /* ======================================================
+       RASPAR
+    ====================================================== */
+
+    raspar(x, y) {
+
+        if (this.isFinished) return;
+
+        this.overlayCtx.save();
+
+        this.overlayCtx.globalCompositeOperation =
+            "destination-out";
+
+        this.overlayCtx.beginPath();
+
+        this.overlayCtx.arc(
+
+            x,
+
+            y,
+
+            this.brushRadius,
+
+            0,
+
+            Math.PI * 2
+
+        );
+
+        this.overlayCtx.fill();
+
+        this.overlayCtx.restore();
+
+        this.calcularPorcentagem();
+
+    }
+    
+        /* ======================================================
+       CALCULAR PORCENTAGEM RASPADA
+    ====================================================== */
+
+    calcularPorcentagem() {
+
+        const dados = this.overlayCtx.getImageData(
+            0,
+            0,
+            this.width,
+            this.height
+        );
+
+        const pixels = dados.data;
+
+        let transparentes = 0;
+
+        for (let i = 3; i < pixels.length; i += 4) {
+
+            if (pixels[i] === 0) {
+                transparentes++;
+            }
+
+        }
+
+        this.percent = Math.round(
+            (transparentes / (this.width * this.height)) * 100
+        );
+
+        const limite =
+            CONFIG?.raspadinha?.porcentagemRevelacao || 60;
+
+        if (
+            this.percent >= limite &&
+            !this.isFinished
+        ) {
+
+            this.revelarPremio();
+
         }
 
     }
 
-    porcentagem = Math.round(
-        (transparentes / (largura * altura)) * 100
-    );
+    /* ======================================================
+       REVELAR PRÊMIO
+    ====================================================== */
 
-    return porcentagem;
+    revelarPremio() {
 
-}
+        this.isFinished = true;
 
-/* ==========================================================
-   VERIFICAR REVELAÇÃO
-========================================================== */
+        this.overlayCtx.clearRect(
+            0,
+            0,
+            this.width,
+            this.height
+        );
 
-function verificarRevelacao() {
+        this.renderizar();
 
-    if (finalizado) return;
+        if (
+            typeof CONFIG?.raspadinha?.aoRevelar === "function"
+        ) {
 
-    const limite =
-        CONFIG?.raspadinha?.porcentagemRevelacao || 60;
+            CONFIG.raspadinha.aoRevelar();
 
-    if (calcularPorcentagemRaspada() >= limite) {
+        }
 
-        revelarPremio();
+    }
+
+    /* ======================================================
+       REINICIAR
+    ====================================================== */
+
+    async reiniciar() {
+
+        this.isDrawing = false;
+        this.isFinished = false;
+        this.percent = 0;
+
+        await this.carregarImagens();
+
+        this.desenharInicial();
+
+    }
+
+    /* ======================================================
+       DESTRUIR
+    ====================================================== */
+
+    destruir() {
+
+        cancelAnimationFrame(
+            this.animationFrame
+        );
+
+        this.canvas = null;
+        this.ctx = null;
+
+        this.overlayCanvas = null;
+        this.overlayCtx = null;
+
+    }
+
+    /* ======================================================
+       GETTERS
+    ====================================================== */
+
+    get porcentagem() {
+
+        return this.percent;
+
+    }
+
+    get finalizado() {
+
+        return this.isFinished;
+
+    }
+
+    get raspando() {
+
+        return this.isDrawing;
 
     }
 
 }
-
 /* ==========================================================
-   REVELAR PRÊMIO
-========================================================== */
+   FIM DO Canvas Engine 5.0
+========================================================== */    /* ======================================================
+       CALCULAR PORCENTAGEM RASPADA
+    ====================================================== */
 
-function revelarPremio() {
+    calcularPorcentagem() {
 
-    finalizado = true;
+        const dados = this.overlayCtx.getImageData(
+            0,
+            0,
+            this.width,
+            this.height
+        );
 
-    camadaCtx.clearRect(
-        0,
-        0,
-        largura,
-        altura
-    );
+        const pixels = dados.data;
 
-    atualizarCanvas();
+        let transparentes = 0;
 
-    if (typeof CONFIG?.raspadinha?.aoRevelar === "function") {
+        for (let i = 3; i < pixels.length; i += 4) {
 
-        CONFIG.raspadinha.aoRevelar();
+            if (pixels[i] === 0) {
+                transparentes++;
+            }
+
+        }
+
+        this.percent = Math.round(
+            (transparentes / (this.width * this.height)) * 100
+        );
+
+        const limite =
+            CONFIG?.raspadinha?.porcentagemRevelacao || 60;
+
+        if (
+            this.percent >= limite &&
+            !this.isFinished
+        ) {
+
+            this.revelarPremio();
+
+        }
+
+    }
+
+    /* ======================================================
+       REVELAR PRÊMIO
+    ====================================================== */
+
+    revelarPremio() {
+
+        this.isFinished = true;
+
+        this.overlayCtx.clearRect(
+            0,
+            0,
+            this.width,
+            this.height
+        );
+
+        this.renderizar();
+
+        if (
+            typeof CONFIG?.raspadinha?.aoRevelar === "function"
+        ) {
+
+            CONFIG.raspadinha.aoRevelar();
+
+        }
+
+    }
+
+    /* ======================================================
+       REINICIAR
+    ====================================================== */
+
+    async reiniciar() {
+
+        this.isDrawing = false;
+        this.isFinished = false;
+        this.percent = 0;
+
+        await this.carregarImagens();
+
+        this.desenharInicial();
+
+    }
+
+    /* ======================================================
+       DESTRUIR
+    ====================================================== */
+
+    destruir() {
+
+        cancelAnimationFrame(
+            this.animationFrame
+        );
+
+        this.canvas = null;
+        this.ctx = null;
+
+        this.overlayCanvas = null;
+        this.overlayCtx = null;
+
+    }
+
+    /* ======================================================
+       GETTERS
+    ====================================================== */
+
+    get porcentagem() {
+
+        return this.percent;
+
+    }
+
+    get finalizado() {
+
+        return this.isFinished;
+
+    }
+
+    get raspando() {
+
+        return this.isDrawing;
 
     }
 
 }
-
 /* ==========================================================
-   ALTERAÇÃO DA FUNÇÃO RASPAR
-========================================================== */
-
-const rasparOriginal = raspar;
-
-raspar = function (x, y) {
-
-    if (finalizado) return;
-
-    rasparOriginal(x, y);
-
-    verificarRevelacao();
-
-};
-
-/* ==========================================================
-   LIMPAR CANVAS
-========================================================== */
-
-export function limparCanvas() {
-
-    camadaCtx.clearRect(
-        0,
-        0,
-        largura,
-        altura
-    );
-
-    atualizarCanvas();
-
-}
-
-/* ==========================================================
-   GETTERS
-========================================================== */
-
-export function obterPorcentagemRaspada() {
-
-    return porcentagem;
-
-}
-
-export function estaFinalizado() {
-
-    return finalizado;
-
-}
-
-export function estaRaspando() {
-
-    return raspando;
-
-}
-
-/* ==========================================================
-   FINAL DO ARQUIVO
-========================================================== */
+   FIM DO Canvas Engine 5.0
+=====================
