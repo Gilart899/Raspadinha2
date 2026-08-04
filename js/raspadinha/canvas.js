@@ -372,3 +372,139 @@ export function obterStatusCanvas() {
     };
 
 }
+
+/* ==========================================================
+   CALCULAR PORCENTAGEM RASPADA
+========================================================== */
+
+function calcularPorcentagemRaspada() {
+
+    const imageData = camadaCtx.getImageData(
+        0,
+        0,
+        largura,
+        altura
+    );
+
+    const pixels = imageData.data;
+
+    let transparentes = 0;
+
+    for (let i = 3; i < pixels.length; i += 4) {
+
+        if (pixels[i] === 0) {
+            transparentes++;
+        }
+
+    }
+
+    porcentagem = Math.round(
+        (transparentes / (largura * altura)) * 100
+    );
+
+    return porcentagem;
+
+}
+
+/* ==========================================================
+   VERIFICAR REVELAÇÃO
+========================================================== */
+
+function verificarRevelacao() {
+
+    if (finalizado) return;
+
+    const limite =
+        CONFIG?.raspadinha?.porcentagemRevelacao || 60;
+
+    if (calcularPorcentagemRaspada() >= limite) {
+
+        revelarPremio();
+
+    }
+
+}
+
+/* ==========================================================
+   REVELAR PRÊMIO
+========================================================== */
+
+function revelarPremio() {
+
+    finalizado = true;
+
+    camadaCtx.clearRect(
+        0,
+        0,
+        largura,
+        altura
+    );
+
+    atualizarCanvas();
+
+    if (typeof CONFIG?.raspadinha?.aoRevelar === "function") {
+
+        CONFIG.raspadinha.aoRevelar();
+
+    }
+
+}
+
+/* ==========================================================
+   ALTERAÇÃO DA FUNÇÃO RASPAR
+========================================================== */
+
+const rasparOriginal = raspar;
+
+raspar = function (x, y) {
+
+    if (finalizado) return;
+
+    rasparOriginal(x, y);
+
+    verificarRevelacao();
+
+};
+
+/* ==========================================================
+   LIMPAR CANVAS
+========================================================== */
+
+export function limparCanvas() {
+
+    camadaCtx.clearRect(
+        0,
+        0,
+        largura,
+        altura
+    );
+
+    atualizarCanvas();
+
+}
+
+/* ==========================================================
+   GETTERS
+========================================================== */
+
+export function obterPorcentagemRaspada() {
+
+    return porcentagem;
+
+}
+
+export function estaFinalizado() {
+
+    return finalizado;
+
+}
+
+export function estaRaspando() {
+
+    return raspando;
+
+}
+
+/* ==========================================================
+   FINAL DO ARQUIVO
+========================================================== */
