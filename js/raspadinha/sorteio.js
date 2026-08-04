@@ -1,10 +1,41 @@
 /* ==========================================================
-   RIFA SOLIDÁRIA 3.0
-   Motor de Sorteio
+   SORTEIO ENGINE 5.0
 ========================================================== */
 
 import { CONFIG } from "../config.js";
 import { definirResultado } from "./resultado.js";
+
+/* ==========================================================
+   ESTADO
+========================================================== */
+
+let resultadoAtual = "perdeu";
+
+let participanteAtual = null;
+
+let modoTeste = CONFIG?.modoTeste ?? false;
+
+/* ==========================================================
+   INICIAR
+========================================================== */
+
+export function iniciarSorteio() {
+
+    resultadoAtual = "perdeu";
+
+    participanteAtual = null;
+
+}
+
+/* ==========================================================
+   DEFINIR PARTICIPANTE
+========================================================== */
+
+export function definirParticipante(participante) {
+
+    participanteAtual = participante;
+
+}
 
 /* ==========================================================
    REALIZAR SORTEIO
@@ -14,34 +45,32 @@ export async function realizarSorteio() {
 
     try {
 
-        // ==================================================
-        // MODO TESTE
-        // ==================================================
-        // Depois será substituído pelo Firebase.
-        // Basta alterar "perdeu" para:
-        //
-        // "ferro"
-        // "liquidificador"
-        // "perdeu"
-        // ==================================================
+        if (modoTeste) {
 
-        const resultado = "perdeu";
+            resultadoAtual = realizarSorteioTeste();
 
-        definirResultado(resultado);
+        } else {
 
-        console.log(
-            "Resultado da raspadinha:",
-            resultado
-        );
+            resultadoAtual =
+                await realizarSorteioFirebase();
 
-        return resultado;
+        }
+
+        definirResultado(resultadoAtual);
+
+        return resultadoAtual;
 
     } catch (erro) {
 
         console.error(
+
             "Erro no sorteio:",
+
             erro
+
         );
+
+        resultadoAtual = "perdeu";
 
         definirResultado("perdeu");
 
@@ -52,10 +81,10 @@ export async function realizarSorteio() {
 }
 
 /* ==========================================================
-   SORTEIO ALEATÓRIO (TESTES)
+   SORTEIO DE TESTE
 ========================================================== */
 
-export function sorteioTeste() {
+function realizarSorteioTeste() {
 
     const premios = CONFIG.premios.filter(
 
@@ -65,18 +94,80 @@ export function sorteioTeste() {
 
     const numero = Math.random();
 
-    if (numero < 0.001) {
+    const chanceFerro =
+        CONFIG?.raspadinha?.chanceFerro ?? 0.001;
 
-        return premios[0].id;
+    const chanceLiquidificador =
+        CONFIG?.raspadinha?.chanceLiquidificador ?? 0.002;
+
+    if (numero <= chanceFerro && premios.length > 0) {
+
+        return premios.find(p => p.id === "ferro")?.id
+            || "ferro";
 
     }
 
-    if (numero < 0.002) {
+    if (numero <= chanceLiquidificador && premios.length > 1) {
 
-        return premios[1].id;
+        return premios.find(
+            p => p.id === "liquidificador"
+        )?.id || "liquidificador";
 
     }
 
     return "perdeu";
+
+}
+
+/* ==========================================================
+   FIREBASE
+========================================================== */
+
+async function realizarSorteioFirebase() {
+
+    /*
+        Esta função será implementada na próxima etapa,
+        utilizando firebase-raspadinha.js.
+
+        Fluxo previsto:
+
+        1 - Validar participante
+        2 - Verificar pagamento
+        3 - Verificar se já raspou
+        4 - Verificar disponibilidade dos prêmios
+        5 - Registrar vencedor
+        6 - Atualizar estoque de prêmios
+        7 - Retornar resultado
+    */
+
+    return "perdeu";
+
+}
+
+/* ==========================================================
+   GETTERS
+========================================================== */
+
+export function obterResultadoAtual() {
+
+    return resultadoAtual;
+
+}
+
+export function obterParticipanteAtual() {
+
+    return participanteAtual;
+
+}
+
+export function alterarModoTeste(valor) {
+
+    modoTeste = Boolean(valor);
+
+}
+
+export function estaEmModoTeste() {
+
+    return modoTeste;
 
 }
