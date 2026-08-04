@@ -1,35 +1,87 @@
 /* ==========================================================
-   RASPADINHA DA AMIZADE 3.0
-   Controle da Raspadinha
+   RASPADINHA SOLIDÁRIA 5.0
+   Controlador Principal
 ========================================================== */
 
-import { iniciarCanvas } from "./canvas.js";
+import CanvasEngine from "./canvas.js";
+
 import { realizarSorteio } from "./sorteio.js";
+
 import { obterImagemResultado } from "./resultado.js";
 
+/* ==========================================================
+   ELEMENTOS
+========================================================== */
+
 let modal = null;
+
 let btnFechar = null;
+
 let imagemPremio = null;
+
+/* ==========================================================
+   MOTOR
+========================================================== */
+
+let canvasEngine = null;
+
+/* ==========================================================
+   ESTADO
+========================================================== */
+
+let inicializado = false;
+
+let aberta = false;
 
 /* ==========================================================
    INICIAR
 ========================================================== */
 
-export function iniciarRaspadinha() {
+export async function iniciarRaspadinha() {
 
-    modal = document.getElementById("modalRaspadinha");
+    if (inicializado) return;
 
-    btnFechar = document.getElementById("btnFecharRaspadinha");
+    modal =
+        document.getElementById(
+            "modalRaspadinha"
+        );
 
-    imagemPremio = document.getElementById("imagemPremio");
+    btnFechar =
+        document.getElementById(
+            "btnFecharRaspadinha"
+        );
+
+    imagemPremio =
+        document.getElementById(
+            "imagemPremio"
+        );
 
     if (!modal) {
 
-        console.error("Modal não encontrado.");
-
-        return;
+        throw new Error(
+            "Modal da raspadinha não encontrado."
+        );
 
     }
+
+    canvasEngine =
+        new CanvasEngine(
+            "canvasRaspadinha"
+        );
+
+    await canvasEngine.iniciar();
+
+    registrarEventos();
+
+    inicializado = true;
+
+}
+
+/* ==========================================================
+   EVENTOS
+========================================================== */
+
+function registrarEventos() {
 
     if (btnFechar) {
 
@@ -51,17 +103,36 @@ export function iniciarRaspadinha() {
 
 export async function abrirRaspadinha() {
 
-    await realizarSorteio();
+    if (!inicializado) {
 
-    if (imagemPremio) {
-
-        imagemPremio.src = obterImagemResultado();
+        await iniciarRaspadinha();
 
     }
 
-    modal.classList.remove("hidden");
+    await realizarSorteio();
 
-    iniciarCanvas();
+    atualizarImagemPremio();
+
+    await canvasEngine.reiniciar();
+
+    modal.classList.remove(
+        "hidden"
+    );
+
+    aberta = true;
+
+}
+
+/* ==========================================================
+   IMAGEM
+========================================================== */
+
+function atualizarImagemPremio() {
+
+    if (!imagemPremio) return;
+
+    imagemPremio.src =
+        obterImagemResultado();
 
 }
 
@@ -75,4 +146,112 @@ export function fecharRaspadinha() {
 
     modal.classList.add("hidden");
 
+    aberta = false;
+
 }
+
+/* ==========================================================
+   REINICIAR
+========================================================== */
+
+export async function reiniciarRaspadinha() {
+
+    if (!canvasEngine) return;
+
+    await canvasEngine.reiniciar();
+
+}
+
+/* ==========================================================
+   STATUS
+========================================================== */
+
+export function raspadinhaAberta() {
+
+    return aberta;
+
+}
+
+export function raspadinhaInicializada() {
+
+    return inicializado;
+
+}
+
+export function obterCanvasEngine() {
+
+    return canvasEngine;
+
+}
+
+/* ==========================================================
+   DESTRUIR
+========================================================== */
+
+export function destruirRaspadinha() {
+
+    if (canvasEngine) {
+
+        canvasEngine.destruir();
+
+        canvasEngine = null;
+
+    }
+
+    aberta = false;
+
+    inicializado = false;
+
+}
+
+/* ==========================================================
+   UTILITÁRIOS
+========================================================== */
+
+export function mostrarModal() {
+
+    if (!modal) return;
+
+    modal.classList.remove("hidden");
+
+    aberta = true;
+
+}
+
+export function ocultarModal() {
+
+    if (!modal) return;
+
+    modal.classList.add("hidden");
+
+    aberta = false;
+
+}
+
+/* ==========================================================
+   GETTERS
+========================================================== */
+
+export function obterStatusRaspadinha() {
+
+    return {
+
+        inicializado,
+
+        aberta,
+
+        porcentagem: canvasEngine
+            ? canvasEngine.porcentagem
+            : 0,
+
+        finalizado: canvasEngine
+            ? canvasEngine.finalizado
+            : false
+
+    };
+
+}
+
+/* ==========================================================
+   FIM DO CONTROLADOR
+=========================
