@@ -404,3 +404,147 @@ function verificarPorcentagem() {
     }
 
 }
+
+/* ==========================================================
+   REINICIAR CANVAS
+========================================================== */
+
+export async function reiniciarCanvas() {
+
+    raspando = false;
+
+    finalizado = false;
+
+    porcentagem = 0;
+
+    await carregarImagens();
+
+    desenharCamada();
+
+    atualizarCanvas();
+
+}
+
+/* ==========================================================
+   LIMPAR CANVAS
+========================================================== */
+
+export function limparCanvas() {
+
+    raspando = false;
+
+    finalizado = false;
+
+    porcentagem = 0;
+
+    camadaCtx.clearRect(
+
+        0,
+
+        0,
+
+        largura,
+
+        altura
+
+    );
+
+    atualizarCanvas();
+
+}
+
+/* ==========================================================
+   REINICIAR CANVAS
+========================================================== */
+
+export async function reiniciarCanvas() {
+
+    raspando = false;
+
+    finalizado = false;
+
+    porcentagem = 0;
+
+    await carregarImagens();
+
+    desenharCamada();
+
+    atualizarCanvas();
+
+}
+
+/* ==========================================================
+   LIMPAR CANVAS
+========================================================== */
+
+export function limparCanvas() {
+
+    raspando = false;
+
+    finalizado = false;
+
+    porcentagem = 0;
+
+    camadaCtx.clearRect(
+
+        0,
+
+        0,
+
+        largura,
+
+        altura
+
+    );
+
+    atualizarCanvas();
+
+}
+
+/* ==========================================================
+   REINICIAR CANVAS
+========================================================== */
+
+export async function reiniciarCanvas() {
+
+    raspando = false;
+
+    finalizado = false;
+
+    porcentagem = 0;
+
+    await carregarImagens();
+
+    desenharCamada();
+
+    atualizarCanvas();
+
+}
+
+/* ==========================================================
+   LIMPAR CANVAS
+========================================================== */
+
+export function limparCanvas() {
+
+    raspando = false;
+
+    finalizado = false;
+
+    porcentagem = 0;
+
+    camadaCtx.clearRect(
+
+        0,
+
+        0,
+
+        largura,
+
+        altura
+
+    );
+
+    atualizarCanvas();
+
+}
