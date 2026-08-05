@@ -12,26 +12,18 @@
 
 <style>
 
-
 *{
-
 box-sizing:border-box;
-
 }
 
 
-
 body{
-
 
 margin:0;
 
 min-height:100vh;
 
-overflow:hidden;
-
 font-family:Arial, Helvetica, sans-serif;
-
 
 display:flex;
 
@@ -39,8 +31,10 @@ justify-content:center;
 
 align-items:center;
 
+color:white;
 
-background-image:
+
+background:
 
 linear-gradient(
 rgba(15,23,42,.75),
@@ -54,40 +48,29 @@ background-size:cover;
 
 background-position:center;
 
-
-color:white;
-
+overflow:hidden;
 
 }
 
 
 
 
-
-/* =========================
-   TREVOS FLUTUANDO
-========================= */
+/* trevos */
 
 
 .trevo{
 
-
 position:absolute;
 
-font-size:38px;
+font-size:40px;
 
-opacity:.45;
-
-z-index:1;
-
+opacity:.4;
 
 animation:
 
 flutuar 12s linear infinite;
 
-
 }
-
 
 
 @keyframes flutuar{
@@ -97,24 +80,20 @@ flutuar 12s linear infinite;
 
 transform:
 
-translateY(110vh)
+translateY(100vh)
 rotate(0deg);
-
 
 }
 
 
 100%{
 
-
 transform:
 
 translateY(-120vh)
 rotate(360deg);
 
-
 }
-
 
 
 }
@@ -125,47 +104,37 @@ rotate(360deg);
 
 left:10%;
 
-animation-duration:8s;
-
 }
-
 
 
 .t2{
 
 left:35%;
 
-animation-duration:12s;
+animation-duration:10s;
 
 }
-
 
 
 .t3{
 
 left:65%;
 
-animation-duration:10s;
+animation-duration:14s;
 
 }
-
 
 
 .t4{
 
 left:85%;
 
-animation-duration:14s;
+animation-duration:8s;
 
 }
 
 
 
-
-
-/* =========================
-   CARD PRINCIPAL
-========================= */
 
 
 .container{
@@ -173,7 +142,7 @@ animation-duration:14s;
 
 position:relative;
 
-z-index:5;
+z-index:2;
 
 
 width:95%;
@@ -197,185 +166,38 @@ text-align:center;
 
 box-shadow:
 
-0 0 40px rgba(0,0,0,.5);
-
+0 0 35px rgba(0,0,0,.5);
 
 
 }
 
 
-
-
-/* =========================
-   LOGO
-========================= */
 
 
 .logo{
 
-
-width:110px;
-
-margin-bottom:10px;
-
+width:120px;
 
 }
-
 
 
 
 h1{
 
-
-margin:5px 0;
-
 color:#facc15;
 
-font-size:28px;
-
+margin:10px 0;
 
 }
 
 
-
-.sub{
-
+p{
 
 color:#e5e7eb;
 
-font-size:16px;
-
-
 }
 
 
-
-
-
-
-
-/* =========================
-   PRÊMIOS
-========================= */
-
-
-.premios{
-
-
-display:flex;
-
-
-gap:15px;
-
-
-justify-content:center;
-
-
-margin:20px 0;
-
-
-}
-
-
-
-
-.premio{
-
-
-flex:1;
-
-
-background:
-
-rgba(255,255,255,.10);
-
-
-border-radius:15px;
-
-
-padding:10px;
-
-
-border:
-
-1px solid rgba(255,255,255,.15);
-
-
-}
-
-
-
-
-.premio img{
-
-
-width:90px;
-
-
-height:90px;
-
-
-object-fit:contain;
-
-
-}
-
-
-
-.premio p{
-
-
-margin:5px 0;
-
-font-size:14px;
-
-
-}
-
-
-
-
-
-/* =========================
-   INPUT
-========================= */
-
-
-#numero{
-
-
-width:100%;
-
-
-padding:15px;
-
-
-border:none;
-
-
-border-radius:12px;
-
-
-font-size:22px;
-
-
-text-align:center;
-
-
-outline:none;
-
-
-margin-top:10px;
-
-
-}
-
-
-
-
-/* =========================
-   BOTÃO
-========================= */
 
 
 button{
@@ -383,11 +205,10 @@ button{
 
 width:100%;
 
-
 padding:16px;
 
 
-margin-top:15px;
+margin-top:20px;
 
 
 border:none;
@@ -415,193 +236,9 @@ cursor:pointer;
 
 
 
-
 button:hover{
 
-
 transform:scale(1.03);
-
-
-}
-
-
-/* =========================
-   ÁREA RASPADINHA
-========================= */
-
-
-.area-raspadinha{
-
-
-margin-top:20px;
-
-
-display:flex;
-
-justify-content:center;
-
-
-}
-
-
-
-
-#raspadinha{
-
-
-width:350px;
-
-
-height:200px;
-
-
-max-width:100%;
-
-
-border-radius:15px;
-
-
-background:transparent;
-
-
-cursor:pointer;
-
-
-box-shadow:
-
-
-0 0 25px rgba(250,204,21,.5);
-
-
-}
-
-
-
-
-
-/* =========================
-   RESULTADO
-========================= */
-
-
-#resultado{
-
-
-margin-top:20px;
-
-
-font-size:22px;
-
-
-font-weight:bold;
-
-
-color:#facc15;
-
-
-}
-
-
-
-.vitoria{
-
-
-animation:
-
-aparecer .6s ease;
-
-
-}
-
-
-
-.derrota{
-
-
-animation:
-
-aparecer .6s ease;
-
-
-}
-
-
-
-@keyframes aparecer{
-
-
-from{
-
-
-transform:scale(0);
-
-
-opacity:0;
-
-
-}
-
-
-to{
-
-
-transform:scale(1);
-
-
-opacity:1;
-
-
-}
-
-
-
-}
-
-
-
-
-
-/* =========================
-   RESPONSIVO
-========================= */
-
-
-@media(max-width:400px){
-
-
-
-.container{
-
-
-padding:18px;
-
-
-}
-
-
-
-.premio img{
-
-
-width:70px;
-
-
-height:70px;
-
-
-}
-
-
-
-h1{
-
-
-font-size:24px;
-
-
-}
-
-
 
 }
 
@@ -613,14 +250,7 @@ font-size:24px;
 </head>
 
 
-
 <body>
-
-
-
-<!-- =========================
-     ANIMAÇÃO FUNDO
-========================= -->
 
 
 <div class="trevo t1">🍀</div>
@@ -633,302 +263,58 @@ font-size:24px;
 
 
 
-
-
 <div class="container">
 
 
 
-<img
-
-class="logo"
-
+<img 
 src="assets/logo.png"
-
-
+class="logo"
 >
-
 
 
 
 <h1>
-
 🎟️ Raspadinha Solidária
-
 </h1>
 
 
 
-<p class="sub">
-
-Digite seu número da rifa e descubra seu prêmio
-
-</p>
-
-
-
-
-
-<!-- =========================
-     PRÊMIOS
-========================= -->
-
-
-<div class="premios">
-
-
-
-<div class="premio">
-
-
-<img src="img/ferro.png">
-
-
 <p>
-
-Ferro elétrico
-
+Participe e descubra seu prêmio!
 </p>
-
-
-</div>
-
-
-
-
-
-<div class="premio">
-
-
-<img src="img/liquidificador.png">
-
-
-<p>
-
-Liquidificador
-
-</p>
-
-
-</div>
-
-
-
-</div>
-
-
-
-
-
-
-
-<input
-
-id="numero"
-
-maxlength="4"
-
-placeholder="0001"
-
-
->
 
 
 
 
 <button onclick="abrirRaspadinha()">
 
-
-🎁 COMEÇAR RASPAGEM
-
+🎁 Jogar Raspadinha
 
 </button>
 
 
 
-
-
-
-<div class="area-raspadinha">
-
-
-<canvas
-
-id="raspadinha"
-
-width="350"
-
-height="200">
-
-
-</canvas>
-
-
 </div>
 
 
 
-
-
-
-<div id="resultado"></div>
-
-  
-<!-- =========================
-     FIREBASE
-========================= -->
-
-
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-
-
-
-
 <script>
-
-
-const firebaseConfig = {
-
-
-apiKey:
-
-"AIzaSyDrc6NkWKXBLKCczw3PiwH9Rt0NE0-DEXY",
-
-
-authDomain:
-
-"raspadinha2.firebaseapp.com",
-
-
-databaseURL:
-
-"https://raspadinha2-default-rtdb.firebaseio.com",
-
-
-projectId:
-
-"raspadinha2",
-
-
-storageBucket:
-
-"raspadinha2.firebasestorage.app",
-
-
-messagingSenderId:
-
-"421282276814",
-
-
-appId:
-
-"1:421282276814:web:faa850a5817eadfb5a779f"
-
-
-};
-
-
-
-firebase.initializeApp(firebaseConfig);
-
-
-
-</script>
-
-
-
-
-
-
-<!-- =========================
-     ARQUIVOS DO SISTEMA
-========================= -->
-
-
-<script src="firebase-raspadinha.js"></script>
-
-
-<script src="js/raspadinha.js"></script>
-
-
-
-
-
-
-<script>
-
-
-// ===============================
-// BOTÃO INICIAR
-// ===============================
-
 
 
 function abrirRaspadinha(){
 
 
-
-let numero =
-
-document
-
-.getElementById("numero")
-
-.value
-
-.trim();
-
-
-
-
-
-if(numero === ""){
-
-
-alert(
-
-"Digite o número da sua rifa."
-
-);
-
-
-return;
+window.location.href="raspadinha.html";
 
 
 }
-
-
-
-
-
-// completa com zeros
-
-numero = numero.padStart(4,"0");
-
-
-
-
-
-Raspadinha.iniciarRaspadinha(numero);
-
-
-
-}
-
-
 
 
 </script>
 
 
 
-
-</div>
-
-
 </body>
-
 
 </html>
