@@ -1,30 +1,73 @@
 /* ==========================================================
-   RASPADINHA DA AMIZADE 2.0
-   Aplicação Principal
+   RASPADINHA SOLIDÁRIA 5.0
+   APP PRINCIPAL
 ========================================================== */
 
 import CONFIG from "./config.js";
 
-import { getDB } from "./firebase/firebase.js";
+import {
+
+    iniciarRaspadinha,
+
+    abrirRaspadinha
+
+} from "./raspadinha/raspadinha.js";
 
 import {
+
+    getDB
+
+} from "./firebase/firebase.js";
+
+import {
+
     ref,
-    set,
+
     get,
+
+    set,
+
     serverTimestamp
+
 } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-database.js";
 
 /* ==========================================================
    ELEMENTOS
 ========================================================== */
 
-const btnParticipar = document.getElementById("btnParticipar");
+const btnParticipar =
+
+    document.getElementById(
+
+        "btnParticipar"
+
+    );
+
+const statusSistema =
+
+    document.getElementById(
+
+        "statusSistema"
+
+    );
 
 /* ==========================================================
-   INICIAR
+   ESTADO
 ========================================================== */
 
-document.addEventListener("DOMContentLoaded", iniciarSistema);
+let sistemaInicializado = false;
+
+/* ==========================================================
+   START
+========================================================== */
+
+document.addEventListener(
+
+    "DOMContentLoaded",
+
+    iniciarSistema
+
+);
 
 /* ==========================================================
    SISTEMA
@@ -32,19 +75,37 @@ document.addEventListener("DOMContentLoaded", iniciarSistema);
 
 async function iniciarSistema() {
 
-    console.log("====================================");
+    if (sistemaInicializado) return;
+
+    escreverStatus(
+
+        "Inicializando sistema..."
+
+    );
+
+    console.clear();
+
+    console.log("================================");
 
     console.log(CONFIG.nome);
 
-    console.log("Versão:", CONFIG.versao);
+    console.log(CONFIG.versao);
 
-    console.log("Inicializando...");
-
-    console.log("====================================");
+    console.log("================================");
 
     await testarFirebase();
 
-    configurarEventos();
+    await iniciarRaspadinha();
+
+    registrarEventos();
+
+    sistemaInicializado = true;
+
+    escreverStatus(
+
+        "Sistema pronto."
+
+    );
 
 }
 
@@ -52,66 +113,227 @@ async function iniciarSistema() {
    EVENTOS
 ========================================================== */
 
-function configurarEventos() {
+function registrarEventos() {
 
-    if (!btnParticipar) return;
+    if (btnParticipar) {
 
-    btnParticipar.addEventListener(
+        btnParticipar.addEventListener(
 
-        "click",
+            "click",
 
-        () => {
+            abrirSistemaRaspadinha
 
-            alert("🍀 Em breve a raspadinha será aberta.");
+        );
 
-        }
-
-    );
+    }
 
 }
 
 /* ==========================================================
-   TESTE FIREBASE
+   ABRIR RASPADINHA
+========================================================== */
+
+async function abrirSistemaRaspadinha() {
+
+    try {
+
+        bloquearBotao(true);
+
+        escreverStatus(
+
+            "Preparando raspadinha..."
+
+        );
+
+        await abrirRaspadinha();
+
+        escreverStatus(
+
+            "Boa sorte! 🍀"
+
+        );
+
+    } catch (erro) {
+
+        console.error(
+
+            "Erro ao abrir raspadinha:",
+
+            erro
+
+        );
+
+        escreverStatus(
+
+            "Erro ao abrir a raspadinha."
+
+        );
+
+        alert(
+
+            "Não foi possível abrir a raspadinha."
+
+        );
+
+    } finally {
+
+        bloquearBotao(false);
+
+    }
+
+}
+
+/* ==========================================================
+   BOTÃO
+========================================================== */
+
+function bloquearBotao(bloquear) {
+
+    if (!btnParticipar) return;
+
+    btnParticipar.disabled = bloquear;
+
+    if (bloquear) {
+
+        btnParticipar.classList.add(
+
+            "desabilitado"
+
+        );
+
+    } else {
+
+        btnParticipar.classList.remove(
+
+            "desabilitado"
+
+        );
+
+    }
+
+}
+
+/* ==========================================================
+   STATUS
+========================================================== */
+
+function escreverStatus(texto) {
+
+    if (!statusSistema) return;
+
+    statusSistema.textContent = texto;
+
+}
+
+/* ==========================================================
+   FIREBASE
 ========================================================== */
 
 async function testarFirebase() {
 
     try {
 
+        escreverStatus(
+            "Conectando ao Firebase..."
+        );
+
         const db = getDB();
 
-        const testeRef = ref(db, "sistema");
+        const sistemaRef = ref(
+            db,
+            "sistema"
+        );
 
-        await set(testeRef, {
+        await set(sistemaRef, {
 
             nome: CONFIG.nome,
 
             versao: CONFIG.versao,
 
-            iniciadoEm: serverTimestamp()
+            iniciadoEm: serverTimestamp(),
+
+            status: "online"
 
         });
 
-        const snap = await get(testeRef);
+        const snap = await get(sistemaRef);
 
-        if (snap.exists()) {
+        if (!snap.exists()) {
 
-            console.log("✅ Firebase conectado!");
-
-            console.log(snap.val());
-
-        } else {
-
-            console.warn("⚠ Firebase respondeu vazio.");
+            throw new Error(
+                "Firebase retornou vazio."
+            );
 
         }
 
+        console.log("================================");
+
+        console.log("Firebase conectado.");
+
+        console.table(snap.val());
+
+        console.log("================================");
+
+        escreverStatus(
+            "Firebase conectado."
+        );
+
+        return true;
+
     } catch (erro) {
 
-        console.error("❌ Erro ao conectar Firebase:");
+        console.error(
 
-        console.error(erro);
+            "Erro Firebase:",
+
+            erro
+
+        );
+
+        escreverStatus(
+            "Falha na conexão."
+        );
+
+        return false;
 
     }
 
 }
+
+/* ==========================================================
+   UTILITÁRIOS
+========================================================== */
+
+export function sistemaPronto() {
+
+    return sistemaInicializado;
+
+}
+
+export function obterConfiguracao() {
+
+    return CONFIG;
+
+}
+
+/* ==========================================================
+   LOG
+========================================================== */
+
+console.log(
+
+    "%cRaspadinha Solidária 5.0",
+
+    "color:#0B7D2B;font-size:16px;font-weight:bold;"
+
+);
+
+console.log(
+
+    "Aplicação carregada."
+
+);
+
+/* ==========================================================
+   FIM DO APP
+===========
