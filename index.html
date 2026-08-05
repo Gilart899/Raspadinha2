@@ -3,1175 +3,354 @@
 
 <head>
 
-<meta charset="UTF-8">
+    <!-- ======================================================
+         CONFIGURAÇÕES
+    ======================================================= -->
 
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
 
-<title>Raspadinha Solidária</title>
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
 
+    <meta
+        name="theme-color"
+        content="#0B7D2B">
 
-<style>
+    <meta
+        name="description"
+        content="Raspadinha Solidária">
 
-*{
-box-sizing:border-box;
-}
+    <meta
+        name="apple-mobile-web-app-capable"
+        content="yes">
 
+    <meta
+        name="mobile-web-app-capable"
+        content="yes">
 
-body{
+    <title>🍀 Raspadinha Solidária</title>
 
-margin:0;
+    <!-- ======================================================
+         CSS
+    ======================================================= -->
 
-min-height:100vh;
-
-font-family:Arial, Helvetica, sans-serif;
-
-display:flex;
-
-justify-content:center;
-
-align-items:center;
-
-color:white;
-
-
-background:
-
-linear-gradient(
-rgba(15,23,42,.75),
-rgba(15,23,42,.75)
-),
-
-url("assets/Fundo.png");
-
-
-background-size:cover;
-
-background-position:center;
-
-overflow:hidden;
-
-}
-
-
-
-
-/* trevos */
-
-
-.trevo{
-
-position:absolute;
-
-font-size:40px;
-
-opacity:.4;
-
-animation:
-
-flutuar 12s linear infinite;
-
-}
-
-
-@keyframes flutuar{
-
-
-0%{
-
-transform:
-
-translateY(100vh)
-rotate(0deg);
-
-}
-
-
-100%{
-
-transform:
-
-translateY(-120vh)
-rotate(360deg);
-
-}
-
-
-}
-
-
-
-.t1{
-
-left:10%;
-
-}
-
-
-.t2{
-
-left:35%;
-
-animation-duration:10s;
-
-}
-
-
-.t3{
-
-left:65%;
-
-animation-duration:14s;
-
-}
-
-
-.t4{
-
-left:85%;
-
-animation-duration:8s;
-
-}
-
-
-
-
-
-.container{
-
-
-position:relative;
-
-z-index:2;
-
-
-width:95%;
-
-max-width:450px;
-
-
-background:
-
-rgba(17,24,39,.92);
-
-
-padding:25px;
-
-
-border-radius:25px;
-
-
-text-align:center;
-
-
-box-shadow:
-
-0 0 35px rgba(0,0,0,.5);
-
-
-}
-
-
-
-
-.logo{
-
-width:120px;
-
-}
-
-
-
-h1{
-
-color:#facc15;
-
-margin:10px 0;
-
-}
-
-
-p{
-
-color:#e5e7eb;
-
-}
-
-
-
-
-button{
-
-
-width:100%;
-
-padding:16px;
-
-
-margin-top:20px;
-
-
-border:none;
-
-
-border-radius:12px;
-
-
-background:#16a34a;
-
-
-color:white;
-
-
-font-size:18px;
-
-
-font-weight:bold;
-
-
-cursor:pointer;
-
-
-}
-
-
-
-button:hover{
-
-transform:scale(1.03);
-
-}
-
-
-
-</style>
-
+    <link
+        rel="stylesheet"
+        href="css/style.css">
 
 </head>
 
-
 <body>
 
+<!-- ======================================================
+     CABEÇALHO
+======================================================= -->
 
-<div class="trevo t1">🍀</div>
+<header class="topo">
 
-<div class="trevo t2">🍀</div>
+    <img
 
-<div class="trevo t3">🍀</div>
+        src="img/logo.png"
 
-<div class="trevo t4">🍀</div>
+        class="logo"
 
+        alt="Logo"
 
+    >
 
-<div class="container">
+    <h1>
 
+        🍀 RASPADINHA SOLIDÁRIA
 
+    </h1>
 
-<img 
-src="assets/logo.png"
-class="logo"
->
+    <p>
 
+        Raspe e descubra seu prêmio.
 
+    </p>
 
-<h1>
-🎟️ Raspadinha Solidária
-</h1>
+</header>
 
+<!-- ======================================================
+     CONTEÚDO
+======================================================= -->
 
+<main class="principal">
 
-<p>
-Participe e descubra seu prêmio!
-</p>
+<!-- ======================================================
+     ÁREA DOS PRÊMIOS
+======================================================= -->
 
+<section class="premios">
 
+    <article class="cardPremio">
 
+        <img
 
-<button onclick="abrirRaspadinha()">
+            src="img/ferro.png"
 
-🎁 Jogar Raspadinha
+            alt="Ferro Elétrico"
 
-</button>
+        >
 
+        <h2>
 
+            Ferro Elétrico
+
+        </h2>
+
+    </article>
+
+    <div class="versus">
+
+        OU
+
+    </div>
+
+    <article class="cardPremio">
+
+        <img
+
+            src="img/liquidificador.png"
+
+            alt="Liquidificador"
+
+        >
+
+        <h2>
+
+            Liquidificador
+
+        </h2>
+
+    </article>
+
+</section><!-- ======================================================
+     AÇÃO
+======================================================= -->
+
+<section class="acoes">
+
+    <button
+
+        id="btnParticipar"
+
+        class="btnPrincipal">
+
+        🎁 RASPAR AGORA
+
+    </button>
+
+</section>
+
+</main>
+
+<!-- ======================================================
+     MODAL DA RASPADINHA
+======================================================= -->
+
+<div
+
+    id="modalRaspadinha"
+
+    class="modal hidden">
+
+    <div class="janela">
+
+        <button
+
+            id="btnFecharRaspadinha"
+
+            class="btnFechar"
+
+            title="Fechar">
+
+            ✕
+
+        </button>
+
+        <h2>
+
+            🍀 Boa Sorte!
+
+        </h2>
+
+        <p>
+
+            Raspe completamente a área abaixo.
+
+        </p>
+
+        <!-- ===========================================
+             ÁREA DA RASPADINHA
+        ============================================ -->
+
+        <div class="areaRaspadinha">
+
+            <canvas
+
+                id="canvasRaspadinha"
+
+                width="380"
+
+                height="380">
+
+            </canvas>
+
+        </div>
+
+        <!-- ===========================================
+             RESULTADO
+        ============================================ -->
+
+        <div
+
+            id="resultadoPremio"
+
+            class="resultadoPremio hidden">
+
+            <img
+
+                id="imagemPremio"
+
+                src=""
+
+                alt="Prêmio">
+
+            <h3
+
+                id="tituloPremio">
+
+            </h3>
+
+            <p
+
+                id="descricaoPremio">
+
+            </p>
+
+        </div>
+
+        <!-- ===========================================
+             MENSAGEM
+        ============================================ -->
+
+        <div
+
+            id="mensagemPremio"
+
+            class="mensagemPremio">
+
+        </div>
+
+        <!-- ===========================================
+             LOADER
+        ============================================ -->
+
+        <div
+
+            id="loadingRaspadinha"
+
+            class="loading hidden">
+
+            <div class="spinner"></div>
+
+            <p>
+
+                Consultando sua raspadinha...
+
+            </p>
+
+        </div>
+
+    </div>
 
 </div>
 
+<!-- ======================================================
+     STATUS DO SISTEMA
+======================================================= -->
 
+<div
 
-<script>
+    id="statusSistema"
 
+    class="statusSistema">
 
-function abrirRaspadinha(){
+</div>
 
+<!-- ======================================================
+     ÁUDIO
+======================================================= -->
 
-window.location.href="raspadinha.html";
+<audio
 
+    id="audioRaspar"
 
-}
+    preload="auto"
 
+    src="sounds/raspar.mp3">
+
+</audio>
+
+<audio
+
+    id="audioVitoria"
+
+    preload="auto"
+
+    src="sounds/vitoria.mp3">
+
+</audio>
+
+<audio
+
+    id="audioPerdeu"
+
+    preload="auto"
+
+    src="sounds/perdeu.mp3">
+
+</audio>
+
+<audio
+
+    id="audioClick"
+
+    preload="auto"
+
+    src="sounds/click.mp3">
+
+</audio>
+
+<!-- ======================================================
+     RODAPÉ
+======================================================= -->
+
+<footer class="rodape">
+
+    <small>
+
+        © 2026 • Raspadinha Solidária
+
+    </small>
+
+</footer>
+
+<!-- ======================================================
+     JAVASCRIPT
+======================================================= -->
+
+<script
+
+    type="module"
+
+    src="js/app.js">
 
 </script>
 
-
-
 </body>
-
-</html>
-
-/* =========================
-   PRÊMIOS
-========================= */
-
-
-.premios{
-
-
-display:flex;
-
-gap:15px;
-
-justify-content:center;
-
-
-margin:20px 0;
-
-
-}
-
-
-
-.premio{
-
-
-flex:1;
-
-
-background:
-
-rgba(255,255,255,.10);
-
-
-border-radius:15px;
-
-
-padding:10px;
-
-
-border:
-
-1px solid rgba(255,255,255,.2);
-
-
-animation:
-
-flutuarPremio 3s ease-in-out infinite;
-
-
-}
-
-
-
-.premio:nth-child(2){
-
-animation-delay:1s;
-
-}
-
-
-
-@keyframes flutuarPremio{
-
-
-0%,100%{
-
-transform:translateY(0);
-
-}
-
-
-50%{
-
-transform:translateY(-8px);
-
-}
-
-
-}
-
-
-
-.premio img{
-
-
-width:90px;
-
-
-height:90px;
-
-
-object-fit:contain;
-
-
-}
-
-
-
-
-.premio p{
-
-
-margin:5px;
-
-
-font-weight:bold;
-
-
-}
-
-
-
-
-
-/* =========================
-   INPUT
-========================= */
-
-
-#numero{
-
-
-width:100%;
-
-
-padding:15px;
-
-
-border:none;
-
-
-border-radius:12px;
-
-
-font-size:22px;
-
-
-text-align:center;
-
-
-outline:none;
-
-
-}
-
-
-
-
-
-/* =========================
-   BOTÃO
-========================= */
-
-
-button{
-
-
-width:100%;
-
-
-padding:16px;
-
-
-margin-top:15px;
-
-
-border:none;
-
-
-border-radius:15px;
-
-
-background:
-
-linear-gradient(
-135deg,
-#22c55e,
-#15803d
-);
-
-
-color:white;
-
-
-font-size:18px;
-
-
-font-weight:bold;
-
-
-cursor:pointer;
-
-
-position:relative;
-
-
-overflow:hidden;
-
-
-}
-
-
-
-
-button::after{
-
-
-content:"";
-
-
-position:absolute;
-
-
-top:0;
-
-left:-100%;
-
-
-width:50%;
-
-
-height:100%;
-
-
-background:
-
-rgba(255,255,255,.35);
-
-
-transform:skewX(-30deg);
-
-
-animation:
-
-brilhoBotao 3s infinite;
-
-
-}
-
-
-
-
-@keyframes brilhoBotao{
-
-
-0%{
-
-left:-100%;
-
-}
-
-
-40%{
-
-left:150%;
-
-}
-
-
-100%{
-
-left:150%;
-
-}
-
-
-}
-
-
-
-
-
-
-/* =========================
-   CARTÃO RASPADINHA
-========================= */
-
-
-.cartao-raspadinha{
-
-
-position:relative;
-
-
-width:350px;
-
-
-height:200px;
-
-
-margin:25px auto;
-
-
-border-radius:20px;
-
-
-overflow:hidden;
-
-
-background:
-
-linear-gradient(
-
-145deg,
-
-#f5f5f5,
-
-#8b8b8b
-
-);
-
-
-
-box-shadow:
-
-
-0 0 35px rgba(255,255,255,.5);
-
-
-
-animation:
-
-cartaoFlutuando 3s ease-in-out infinite;
-
-
-
-}
-
-
-
-
-@keyframes cartaoFlutuando{
-
-
-0%,100%{
-
-transform:translateY(0);
-
-}
-
-
-50%{
-
-transform:translateY(-10px);
-
-}
-
-
-}
-
-
-
-
-/* brilho passando no cartão */
-
-
-.cartao-raspadinha::before{
-
-
-content:"";
-
-
-position:absolute;
-
-
-top:0;
-
-
-left:-100%;
-
-
-width:70%;
-
-
-height:100%;
-
-
-background:
-
-
-linear-gradient(
-
-90deg,
-
-transparent,
-
-rgba(255,255,255,.8),
-
-transparent
-
-);
-
-
-
-animation:
-
-brilhoCartao 4s infinite;
-
-
-
-}
-
-
-
-@keyframes brilhoCartao{
-
-
-0%{
-
-left:-100%;
-
-}
-
-
-50%{
-
-left:150%;
-
-}
-
-
-100%{
-
-left:150%;
-
-}
-
-
-}
-
-
-
-
-
-/* texto */
-
-
-.texto-raspe{
-
-
-position:absolute;
-
-
-top:75px;
-
-
-width:100%;
-
-
-text-align:center;
-
-
-font-size:30px;
-
-
-font-weight:900;
-
-
-color:#444;
-
-
-letter-spacing:3px;
-
-
-animation:
-
-pulsarTexto 1.5s infinite;
-
-
-z-index:2;
-
-
-}
-
-
-
-
-@keyframes pulsarTexto{
-
-
-50%{
-
-
-transform:scale(1.08);
-
-
-}
-
-
-}
-
-
-
-
-/* trevos no cartão */
-
-
-.trevo-cartao{
-
-
-position:absolute;
-
-
-font-size:50px;
-
-
-opacity:.45;
-
-
-z-index:2;
-
-
-}
-
-
-
-.trevo-cima{
-
-
-top:10px;
-
-
-left:20px;
-
-
-}
-
-
-
-.trevo-baixo{
-
-
-bottom:10px;
-
-
-right:20px;
-
-
-}
-
-
-
-
-/* Canvas */
-
-
-#raspadinha{
-
-
-position:absolute;
-
-
-top:0;
-
-
-left:0;
-
-
-width:100%;
-
-
-height:100%;
-
-
-z-index:3;
-
-
-cursor:pointer;
-
-
-}
-
-
-</style>
-
-</head>
-
-
-<body>
-
-
-<!-- =========================
-     TREVOS FLUTUANDO
-========================= -->
-
-
-<div class="trevo t1">🍀</div>
-<div class="trevo t2">🍀</div>
-<div class="trevo t3">🍀</div>
-<div class="trevo t4">🍀</div>
-
-
-
-
-<div class="container">
-
-
-
-<img
-
-src="assets/logo.png"
-
-class="logo"
-
->
-
-
-
-
-<h1>
-
-🎟️ Raspadinha Solidária
-
-</h1>
-
-
-
-
-<p class="sub">
-
-Digite seu número e tente a sorte!
-
-</p>
-
-
-
-
-
-<!-- =========================
-     PRÊMIOS
-========================= -->
-
-
-<div class="premios">
-
-
-<div class="premio">
-
-
-<img src="img/ferro.png">
-
-
-<p>
-
-Ferro Elétrico
-
-</p>
-
-
-</div>
-
-
-
-
-
-<div class="premio">
-
-
-<img src="img/liquidificador.png">
-
-
-<p>
-
-Liquidificador
-
-</p>
-
-
-</div>
-
-
-
-</div>
-
-
-
-
-
-
-
-<input
-
-id="numero"
-
-maxlength="4"
-
-placeholder="0001"
-
->
-
-
-<button onclick="abrirRaspadinha()">
-
-
-🎁 COMEÇAR RASPAGEM
-
-
-</button>
-
-
-
-
-
-
-
-
-<!-- =========================
-     CARTÃO
-========================= -->
-
-
-<div class="cartao-raspadinha">
-
-
-<div class="trevo-cartao trevo-cima">
-
-🍀
-
-</div>
-
-
-
-<div class="texto-raspe">
-
-✨ RASPE AQUI ✨
-
-</div>
-
-
-
-
-<div class="trevo-cartao trevo-baixo">
-
-🍀
-
-</div>
-
-
-
-
-
-<canvas
-
-id="raspadinha"
-
-width="350"
-
-height="200">
-
-</canvas>
-
-
-
-
-</div>
-
-
-
-
-
-
-<div id="resultado"></div>
-
-
-
-
-</div>
-
-
-
-
-
-
-
-<!-- =========================
-     SCRIPTS
-========================= -->
-
-
-<script>
-
-
-function abrirRaspadinha(){
-
-
-let numero = 
-
-document
-
-.getElementById("numero")
-
-.value
-
-.trim();
-
-
-
-
-
-if(numero===""){
-
-
-alert(
-
-"Digite o número da sua rifa."
-
-);
-
-
-return;
-
-
-}
-
-
-
-
-numero = numero.padStart(4,"0");
-
-
-
-
-
-if(window.Raspadinha){
-
-
-Raspadinha.iniciarRaspadinha(numero);
-
-
-}else{
-
-
-console.log(
-
-"Raspadinha.js ainda não carregado"
-
-);
-
-
-}
-
-
-
-
-}
-
-
-
-</script>
-
-
-
-</body>
-
 
 </html>
