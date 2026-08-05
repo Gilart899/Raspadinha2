@@ -1,379 +1,429 @@
-/* ==========================================================
-   FIREBASE ENGINE 5.0
-========================================================== */
+// =====================================================
+// RASPADINHA.JS
+// Canvas + Firebase Raspadinha2
+// =====================================================
 
-import {
 
-    ref,
+let canvas;
+let ctx;
 
-    get,
+let raspando = false;
 
-    set,
+let terminou = false;
 
-    update,
+let percentualRaspado = 0;
 
-    push,
 
-    runTransaction
+let numeroParticipante = null;
 
-} from "https://www.gstatic.com/firebasejs/10.13.2/firebase-database.js";
 
-import { db } from "./firebase.js";
 
-/* ==========================================================
-   REFERÊNCIAS
-========================================================== */
+// =====================================================
+// INICIAR RASPADINHA
+// =====================================================
 
-const campanhaRef =
-    ref(db, "campanha");
+function iniciarRaspadinha(numero){
 
-const participantesRef =
-    ref(db, "participantes");
 
-const vencedoresRef =
-    ref(db, "vencedores");
+numeroParticipante = numero;
 
-const premiosRef =
-    ref(db, "premios");
 
-const estatisticasRef =
-    ref(db, "estatisticas");
+canvas = document.getElementById("raspadinha");
 
-/* ==========================================================
-   CAMPANHA
-========================================================== */
 
-export async function carregarCampanha() {
+ctx = canvas.getContext("2d");
 
-    const snap =
-        await get(campanhaRef);
 
-    if (!snap.exists()) {
 
-        throw new Error(
-            "Campanha não encontrada."
-        );
+desenharCobertura();
 
-    }
 
-    return snap.val();
+
+adicionarEventos();
+
+
 
 }
 
-/* ==========================================================
-   PARTICIPANTE
-========================================================== */
 
-export async function obterParticipante(numero) {
 
-    const snap =
-        await get(
+// =====================================================
+// DESENHAR COBERTURA
+// =====================================================
 
-            ref(
+function desenharCobertura(){
 
-                db,
 
-                `participantes/${numero}`
+ctx.fillStyle = "#b8b8b8";
 
-            )
 
-        );
+ctx.fillRect(
 
-    if (!snap.exists()) {
+0,
 
-        return null;
+0,
 
-    }
+canvas.width,
 
-    return snap.val();
+canvas.height
 
-}
+);
 
-/* ==========================================================
-   REGISTRAR PARTICIPANTE
-========================================================== */
 
-export async function registrarParticipante(numero, dados) {
 
-    await set(
+// efeito texto
 
-        ref(db, `participantes/${numero}`),
+ctx.fillStyle="#555";
 
-        dados
 
-    );
+ctx.font="bold 25px Arial";
 
-}
 
-/* ==========================================================
-   VERIFICAR SE JÁ RASPOU
-========================================================== */
+ctx.textAlign="center";
 
-export async function participanteJaRaspou(numero) {
 
-    const snap = await get(
+ctx.fillText(
 
-        ref(db, `participantes/${numero}/raspou`)
+"RASPE AQUI",
 
-    );
+canvas.width/2,
 
-    return snap.exists() && snap.val() === true;
+canvas.height/2
+
+);
+
+
 
 }
 
-/* ==========================================================
-   MARCAR COMO RASPOU
-========================================================== */
 
-export async function marcarComoRaspou(numero) {
 
-    await update(
+// =====================================================
+// EVENTOS
+// =====================================================
 
-        ref(db, `participantes/${numero}`),
 
-        {
+function adicionarEventos(){
 
-            raspou: true,
 
-            dataRaspagem: Date.now()
+canvas.addEventListener(
+"mousedown",
+iniciar
+);
 
-        }
 
-    );
+canvas.addEventListener(
+"mousemove",
+raspar
+);
 
-}
 
-/* ==========================================================
-   CONSULTAR PRÊMIOS
-========================================================== */
+canvas.addEventListener(
+"mouseup",
+finalizar
+);
 
-export async function carregarPremios() {
 
-    const snap = await get(premiosRef);
 
-    if (!snap.exists()) {
+canvas.addEventListener(
+"touchstart",
+iniciar
+);
 
-        throw new Error("Prêmios não encontrados.");
 
-    }
+canvas.addEventListener(
+"touchmove",
+raspar
+);
 
-    return snap.val();
 
-}
+canvas.addEventListener(
+"touchend",
+finalizar
+);
 
-/* ==========================================================
-   REGISTRAR VENCEDOR
-========================================================== */
 
-export async function registrarVencedor(dados) {
-
-    const novo = push(vencedoresRef);
-
-    await set(
-
-        novo,
-
-        {
-
-            ...dados,
-
-            dataRegistro: Date.now()
-
-        }
-
-    );
 
 }
 
-/* ==========================================================
-   ATUALIZAR ESTATÍSTICAS
-========================================================== */
 
-export async function incrementarRaspagens() {
 
-    await runTransaction(
 
-        ref(db, "estatisticas/raspagens"),
+// =====================================================
+// INICIAR RASPAGEM
+// =====================================================
 
-        (valor) => {
 
-            return (valor || 0) + 1;
+function iniciar(e){
 
-        }
 
-    );
+if(terminou)return;
 
-}
 
-export async function incrementarPremios() {
+raspando=true;
 
-    await runTransaction(
-
-        ref(db, "estatisticas/premiosEntregues"),
-
-        (valor) => {
-
-            return (valor || 0) + 1;
-
-        }
-
-    );
 
 }
 
-/* ==========================================================
-   FIREBASE ENGINE 5.0
-   PARTE 3
-========================================================== */
 
-/* ==========================================================
-   VALIDAR PAGAMENTO
-========================================================== */
 
-export async function pagamentoConfirmado(numero) {
+// =====================================================
+// RASPAR
+// =====================================================
 
-    const participante = await obterParticipante(numero);
 
-    if (!participante) return false;
+function raspar(e){
 
-    return participante.pagamento === true;
 
-}
+if(!raspando)return;
 
-/* ==========================================================
-   CONSUMIR PRÊMIO
-========================================================== */
 
-export async function consumirPremio(idPremio) {
+let rect =
+canvas.getBoundingClientRect();
 
-    const premioRef = ref(db, `premios/${idPremio}/quantidade`);
 
-    const resultado = await runTransaction(
 
-        premioRef,
+let x;
 
-        (quantidadeAtual) => {
+let y;
 
-            if (quantidadeAtual === null) {
 
-                return quantidadeAtual;
 
-            }
+if(e.touches){
 
-            if (quantidadeAtual <= 0) {
 
-                return;
+x=e.touches[0].clientX-rect.left;
 
-            }
+y=e.touches[0].clientY-rect.top;
 
-            return quantidadeAtual - 1;
 
-        }
+}else{
 
-    );
 
-    return resultado.committed;
+x=e.clientX-rect.left;
+
+y=e.clientY-rect.top;
+
 
 }
 
-/* ==========================================================
-   LIBERAR RASPADINHA
-========================================================== */
 
-export async function liberarRaspadinha(numero) {
 
-    const participante = await obterParticipante(numero);
+ctx.globalCompositeOperation =
+"destination-out";
 
-    if (!participante) {
 
-        throw new Error("Participante não encontrado.");
 
-    }
+ctx.beginPath();
 
-    if (await participanteJaRaspou(numero)) {
 
-        throw new Error("Este número já utilizou a raspadinha.");
+ctx.arc(
 
-    }
+x,
 
-    if (!(await pagamentoConfirmado(numero))) {
+y,
 
-        throw new Error("Pagamento ainda não confirmado.");
+20,
 
-    }
+0,
 
-    return true;
+Math.PI*2
 
-}
+);
 
-/* ==========================================================
-   FINALIZAR RASPADINHA
-========================================================== */
 
-export async function finalizarRaspadinha(
 
-    numero,
+ctx.fill();
 
-    premio,
 
-    dadosVencedor = {}
 
-) {
+calcularRaspado();
 
-    await marcarComoRaspou(numero);
 
-    if (premio !== "perdeu") {
-
-        const reservado = await consumirPremio(premio);
-
-        if (!reservado) {
-
-            throw new Error(
-
-                "Prêmio indisponível."
-
-            );
-
-        }
-
-        await registrarVencedor({
-
-            numero,
-
-            premio,
-
-            ...dadosVencedor
-
-        });
-
-        await incrementarPremios();
-
-    }
-
-    await incrementarRaspagens();
 
 }
 
-/* ==========================================================
-   STATUS
-========================================================== */
 
-export async function obterStatusFirebase() {
 
-    const campanha = await carregarCampanha();
+// =====================================================
+// FINALIZAR
+// =====================================================
 
-    const premios = await carregarPremios();
 
-    return {
+function finalizar(){
 
-        campanha,
 
-        premios
+raspando=false;
 
-    };
+
+
+if(percentualRaspado >= 60){
+
+revelarResultado();
 
 }
 
-/* ==========================================================
-   FIM DO FIREBASE ENGINE
-=================
+
+
+}
+
+
+
+
+// =====================================================
+// CALCULAR ÁREA
+// =====================================================
+
+
+function calcularRaspado(){
+
+
+let pixels =
+ctx.getImageData(
+
+0,
+
+0,
+
+canvas.width,
+
+canvas.height
+
+).data;
+
+
+
+let transparentes=0;
+
+
+for(let i=3;i<pixels.length;i+=4){
+
+
+if(pixels[i]===0){
+
+transparentes++;
+
+}
+
+
+}
+
+
+
+percentualRaspado =
+
+(transparentes / (pixels.length/4))*100;
+
+
+
+}
+
+
+
+// =====================================================
+// CHAMAR FIREBASE
+// =====================================================
+
+
+async function revelarResultado(){
+
+
+if(terminou)return;
+
+
+terminou=true;
+
+
+
+try{
+
+
+const resultado =
+
+await RaspadinhaFirebase.revelarRaspadinha(
+
+numeroParticipante
+
+);
+
+
+
+mostrarResultado(resultado);
+
+
+
+}
+
+catch(erro){
+
+
+alert(
+erro.message
+);
+
+
+}
+
+
+
+}
+
+
+
+
+// =====================================================
+// MOSTRAR RESULTADO
+// =====================================================
+
+
+function mostrarResultado(resultado){
+
+
+
+let elemento =
+
+document.getElementById(
+"resultado"
+);
+
+
+
+if(resultado.ganhou){
+
+
+
+elemento.innerHTML =
+
+"🎉 PARABÉNS!<br><br>" +
+
+"Você ganhou:<br>" +
+
+resultado.premio;
+
+
+
+}else{
+
+
+elemento.innerHTML =
+
+"😔 Não foi dessa vez.<br><br>" +
+
+"Continue participando!";
+
+
+}
+
+
+
+}
+
+
+// Exportar
+
+window.Raspadinha = {
+
+
+iniciarRaspadinha
+
+};
