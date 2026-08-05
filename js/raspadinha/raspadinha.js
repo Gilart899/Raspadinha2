@@ -1,15 +1,21 @@
 // =====================================================
-// RASPADINHA.JS
-// Canvas + Firebase Raspadinha2
+// RASPADINHA.JS V2 PROFISSIONAL
+// Canvas + Firebase + Camada Real
+// Projeto Raspadinha2
 // =====================================================
 
 
+
 let canvas;
+
 let ctx;
+
 
 let raspando = false;
 
+
 let terminou = false;
+
 
 let percentualRaspado = 0;
 
@@ -18,9 +24,38 @@ let numeroParticipante = null;
 
 
 
+let camada = new Image();
+
+
+
+let eventosAtivos = false;
+
+
+
+// Sons
+
+const somRaspar = new Audio(
+"sounds/raspar.mp3"
+);
+
+
+const somVitoria = new Audio(
+"sounds/vitoria.mp3"
+);
+
+
+const somPerdeu = new Audio(
+"sounds/perdeu.mp3"
+);
+
+
+
+
+
 // =====================================================
 // INICIAR RASPADINHA
 // =====================================================
+
 
 function iniciarRaspadinha(numero){
 
@@ -28,18 +63,37 @@ function iniciarRaspadinha(numero){
 numeroParticipante = numero;
 
 
-canvas = document.getElementById("raspadinha");
+canvas =
+document.getElementById(
+"raspadinha"
+);
 
 
-ctx = canvas.getContext("2d");
+
+ctx =
+canvas.getContext(
+"2d"
+);
 
 
 
-desenharCobertura();
+terminou=false;
+
+percentualRaspado=0;
 
 
+
+carregarCamada();
+
+
+
+if(!eventosAtivos){
 
 adicionarEventos();
+
+eventosAtivos=true;
+
+}
 
 
 
@@ -47,17 +101,23 @@ adicionarEventos();
 
 
 
+
+
+
+
 // =====================================================
-// DESENHAR COBERTURA
+// CARREGAR CAMADA REAL
 // =====================================================
 
-function desenharCobertura(){
+
+function carregarCamada(){
 
 
-ctx.fillStyle = "#b8b8b8";
+
+camada.onload=function(){
 
 
-ctx.fillRect(
+ctx.clearRect(
 
 0,
 
@@ -71,30 +131,35 @@ canvas.height
 
 
 
-// efeito texto
+ctx.drawImage(
 
-ctx.fillStyle="#555";
+camada,
 
+0,
 
-ctx.font="bold 25px Arial";
+0,
 
+canvas.width,
 
-ctx.textAlign="center";
-
-
-ctx.fillText(
-
-"RASPE AQUI",
-
-canvas.width/2,
-
-canvas.height/2
+canvas.height
 
 );
 
 
 
+};
+
+
+
+camada.src =
+"img/camada-raspadinha.png";
+
+
+
 }
+
+
+
 
 
 
@@ -106,40 +171,64 @@ canvas.height/2
 function adicionarEventos(){
 
 
+
 canvas.addEventListener(
+
 "mousedown",
-iniciar
+
+iniciarRaspagem
+
 );
 
 
+
 canvas.addEventListener(
+
 "mousemove",
+
 raspar
+
 );
 
 
+
 canvas.addEventListener(
+
 "mouseup",
-finalizar
+
+pararRaspagem
+
 );
 
 
 
+
 canvas.addEventListener(
+
 "touchstart",
-iniciar
+
+iniciarRaspagem
+
 );
 
 
+
 canvas.addEventListener(
+
 "touchmove",
+
 raspar
+
 );
 
 
+
 canvas.addEventListener(
+
 "touchend",
-finalizar
+
+pararRaspagem
+
 );
 
 
@@ -149,33 +238,104 @@ finalizar
 
 
 
+
 // =====================================================
-// INICIAR RASPAGEM
+// COMEÇAR
 // =====================================================
 
 
-function iniciar(e){
+function iniciarRaspagem(e){
 
 
 if(terminou)return;
 
 
+
 raspando=true;
+
+
+
+somRaspar.currentTime=0;
+
+
+somRaspar.play()
+.catch(()=>{});
+
 
 
 }
 
 
 
+
+
 // =====================================================
-// RASPAR
+// RASPAGEM
 // =====================================================
 
 
 function raspar(e){
 
 
+
 if(!raspando)return;
+
+
+if(terminou)return;
+
+
+
+let pos =
+obterPosicao(e);
+
+
+
+ctx.globalCompositeOperation =
+
+"destination-out";
+
+
+
+ctx.beginPath();
+
+
+
+ctx.arc(
+
+pos.x,
+
+pos.y,
+
+22,
+
+0,
+
+Math.PI*2
+
+);
+
+
+
+ctx.fill();
+
+
+
+calcularArea();
+
+
+
+}
+
+
+
+
+// =====================================================
+// POSIÇÃO DO TOQUE
+// =====================================================
+
+
+function obterPosicao(e){
+
 
 
 let rect =
@@ -192,52 +352,49 @@ let y;
 if(e.touches){
 
 
-x=e.touches[0].clientX-rect.left;
 
-y=e.touches[0].clientY-rect.top;
+x =
+e.touches[0].clientX
+-
+rect.left;
+
+
+
+y =
+e.touches[0].clientY
+-
+rect.top;
+
 
 
 }else{
 
 
-x=e.clientX-rect.left;
 
-y=e.clientY-rect.top;
+x =
+e.clientX
+-
+rect.left;
+
+
+
+y =
+e.clientY
+-
+rect.top;
 
 
 }
 
 
 
-ctx.globalCompositeOperation =
-"destination-out";
+return {
 
+x:x,
 
+y:y
 
-ctx.beginPath();
-
-
-ctx.arc(
-
-x,
-
-y,
-
-20,
-
-0,
-
-Math.PI*2
-
-);
-
-
-
-ctx.fill();
-
-
-
-calcularRaspado();
+};
 
 
 
@@ -245,12 +402,14 @@ calcularRaspado();
 
 
 
+// CONTINUA NA PARTE 2
+
 // =====================================================
-// FINALIZAR
+// PARAR RASPAGEM
 // =====================================================
 
 
-function finalizar(){
+function pararRaspagem(){
 
 
 raspando=false;
@@ -259,26 +418,30 @@ raspando=false;
 
 if(percentualRaspado >= 60){
 
+
 revelarResultado();
 
-}
-
-
 
 }
 
 
 
+}
+
+
+
+
 
 // =====================================================
-// CALCULAR ÁREA
+// CALCULAR ÁREA RASPADA
 // =====================================================
 
 
-function calcularRaspado(){
+function calcularArea(){
 
 
 let pixels =
+
 ctx.getImageData(
 
 0,
@@ -293,13 +456,22 @@ canvas.height
 
 
 
-let transparentes=0;
+let transparentes = 0;
 
 
-for(let i=3;i<pixels.length;i+=4){
+
+for(
+
+let i = 3;
+
+i < pixels.length;
+
+i += 4
+
+){
 
 
-if(pixels[i]===0){
+if(pixels[i] === 0){
 
 transparentes++;
 
@@ -312,7 +484,17 @@ transparentes++;
 
 percentualRaspado =
 
-(transparentes / (pixels.length/4))*100;
+(
+
+transparentes /
+
+(pixels.length / 4)
+
+)
+
+*
+
+100;
 
 
 
@@ -320,15 +502,19 @@ percentualRaspado =
 
 
 
+
+
 // =====================================================
-// CHAMAR FIREBASE
+// CONSULTAR FIREBASE
 // =====================================================
 
 
 async function revelarResultado(){
 
 
+
 if(terminou)return;
+
 
 
 terminou=true;
@@ -357,16 +543,24 @@ mostrarResultado(resultado);
 catch(erro){
 
 
+
+terminou=false;
+
+
 alert(
+
 erro.message
+
 );
 
 
-}
-
-
 
 }
+
+
+
+}
+
 
 
 
@@ -380,11 +574,19 @@ function mostrarResultado(resultado){
 
 
 
-let elemento =
+const area =
 
 document.getElementById(
+
 "resultado"
+
 );
+
+
+
+if(!area)return;
+
+
 
 
 
@@ -392,38 +594,161 @@ if(resultado.ganhou){
 
 
 
-elemento.innerHTML =
+somVitoria.play()
+.catch(()=>{});
 
-"🎉 PARABÉNS!<br><br>" +
 
-"Você ganhou:<br>" +
 
-resultado.premio;
+let imagem="";
+
+
+
+if(
+resultado.premio
+.includes("Ferro")
+){
+
+
+imagem="img/ferro.png";
+
+
+}
+
+
+
+if(
+resultado.premio
+.includes("Liquidificador")
+){
+
+
+imagem="img/liquidificador.png";
+
+
+}
+
+
+
+
+area.innerHTML = `
+
+<div class="vitoria">
+
+🎉 PARABÉNS! 🎉
+
+<br><br>
+
+Você ganhou:
+
+<br><br>
+
+<img src="${imagem}" width="120">
+
+<br><br>
+
+<b>${resultado.premio}</b>
+
+
+</div>
+
+`;
+
 
 
 
 }else{
 
 
-elemento.innerHTML =
 
-"😔 Não foi dessa vez.<br><br>" +
+somPerdeu.play()
+.catch(()=>{});
 
-"Continue participando!";
+
+
+area.innerHTML = `
+
+
+<div class="derrota">
+
+
+<img src="img/perdeu.png" width="120">
+
+
+<br><br>
+
+
+😔 Não foi dessa vez.
+
+
+<br>
+
+
+Continue participando!
+
+
+</div>
+
+
+`;
+
 
 
 }
 
 
 
+
 }
 
 
-// Exportar
+
+// =====================================================
+// LIMPAR
+// =====================================================
+
+
+function resetarRaspadinha(){
+
+
+
+ctx.clearRect(
+
+0,
+
+0,
+
+canvas.width,
+
+canvas.height
+
+);
+
+
+
+percentualRaspado=0;
+
+
+terminou=false;
+
+
+
+}
+
+
+
+
+
+// =====================================================
+// EXPORTAR
+// =====================================================
+
 
 window.Raspadinha = {
 
 
-iniciarRaspadinha
+iniciarRaspadinha,
+
+resetarRaspadinha
+
 
 };
