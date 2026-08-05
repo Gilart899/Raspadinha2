@@ -3,135 +3,353 @@
 
 <head>
 
+    <!-- ======================================================
+         CONFIGURAÇÕES
+    ======================================================= -->
+
     <meta charset="UTF-8">
 
-    <meta name="viewport"
+    <meta
+        name="viewport"
         content="width=device-width, initial-scale=1.0">
 
-    <meta name="theme-color"
+    <meta
+        name="theme-color"
         content="#0B7D2B">
 
-    <meta name="description"
-        content="Raspadinha da Amizade 2.0">
+    <meta
+        name="description"
+        content="Raspadinha Solidária">
 
-    <title>🍀 Raspadinha da Amizade</title>
+    <meta
+        name="apple-mobile-web-app-capable"
+        content="yes">
 
-    <link rel="stylesheet"
+    <meta
+        name="mobile-web-app-capable"
+        content="yes">
+
+    <title>🍀 Raspadinha Solidária</title>
+
+    <!-- ======================================================
+         CSS
+    ======================================================= -->
+
+    <link
+        rel="stylesheet"
         href="css/style.css">
 
 </head>
 
 <body>
 
-    <!-- =====================================================
-         CABEÇALHO
-    ====================================================== -->
+<!-- ======================================================
+     CABEÇALHO
+======================================================= -->
 
-    <header class="topo">
+<header class="topo">
+
+    <img
+
+        src="img/logo.png"
+
+        class="logo"
+
+        alt="Logo"
+
+    >
+
+    <h1>
+
+        🍀 RASPADINHA SOLIDÁRIA
+
+    </h1>
+
+    <p>
+
+        Raspe e descubra seu prêmio.
+
+    </p>
+
+</header>
+
+<!-- ======================================================
+     CONTEÚDO
+======================================================= -->
+
+<main class="principal">
+
+<!-- ======================================================
+     ÁREA DOS PRÊMIOS
+======================================================= -->
+
+<section class="premios">
+
+    <article class="cardPremio">
 
         <img
-            src="img/logo.png"
-            alt="Logo"
-            class="logo">
 
-        <h1>
+            src="img/ferro.png"
 
-            🍀 RASPADINHA DA AMIZADE
+            alt="Ferro Elétrico"
 
-        </h1>
+        >
 
-        <p>
+        <h2>
 
-            Raspe e descubra se você ganhou!
+            Ferro Elétrico
 
-        </p>
+        </h2>
 
-    </header>
+    </article>
 
-    <!-- =====================================================
-         PRÊMIOS
-    ====================================================== -->
+    <div class="versus">
 
-    <main>
+        OU
 
-        <section class="premios">
+    </div>
 
-            <div class="premio">
+    <article class="cardPremio">
 
-                <img
-                    src="img/ferro.png"
-                    alt="Ferro Elétrico">
+        <img
 
-                <h2>Ferro Elétrico</h2>
+            src="img/liquidificador.png"
 
-            </div>
+            alt="Liquidificador"
 
-            <div class="ou">
+        >
 
-                OU
+        <h2>
 
-            </div>
+            Liquidificador
 
-            <div class="premio">
+        </h2>
 
-                <img
-                    src="img/liquidificador.png"
-                    alt="Liquidificador">
+    </article>
 
-                <h2>Liquidificador</h2>
+</section><!-- ======================================================
+     AÇÃO
+======================================================= -->
 
-            </div>
+<section class="acoes">
 
-        </section>
+    <button
 
-        <!-- =====================================================
-             BOTÃO
-        ====================================================== -->
+        id="btnParticipar"
 
-        <section class="acao">
+        class="btnPrincipal">
 
-            <button id="btnParticipar">
+        🎁 RASPAR AGORA
 
-                🎁 RASPE E CONCORRA
+    </button>
 
-            </button>
+</section>
 
-        </section>
+</main>
 
-    </main>
-
- <!-- =====================================================
+<!-- ======================================================
      MODAL DA RASPADINHA
-===================================================== -->
+======================================================= -->
 
-<div id="modalRaspadinha" class="modal hidden">
+<div
+
+    id="modalRaspadinha"
+
+    class="modal hidden">
 
     <div class="janela">
 
-        <h2>🍀 Boa sorte!</h2>
+        <button
 
-        <p>Raspe toda a área para descobrir seu prêmio.</p>
+            id="btnFecharRaspadinha"
 
-      <div class="areaRaspadinha">
+            class="btnFechar"
 
-    <canvas id="canvasRaspadinha"></canvas>
+            title="Fechar">
 
-</div>
-
-        <button id="btnFecharRaspadinha">
-
-            Fechar
+            ✕
 
         </button>
+
+        <h2>
+
+            🍀 Boa Sorte!
+
+        </h2>
+
+        <p>
+
+            Raspe completamente a área abaixo.
+
+        </p>
+
+        <!-- ===========================================
+             ÁREA DA RASPADINHA
+        ============================================ -->
+
+        <div class="areaRaspadinha">
+
+            <canvas
+
+                id="canvasRaspadinha"
+
+                width="380"
+
+                height="380">
+
+            </canvas>
+
+        </div>
+
+        <!-- ===========================================
+             RESULTADO
+        ============================================ -->
+
+        <div
+
+            id="resultadoPremio"
+
+            class="resultadoPremio hidden">
+
+            <img
+
+                id="imagemPremio"
+
+                src=""
+
+                alt="Prêmio">
+
+            <h3
+
+                id="tituloPremio">
+
+            </h3>
+
+            <p
+
+                id="descricaoPremio">
+
+            </p>
+
+        </div>
+
+        <!-- ===========================================
+             MENSAGEM
+        ============================================ -->
+
+        <div
+
+            id="mensagemPremio"
+
+            class="mensagemPremio">
+
+        </div>
+
+        <!-- ===========================================
+             LOADER
+        ============================================ -->
+
+        <div
+
+            id="loadingRaspadinha"
+
+            class="loading hidden">
+
+            <div class="spinner"></div>
+
+            <p>
+
+                Consultando sua raspadinha...
+
+            </p>
+
+        </div>
 
     </div>
 
 </div>
-    
-    <div id="statusSistema"></div>
 
-    <script type="module"
-        src="js/app.js"></script>
+<!-- ======================================================
+     STATUS DO SISTEMA
+======================================================= -->
+
+<div
+
+    id="statusSistema"
+
+    class="statusSistema">
+
+</div>
+
+<!-- ======================================================
+     ÁUDIO
+======================================================= -->
+
+<audio
+
+    id="audioRaspar"
+
+    preload="auto"
+
+    src="sounds/raspar.mp3">
+
+</audio>
+
+<audio
+
+    id="audioVitoria"
+
+    preload="auto"
+
+    src="sounds/vitoria.mp3">
+
+</audio>
+
+<audio
+
+    id="audioPerdeu"
+
+    preload="auto"
+
+    src="sounds/perdeu.mp3">
+
+</audio>
+
+<audio
+
+    id="audioClick"
+
+    preload="auto"
+
+    src="sounds/click.mp3">
+
+</audio>
+
+<!-- ======================================================
+     RODAPÉ
+======================================================= -->
+
+<footer class="rodape">
+
+    <small>
+
+        © 2026 • Raspadinha Solidária
+
+    </small>
+
+</footer>
+
+<!-- ======================================================
+     JAVASCRIPT
+======================================================= -->
+
+<script
+
+    type="module"
+
+    src="js/app.js">
+
+</script>
 
 </body>
 
