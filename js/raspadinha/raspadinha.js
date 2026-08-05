@@ -1,164 +1,356 @@
 /* ==========================================================
-   RASPADINHA SOLIDÁRIA 5.0
-   Controlador Principal
+   FIREBASE ENGINE 5.0
 ========================================================== */
 
-import CanvasEngine from "./canvas.js";
+import {
 
-import { realizarSorteio } from "./sorteio.js";
+    ref,
 
-import { obterImagemResultado } from "./resultado.js";
+    get,
+
+    set,
+
+    update,
+
+    push,
+
+    runTransaction
+
+} from "https://www.gstatic.com/firebasejs/10.13.2/firebase-database.js";
+
+import { db } from "./firebase.js";
 
 /* ==========================================================
-   ELEMENTOS
+   REFERÊNCIAS
 ========================================================== */
 
-let modal = null;
+const campanhaRef =
+    ref(db, "campanha");
 
-let btnFechar = null;
+const participantesRef =
+    ref(db, "participantes");
 
-let imagemPremio = null;
+const vencedoresRef =
+    ref(db, "vencedores");
+
+const premiosRef =
+    ref(db, "premios");
+
+const estatisticasRef =
+    ref(db, "estatisticas");
 
 /* ==========================================================
-   MOTOR
+   CAMPANHA
 ========================================================== */
 
-let canvasEngine = null;
+export async function carregarCampanha() {
 
-/* ==========================================================
-   ESTADO
-========================================================== */
+    const snap =
+        await get(campanhaRef);
 
-let inicializado = false;
-
-let aberta = false;
-
-/* ==========================================================
-   INICIAR
-========================================================== */
-
-export async function iniciarRaspadinha() {
-
-    if (inicializado) return;
-
-    modal =
-        document.getElementById(
-            "modalRaspadinha"
-        );
-
-    btnFechar =
-        document.getElementById(
-            "btnFecharRaspadinha"
-        );
-
-    imagemPremio =
-        document.getElementById(
-            "imagemPremio"
-        );
-
-    if (!modal) {
+    if (!snap.exists()) {
 
         throw new Error(
-            "Modal da raspadinha não encontrado."
+            "Campanha não encontrada."
         );
 
     }
 
-    canvasEngine =
-        new CanvasEngine(
-            "canvasRaspadinha"
-        );
-
-    await canvasEngine.iniciar();
-
-    registrarEventos();
-
-    inicializado = true;
+    return snap.val();
 
 }
 
 /* ==========================================================
-   EVENTOS
+   PARTICIPANTE
 ========================================================== */
 
-function registrarEventos() {
+export async function obterParticipante(numero) {
 
-    if (btnFechar) {
+    const snap =
+        await get(
 
-        btnFechar.addEventListener(
+            ref(
 
-            "click",
+                db,
 
-            fecharRaspadinha
+                `participantes/${numero}`
+
+            )
 
         );
 
+    if (!snap.exists()) {
+
+        return null;
+
     }
+
+    return snap.val();
 
 }
 
 /* ==========================================================
-   ABRIR
+   REGISTRAR PARTICIPANTE
 ========================================================== */
 
-export async function abrirRaspadinha() {
+export async function registrarParticipante(numero, dados) {
 
-    if (!inicializado) {
+    await set(
 
-        await iniciarRaspadinha();
+        ref(db, `participantes/${numero}`),
 
-    }
+        dados
 
-    await realizarSorteio();
-
-    atualizarImagemPremio();
-
-    await canvasEngine.reiniciar();
-
-    modal.classList.remove(
-        "hidden"
     );
 
-    aberta = true;
+}
+
+/* ==========================================================
+   VERIFICAR SE JÁ RASPOU
+========================================================== */
+
+export async function participanteJaRaspou(numero) {
+
+    const snap = await get(
+
+        ref(db, `participantes/${numero}/raspou`)
+
+    );
+
+    return snap.exists() && snap.val() === true;
 
 }
 
 /* ==========================================================
-   IMAGEM
+   MARCAR COMO RASPOU
 ========================================================== */
 
-function atualizarImagemPremio() {
+export async function marcarComoRaspou(numero) {
 
-    if (!imagemPremio) return;
+    await update(
 
-    imagemPremio.src =
-        obterImagemResultado();
+        ref(db, `participantes/${numero}`),
+
+        {
+
+            raspou: true,
+
+            dataRaspagem: Date.now()
+
+        }
+
+    );
 
 }
 
 /* ==========================================================
-   FECHAR
+   CONSULTAR PRÊMIOS
 ========================================================== */
 
-export function fecharRaspadinha() {
+export async function carregarPremios() {
 
-    if (!modal) return;
+    const snap = await get(premiosRef);
 
-    modal.classList.add("hidden");
+    if (!snap.exists()) {
 
-    aberta = false;
+        throw new Error("Prêmios não encontrados.");
+
+    }
+
+    return snap.val();
 
 }
 
 /* ==========================================================
-   REINICIAR
+   REGISTRAR VENCEDOR
 ========================================================== */
 
-export async function reiniciarRaspadinha() {
+export async function registrarVencedor(dados) {
 
-    if (!canvasEngine) return;
+    const novo = push(vencedoresRef);
 
-    await canvasEngine.reiniciar();
+    await set(
+
+        novo,
+
+        {
+
+            ...dados,
+
+            dataRegistro: Date.now()
+
+        }
+
+    );
+
+}
+
+/* ==========================================================
+   ATUALIZAR ESTATÍSTICAS
+========================================================== */
+
+export async function incrementarRaspagens() {
+
+    await runTransaction(
+
+        ref(db, "estatisticas/raspagens"),
+
+        (valor) => {
+
+            return (valor || 0) + 1;
+
+        }
+
+    );
+
+}
+
+export async function incrementarPremios() {
+
+    await runTransaction(
+
+        ref(db, "estatisticas/premiosEntregues"),
+
+        (valor) => {
+
+            return (valor || 0) + 1;
+
+        }
+
+    );
+
+}
+
+/* ==========================================================
+   FIREBASE ENGINE 5.0
+   PARTE 3
+========================================================== */
+
+/* ==========================================================
+   VALIDAR PAGAMENTO
+========================================================== */
+
+export async function pagamentoConfirmado(numero) {
+
+    const participante = await obterParticipante(numero);
+
+    if (!participante) return false;
+
+    return participante.pagamento === true;
+
+}
+
+/* ==========================================================
+   CONSUMIR PRÊMIO
+========================================================== */
+
+export async function consumirPremio(idPremio) {
+
+    const premioRef = ref(db, `premios/${idPremio}/quantidade`);
+
+    const resultado = await runTransaction(
+
+        premioRef,
+
+        (quantidadeAtual) => {
+
+            if (quantidadeAtual === null) {
+
+                return quantidadeAtual;
+
+            }
+
+            if (quantidadeAtual <= 0) {
+
+                return;
+
+            }
+
+            return quantidadeAtual - 1;
+
+        }
+
+    );
+
+    return resultado.committed;
+
+}
+
+/* ==========================================================
+   LIBERAR RASPADINHA
+========================================================== */
+
+export async function liberarRaspadinha(numero) {
+
+    const participante = await obterParticipante(numero);
+
+    if (!participante) {
+
+        throw new Error("Participante não encontrado.");
+
+    }
+
+    if (await participanteJaRaspou(numero)) {
+
+        throw new Error("Este número já utilizou a raspadinha.");
+
+    }
+
+    if (!(await pagamentoConfirmado(numero))) {
+
+        throw new Error("Pagamento ainda não confirmado.");
+
+    }
+
+    return true;
+
+}
+
+/* ==========================================================
+   FINALIZAR RASPADINHA
+========================================================== */
+
+export async function finalizarRaspadinha(
+
+    numero,
+
+    premio,
+
+    dadosVencedor = {}
+
+) {
+
+    await marcarComoRaspou(numero);
+
+    if (premio !== "perdeu") {
+
+        const reservado = await consumirPremio(premio);
+
+        if (!reservado) {
+
+            throw new Error(
+
+                "Prêmio indisponível."
+
+            );
+
+        }
+
+        await registrarVencedor({
+
+            numero,
+
+            premio,
+
+            ...dadosVencedor
+
+        });
+
+        await incrementarPremios();
+
+    }
+
+    await incrementarRaspagens();
 
 }
 
@@ -166,92 +358,22 @@ export async function reiniciarRaspadinha() {
    STATUS
 ========================================================== */
 
-export function raspadinhaAberta() {
+export async function obterStatusFirebase() {
 
-    return aberta;
+    const campanha = await carregarCampanha();
 
-}
-
-export function raspadinhaInicializada() {
-
-    return inicializado;
-
-}
-
-export function obterCanvasEngine() {
-
-    return canvasEngine;
-
-}
-
-/* ==========================================================
-   DESTRUIR
-========================================================== */
-
-export function destruirRaspadinha() {
-
-    if (canvasEngine) {
-
-        canvasEngine.destruir();
-
-        canvasEngine = null;
-
-    }
-
-    aberta = false;
-
-    inicializado = false;
-
-}
-
-/* ==========================================================
-   UTILITÁRIOS
-========================================================== */
-
-export function mostrarModal() {
-
-    if (!modal) return;
-
-    modal.classList.remove("hidden");
-
-    aberta = true;
-
-}
-
-export function ocultarModal() {
-
-    if (!modal) return;
-
-    modal.classList.add("hidden");
-
-    aberta = false;
-
-}
-
-/* ==========================================================
-   GETTERS
-========================================================== */
-
-export function obterStatusRaspadinha() {
+    const premios = await carregarPremios();
 
     return {
 
-        inicializado,
+        campanha,
 
-        aberta,
-
-        porcentagem: canvasEngine
-            ? canvasEngine.porcentagem
-            : 0,
-
-        finalizado: canvasEngine
-            ? canvasEngine.finalizado
-            : false
+        premios
 
     };
 
 }
 
 /* ==========================================================
-   FIM DO CONTROLADOR
-=========================
+   FIM DO FIREBASE ENGINE
+=================
