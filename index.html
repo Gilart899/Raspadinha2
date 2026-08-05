@@ -1,260 +1,100 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-
-<head>
-
-<meta charset="UTF-8">
-
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Raspadinha Solidária</title>
-
-
-<style>
-
-
-*{
-box-sizing:border-box;
-}
+// =====================================================
+// RASPADINHA.JS V2 PROFISSIONAL
+// Canvas + Firebase + Camada Real
+// Projeto Raspadinha2
+// =====================================================
 
 
 
-body{
+let canvas;
 
-margin:0;
+let ctx;
 
-min-height:100vh;
 
-overflow:hidden;
+let raspando = false;
 
-font-family:Arial,sans-serif;
 
-display:flex;
+let terminou = false;
 
-justify-content:center;
 
-align-items:center;
+let percentualRaspado = 0;
 
-background:
 
-linear-gradient(
-135deg,
-#0f172a,
-#1e293b
+let numeroParticipante = null;
+
+
+
+let camada = new Image();
+
+
+
+let eventosAtivos = false;
+
+
+
+// Sons
+
+const somRaspar = new Audio(
+"sounds/raspar.mp3"
 );
 
-color:white;
+
+const somVitoria = new Audio(
+"sounds/vitoria.mp3"
+);
+
+
+const somPerdeu = new Audio(
+"sounds/perdeu.mp3"
+);
+
+
+
+
+
+// =====================================================
+// INICIAR RASPADINHA
+// =====================================================
+
+
+function iniciarRaspadinha(numero){
+
+
+numeroParticipante = numero;
+
+
+canvas =
+document.getElementById(
+"raspadinha"
+);
+
+
+
+ctx =
+canvas.getContext(
+"2d"
+);
+
+
+
+terminou=false;
+
+percentualRaspado=0;
+
+
+
+carregarCamada();
+
+
+
+if(!eventosAtivos){
+
+adicionarEventos();
+
+eventosAtivos=true;
 
 }
 
-
-
-/* ==========================
-   TREVOS FLUTUANDO
-========================== */
-
-
-.trevo{
-
-position:absolute;
-
-font-size:35px;
-
-opacity:.35;
-
-animation:
-
-subir 10s linear infinite;
-
-}
-
-
-
-@keyframes subir{
-
-
-0%{
-
-transform:
-translateY(100vh)
-rotate(0deg);
-
-}
-
-
-
-100%{
-
-transform:
-translateY(-120vh)
-rotate(360deg);
-
-}
-
-
-}
-
-
-
-.t1{
-left:10%;
-animation-duration:8s;
-}
-
-
-.t2{
-left:30%;
-animation-duration:12s;
-}
-
-
-.t3{
-left:60%;
-animation-duration:10s;
-}
-
-
-.t4{
-left:85%;
-animation-duration:14s;
-}
-
-
-
-
-
-/* ==========================
-   CONTAINER
-========================== */
-
-
-.container{
-
-position:relative;
-
-z-index:5;
-
-width:95%;
-
-max-width:450px;
-
-background:
-
-rgba(31,41,55,.94);
-
-padding:25px;
-
-border-radius:25px;
-
-text-align:center;
-
-box-shadow:
-
-0 0 35px rgba(255,255,255,.15);
-
-}
-
-
-
-/* ==========================
-   TITULO
-========================== */
-
-
-h1{
-
-color:#facc15;
-
-margin-bottom:5px;
-
-}
-
-
-
-.sub{
-
-color:#d1d5db;
-
-}
-
-
-
-/* ==========================
-   PREMIOS
-========================== */
-
-
-.premios{
-
-display:flex;
-
-gap:15px;
-
-justify-content:center;
-
-margin:20px 0;
-
-}
-
-
-
-.premio{
-
-width:50%;
-
-background:#374151;
-
-border-radius:15px;
-
-padding:10px;
-
-}
-
-
-
-.premio img{
-
-width:90px;
-
-height:90px;
-
-object-fit:contain;
-
-}
-
-
-
-.premio p{
-
-margin:5px;
-
-font-size:14px;
-
-}
-
-
-
-/* ==========================
-   INPUT
-========================== */
-
-
-input{
-
-
-width:100%;
-
-padding:15px;
-
-border-radius:12px;
-
-border:none;
-
-font-size:20px;
-
-text-align:center;
-
-margin-top:10px;
 
 
 }
@@ -262,298 +102,135 @@ margin-top:10px;
 
 
 
-button{
 
 
-width:100%;
 
-padding:16px;
+// =====================================================
+// CARREGAR CAMADA REAL
+// =====================================================
 
-margin-top:15px;
 
-background:#16a34a;
+function carregarCamada(){
 
-border:none;
 
-border-radius:12px;
 
-color:white;
+camada.onload=function(){
 
-font-size:18px;
 
-font-weight:bold;
+ctx.clearRect(
 
-cursor:pointer;
+0,
 
-}
+0,
 
+canvas.width,
 
+canvas.height
 
+);
 
-button:active{
 
-transform:scale(.97);
 
-}
+ctx.drawImage(
 
+camada,
 
+0,
 
+0,
 
+canvas.width,
 
-/* ==========================
-   CANVAS
-========================== */
+canvas.height
 
+);
 
-#raspadinha{
-
-
-margin-top:20px;
-
-background:white;
-
-border-radius:15px;
-
-width:100%;
-
-max-width:350px;
-
-box-shadow:
-
-0 0 25px rgba(250,204,21,.5);
-
-}
-
-
-
-/* RESULTADO */
-
-
-#resultado{
-
-margin-top:20px;
-
-font-size:22px;
-
-font-weight:bold;
-
-color:#facc15;
-
-}
-
-
-
-</style>
-
-
-</head>
-
-
-<body>
-
-
-
-<!-- TREVOS -->
-
-<div class="trevo t1">🍀</div>
-
-<div class="trevo t2">🍀</div>
-
-<div class="trevo t3">🍀</div>
-
-<div class="trevo t4">🍀</div>
-
-
-
-
-<div class="container">
-
-
-
-<h1>🎟️ Raspadinha Solidária</h1>
-
-
-<p class="sub">
-
-Digite seu número e descubra seu prêmio
-
-</p>
-
-
-
-<div class="premios">
-
-
-
-<div class="premio">
-
-<img src="img/Ferro.png">
-
-<p>Ferro elétrico</p>
-
-</div>
-
-
-
-<div class="premio">
-
-<img src="img/Liquidificador.png">
-
-<p>Liquidificador</p>
-
-</div>
-
-
-
-</div>
-
-
-
-<input
-
-id="numero"
-
-maxlength="4"
-
-placeholder="0001"
-
-
-
->
-
-
-<button onclick="abrirRaspadinha()">
-
-🎁 COMEÇAR RASPAGEM
-
-</button>
-
-
-
-<canvas
-
-id="raspadinha"
-
-width="350"
-
-height="200">
-
-</canvas>
-
-
-
-<div id="resultado"></div>
-
-     </div>
-
-
-
-<!-- ==========================
-     FIREBASE SDK
-========================== -->
-
-
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-
-
-
-<script>
-
-
-// =================================
-// CONFIGURAÇÃO FIREBASE RASPADINHA2
-// =================================
-
-
-const firebaseConfig = {
-
-
-apiKey: "AIzaSyDrc6NkWKXBLKCczw3PiwH9Rt0NE0-DEXY",
-
-authDomain:
-"raspadinha2.firebaseapp.com",
-
-databaseURL:
-"https://raspadinha2-default-rtdb.firebaseio.com",
-
-projectId:
-"raspadinha2",
-
-storageBucket:
-"raspadinha2.firebasestorage.app",
-
-messagingSenderId:
-"421282276814",
-
-appId:
-"1:421282276814:web:faa850a5817eadfb5a779f"
 
 
 };
 
 
 
-firebase.initializeApp(firebaseConfig);
+camada.src =
+"img/camada-raspadinha.png";
 
 
 
-</script>
-
-
-
-
-
-<!-- ==========================
-     SISTEMA RASPADINHA
-========================== -->
-
-
-<script src="firebase-raspadinha.js"></script>
-
-<script src="raspadinha.js"></script>
-
-
-
-
-<script>
-
-
-// ================================
-// BOTÃO INICIAR
-// ================================
-
-
-function abrirRaspadinha(){
-
-
-
-const numero =
-
-document
-
-.getElementById("numero")
-
-.value
-
-.trim();
+}
 
 
 
 
 
-if(numero.length !== 4){
+
+// =====================================================
+// EVENTOS
+// =====================================================
 
 
-alert(
+function adicionarEventos(){
 
-"Digite um número válido com 4 dígitos."
+
+
+canvas.addEventListener(
+
+"mousedown",
+
+iniciarRaspagem
 
 );
 
 
-return;
+
+canvas.addEventListener(
+
+"mousemove",
+
+raspar
+
+);
+
+
+
+canvas.addEventListener(
+
+"mouseup",
+
+pararRaspagem
+
+);
+
+
+
+
+canvas.addEventListener(
+
+"touchstart",
+
+iniciarRaspagem
+
+);
+
+
+
+canvas.addEventListener(
+
+"touchmove",
+
+raspar
+
+);
+
+
+
+canvas.addEventListener(
+
+"touchend",
+
+pararRaspagem
+
+);
+
 
 
 }
@@ -561,7 +238,28 @@ return;
 
 
 
-Raspadinha.iniciarRaspadinha(numero);
+
+// =====================================================
+// COMEÇAR
+// =====================================================
+
+
+function iniciarRaspagem(e){
+
+
+if(terminou)return;
+
+
+
+raspando=true;
+
+
+
+somRaspar.currentTime=0;
+
+
+somRaspar.play()
+.catch(()=>{});
 
 
 
@@ -569,10 +267,486 @@ Raspadinha.iniciarRaspadinha(numero);
 
 
 
-</script>
+
+
+// =====================================================
+// RASPAGEM
+// =====================================================
+
+
+function raspar(e){
 
 
 
-</body>
+if(!raspando)return;
 
-</html>
+
+if(terminou)return;
+
+
+
+let pos =
+obterPosicao(e);
+
+
+
+ctx.globalCompositeOperation =
+
+"destination-out";
+
+
+
+ctx.beginPath();
+
+
+
+ctx.arc(
+
+pos.x,
+
+pos.y,
+
+22,
+
+0,
+
+Math.PI*2
+
+);
+
+
+
+ctx.fill();
+
+
+
+calcularArea();
+
+
+
+}
+
+
+
+
+// =====================================================
+// POSIÇÃO DO TOQUE
+// =====================================================
+
+
+function obterPosicao(e){
+
+
+
+let rect =
+canvas.getBoundingClientRect();
+
+
+
+let x;
+
+let y;
+
+
+
+if(e.touches){
+
+
+
+x =
+e.touches[0].clientX
+-
+rect.left;
+
+
+
+y =
+e.touches[0].clientY
+-
+rect.top;
+
+
+
+}else{
+
+
+
+x =
+e.clientX
+-
+rect.left;
+
+
+
+y =
+e.clientY
+-
+rect.top;
+
+
+}
+
+
+
+return {
+
+x:x,
+
+y:y
+
+};
+
+
+
+}
+
+
+
+// =====================================================
+// PARAR RASPAGEM
+// =====================================================
+
+
+function pararRaspagem(){
+
+
+raspando=false;
+
+
+
+if(percentualRaspado >= 60){
+
+
+revelarResultado();
+
+
+}
+
+
+
+}
+
+
+
+
+
+// =====================================================
+// CALCULAR ÁREA RASPADA
+// =====================================================
+
+
+function calcularArea(){
+
+
+let pixels =
+
+ctx.getImageData(
+
+0,
+
+0,
+
+canvas.width,
+
+canvas.height
+
+).data;
+
+
+
+let transparentes = 0;
+
+
+
+for(
+
+let i = 3;
+
+i < pixels.length;
+
+i += 4
+
+){
+
+
+if(pixels[i] === 0){
+
+transparentes++;
+
+}
+
+
+}
+
+
+
+percentualRaspado =
+
+(
+
+transparentes /
+
+(pixels.length / 4)
+
+)
+
+*
+
+100;
+
+
+
+}
+
+
+
+
+
+// =====================================================
+// CONSULTAR FIREBASE
+// =====================================================
+
+
+async function revelarResultado(){
+
+
+
+if(terminou)return;
+
+
+
+terminou=true;
+
+
+
+try{
+
+
+const resultado =
+
+await RaspadinhaFirebase.revelarRaspadinha(
+
+numeroParticipante
+
+);
+
+
+
+mostrarResultado(resultado);
+
+
+
+}
+
+catch(erro){
+
+
+
+terminou=false;
+
+
+alert(
+
+erro.message
+
+);
+
+
+
+}
+
+
+
+}
+
+
+
+
+
+// =====================================================
+// MOSTRAR RESULTADO
+// =====================================================
+
+
+function mostrarResultado(resultado){
+
+
+
+const area =
+
+document.getElementById(
+
+"resultado"
+
+);
+
+
+
+if(!area)return;
+
+
+
+
+
+if(resultado.ganhou){
+
+
+
+somVitoria.play()
+.catch(()=>{});
+
+
+
+let imagem="";
+
+
+
+if(
+resultado.premio
+.includes("Ferro")
+){
+
+
+imagem="img/ferro.png";
+
+
+}
+
+
+
+if(
+resultado.premio
+.includes("Liquidificador")
+){
+
+
+imagem="img/liquidificador.png";
+
+
+}
+
+
+
+
+area.innerHTML = `
+
+<div class="vitoria">
+
+🎉 PARABÉNS! 🎉
+
+<br><br>
+
+Você ganhou:
+
+<br><br>
+
+<img src="${imagem}" width="120">
+
+<br><br>
+
+<b>${resultado.premio}</b>
+
+
+</div>
+
+`;
+
+
+
+
+}else{
+
+
+
+somPerdeu.play()
+.catch(()=>{});
+
+
+
+area.innerHTML = `
+
+
+<div class="derrota">
+
+
+<img src="img/perdeu.png" width="120">
+
+
+<br><br>
+
+
+😔 Não foi dessa vez.
+
+
+<br>
+
+
+Continue participando!
+
+
+</div>
+
+
+`;
+
+
+
+}
+
+
+
+
+}
+
+
+
+// =====================================================
+// LIMPAR
+// =====================================================
+
+
+function resetarRaspadinha(){
+
+
+
+ctx.clearRect(
+
+0,
+
+0,
+
+canvas.width,
+
+canvas.height
+
+);
+
+
+
+percentualRaspado=0;
+
+
+terminou=false;
+
+
+
+}
+
+
+
+
+
+// =====================================================
+// EXPORTAR
+// =====================================================
+
+
+window.Raspadinha = {
+
+
+iniciarRaspadinha,
+
+resetarRaspadinha
+
+
+};
