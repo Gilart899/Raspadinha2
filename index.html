@@ -1,355 +1,255 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
+body{
 
-<head>
+margin:0;
+min-height:100vh;
 
-    <!-- ======================================================
-         CONFIGURAÇÕES
-    ======================================================= -->
+background:
+linear-gradient(135deg,#0f172a,#1e293b);
 
-    <meta charset="UTF-8">
+font-family:Arial,sans-serif;
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0">
+display:flex;
+justify-content:center;
+align-items:center;
 
-    <meta
-        name="theme-color"
-        content="#0B7D2B">
+overflow:hidden;
 
-    <meta
-        name="description"
-        content="Raspadinha Solidária">
+color:white;
 
-    <meta
-        name="apple-mobile-web-app-capable"
-        content="yes">
+}
 
-    <meta
-        name="mobile-web-app-capable"
-        content="yes">
 
-    <title>🍀 Raspadinha Solidária</title>
+/* TREVOS FLUTUANDO */
 
-    <!-- ======================================================
-         CSS
-    ======================================================= -->
+.trevo{
 
-    <link
-        rel="stylesheet"
-        href="css/style.css">
+position:absolute;
 
-</head>
+font-size:35px;
 
-<body>
+animation:
+flutuar 8s infinite linear;
 
-<!-- ======================================================
-     CABEÇALHO
-======================================================= -->
+opacity:.5;
 
-<header class="topo">
+}
 
-    <img
 
-        src="img/logo.png"
+@keyframes flutuar{
 
-        class="logo"
 
-        alt="Logo"
+0%{
 
-    >
+transform:
+translateY(100vh)
+rotate(0deg);
 
-    <h1>
+}
 
-        🍀 RASPADINHA SOLIDÁRIA
 
-    </h1>
+100%{
 
-    <p>
+transform:
+translateY(-120vh)
+rotate(360deg);
 
-        Raspe e descubra seu prêmio.
+}
 
-    </p>
 
-</header>
+}
 
-<!-- ======================================================
-     CONTEÚDO
-======================================================= -->
 
-<main class="principal">
 
-<!-- ======================================================
-     ÁREA DOS PRÊMIOS
-======================================================= -->
+.trevo:nth-child(1){
 
-<section class="premios">
+left:10%;
 
-    <article class="cardPremio">
+animation-duration:9s;
 
-        <img
+}
 
-            src="img/ferro.png"
 
-            alt="Ferro Elétrico"
+.trevo:nth-child(2){
 
-        >
+left:35%;
 
-        <h2>
+animation-duration:12s;
 
-            Ferro Elétrico
+}
 
-        </h2>
 
-    </article>
+.trevo:nth-child(3){
 
-    <div class="versus">
+left:70%;
 
-        OU
+animation-duration:10s;
 
-    </div>
+}
 
-    <article class="cardPremio">
 
-        <img
+.trevo:nth-child(4){
 
-            src="img/liquidificador.png"
+left:85%;
 
-            alt="Liquidificador"
+animation-duration:14s;
 
-        >
+}
 
-        <h2>
 
-            Liquidificador
 
-        </h2>
 
-    </article>
 
-</section><!-- ======================================================
-     AÇÃO
-======================================================= -->
+.container{
 
-<section class="acoes">
 
-    <button
+position:relative;
 
-        id="btnParticipar"
+z-index:2;
 
-        class="btnPrincipal">
+width:90%;
 
-        🎁 RASPAR AGORA
+max-width:450px;
 
-    </button>
+background:
 
-</section>
+rgba(31,41,55,.92);
 
-</main>
+padding:25px;
 
-<!-- ======================================================
-     MODAL DA RASPADINHA
-======================================================= -->
+border-radius:25px;
 
-<div
+text-align:center;
 
-    id="modalRaspadinha"
+box-shadow:
 
-    class="modal hidden">
+0 0 30px rgba(255,255,255,.15);
 
-    <div class="janela">
 
-        <button
+}
 
-            id="btnFecharRaspadinha"
 
-            class="btnFechar"
 
-            title="Fechar">
 
-            ✕
+.premios{
 
-        </button>
 
-        <h2>
+display:flex;
 
-            🍀 Boa Sorte!
+gap:15px;
 
-        </h2>
+justify-content:center;
 
-        <p>
+margin:20px 0;
 
-            Raspe completamente a área abaixo.
 
-        </p>
+}
 
-        <!-- ===========================================
-             ÁREA DA RASPADINHA
-        ============================================ -->
 
-        <div class="areaRaspadinha">
 
-            <canvas
+.premio{
 
-                id="canvasRaspadinha"
 
-                width="380"
+width:45%;
 
-                height="380">
+background:#374151;
 
-            </canvas>
+border-radius:15px;
 
-        </div>
+padding:10px;
 
-        <!-- ===========================================
-             RESULTADO
-        ============================================ -->
+}
 
-        <div
 
-            id="resultadoPremio"
+.premio img{
 
-            class="resultadoPremio hidden">
 
-            <img
+width:90px;
 
-                id="imagemPremio"
+height:90px;
 
-                src=""
+object-fit:contain;
 
-                alt="Prêmio">
 
-            <h3
+}
 
-                id="tituloPremio">
 
-            </h3>
 
-            <p
 
-                id="descricaoPremio">
+#raspadinha{
 
-            </p>
 
-        </div>
+border-radius:15px;
 
-        <!-- ===========================================
-             MENSAGEM
-        ============================================ -->
+margin-top:20px;
 
-        <div
+box-shadow:
 
-            id="mensagemPremio"
+0 0 20px rgba(250,204,21,.5);
 
-            class="mensagemPremio">
 
-        </div>
+}
 
-        <!-- ===========================================
-             LOADER
-        ============================================ -->
+<!-- =====================================
+     FIREBASE SDK
+===================================== -->
 
-        <div
 
-            id="loadingRaspadinha"
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 
-            class="loading hidden">
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
-            <div class="spinner"></div>
 
-            <p>
 
-                Consultando sua raspadinha...
+<script>
 
-            </p>
 
-        </div>
+// =====================================
+// CONFIG FIREBASE RASPADINHA2
+// =====================================
 
-    </div>
 
-</div>
+const firebaseConfig = {
 
-<!-- ======================================================
-     STATUS DO SISTEMA
-======================================================= -->
 
-<div
+apiKey: "COLE_SUA_API_KEY",
 
-    id="statusSistema"
+authDomain: "raspadinha2.firebaseapp.com",
 
-    class="statusSistema">
+databaseURL:
+"https://raspadinha2-default-rtdb.firebaseio.com",
 
-</div>
+projectId:"raspadinha2",
 
-<!-- ======================================================
-     ÁUDIO
-======================================================= -->
+storageBucket:"raspadinha2.appspot.com",
 
-<audio
+messagingSenderId:"COLE_SEU_ID",
 
-    id="audioRaspar"
+appId:"COLE_SEU_APP_ID"
 
-    preload="auto"
 
-    src="sounds/raspar.mp3">
+};
 
-</audio>
 
-<audio
 
-    id="audioVitoria"
+firebase.initializeApp(firebaseConfig);
 
-    preload="auto"
 
-    src="sounds/vitoria.mp3">
-
-</audio>
-
-<audio
-
-    id="audioPerdeu"
-
-    preload="auto"
-
-    src="sounds/perdeu.mp3">
-
-</audio>
-
-<audio
-
-    id="audioClick"
-
-    preload="auto"
-
-    src="sounds/click.mp3">
-
-</audio>
-
-<!-- ======================================================
-     RODAPÉ
-======================================================= -->
-
-<footer class="rodape">
-
-    <small>
-
-        © 2026 • Raspadinha Solidária
-
-    </small>
-
-</footer>
-
-<!-- ======================================================
-     JAVASCRIPT
-======================================================= -->
-
-<script
-
-    type="module"
-
-    src="js/app.js">
 
 </script>
+
+
+
+<!-- =====================================
+     SISTEMA RASPADINHA
+===================================== -->
+
+
+<script src="firebase-raspadinha.js"></script>
+
+
+<script src="raspadinha.js"></script>
+
+
 
 </body>
 
