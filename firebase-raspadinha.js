@@ -1,15 +1,15 @@
-// =====================================================
-// FIREBASE RASPADINHA 2.0
-// Compatível com firebase-inicial-completo.json
-// =====================================================
+// ======================================================
+// FIREBASE RASPADINHA - VERSÃO PROFISSIONAL
+// Firebase como autoridade do sorteio
+// ======================================================
 
 
-// Referências Firebase
+// Referência Firebase
 
 const db = firebase.database();
 
 
-// Caminhos
+// Nós do banco
 
 const participantesRef = db.ref("participantes");
 
@@ -19,13 +19,12 @@ const vencedoresRef = db.ref("vencedores");
 
 const estatisticasRef = db.ref("estatisticas");
 
-const campanhaRef = db.ref("campanha");
 
 
 
-// =====================================================
+// ======================================================
 // BUSCAR PARTICIPANTE
-// =====================================================
+// ======================================================
 
 async function buscarParticipante(numero){
 
@@ -42,9 +41,11 @@ return snap.val();
 
 
 
-// =====================================================
+
+
+// ======================================================
 // VALIDAR PARTICIPANTE
-// =====================================================
+// ======================================================
 
 async function validarParticipante(numero){
 
@@ -56,7 +57,7 @@ const participante = await buscarParticipante(numero);
 if(!participante){
 
 throw new Error(
-"Participante não encontrado."
+"Número não encontrado."
 );
 
 }
@@ -66,79 +67,10 @@ throw new Error(
 if(!participante.comprado){
 
 throw new Error(
-"Pagamento não confirmado."
+"Este número ainda não possui pagamento confirmado."
 );
 
 }
-
-
-
-return participante;
-
-
-
-}
-
-
-
-// =====================================================
-// LIBERAR RASPADINHA
-// =====================================================
-
-async function liberarRaspadinha(numero){
-
-
-await validarParticipante(numero);
-
-
-
-await participantesRef
-.child(numero)
-.child("raspadinha")
-.update({
-
-liberada:true
-
-});
-
-
-
-return true;
-
-
-}
-
-
-
-
-// =====================================================
-// VERIFICAR PRÊMIOS DISPONÍVEIS
-// =====================================================
-
-
-async function buscarPremios(){
-
-
-const snap = await premiosRef.once("value");
-
-
-return snap.val();
-
-
-}
-
-
-
-
-// =====================================================
-// SORTEIO DO PRÊMIO
-// =====================================================
-
-async function sortearPremio(numero){
-
-
-const participante =
-await validarParticipante(numero);
 
 
 
@@ -148,102 +80,116 @@ participante.raspadinha.realizada
 ){
 
 throw new Error(
-"Raspadinha já utilizada."
+"Esta raspadinha já foi utilizada."
 );
 
 }
 
 
+
+return participante;
+
+
+}
+
+
+
+
+
+// ======================================================
+// REVELAR RASPADINHA
+// ======================================================
+
+async function revelarRaspadinha(numero){
+
+
+await validarParticipante(numero);
+
+
+
+const premiosSnap =
+await premiosRef.once("value");
 
 
 const premios =
-await buscarPremios();
+premiosSnap.val();
 
 
 
-let disponiveis=[];
+let premioEncontrado = null;
+
+let chavePremio = null;
+
+
+
+for(const chave in premios){
+
+
+const premio = premios[chave];
 
 
 
 if(
-premios.ferro &&
-premios.ferro.disponivel
+premio.numeroPremiado === numero &&
+premio.disponivel === true
 ){
 
-disponiveis.push("ferro");
+
+premioEncontrado = premio;
+
+chavePremio = chave;
+
+
+break;
+
 
 }
 
-
-
-if(
-premios.liquidificador &&
-premios.liquidificador.disponivel
-){
-
-disponiveis.push("liquidificador");
-
-}
-
-
-
-if(disponiveis.length===0){
-
-throw new Error(
-"Não existem prêmios disponíveis."
-);
-
-}
-
-
-
-// Sorteio
-
-const escolhido =
-disponiveis[
-Math.floor(
-Math.random()*disponiveis.length
-)
-];
-
-
-
-
-
-// Dados do prêmio
-
-let nomePremio="";
-
-
-if(escolhido==="ferro"){
-
-nomePremio="Ferro elétrico";
-
-}
-
-
-if(escolhido==="liquidificador"){
-
-nomePremio="Liquidificador";
 
 }
 
 
 
 
-// Salvar vencedor
+let resultado = "Não ganhou";
 
-await vencedoresRef
-.push({
+
+
+if(premioEncontrado){
+
+
+resultado = premioEncontrado.nome;
+
+
+
+// Bloquear prêmio
+
+await premiosRef
+.child(chavePremio)
+.update({
+
+disponivel:false
+
+});
+
+
+
+
+// Registrar vencedor
+
+await vencedoresRef.push({
 
 numero:numero,
 
-premio:nomePremio,
+premio:resultado,
 
 data:new Date()
 .toISOString()
 
 });
+
+
+}
 
 
 
@@ -257,52 +203,81 @@ await participantesRef
 
 realizada:true,
 
-premio:nomePremio
+premio:resultado
 
 });
 
 
 
 
-// Retirar prêmio do estoque
 
-await premiosRef
-.child(escolhido)
-.update({
-
-disponivel:false
-
-});
-
-
-
-
-// Estatística
+// Atualizar estatística
 
 await estatisticasRef
 .child("raspadinhasRealizadas")
 .transaction(
-(valor)=>(valor||0)+1
+
+valor => (valor || 0) + 1
+
 );
+
+
 
 
 
 return {
 
+
 numero:numero,
 
-premio:nomePremio
+premio:resultado,
+
+ganhou:!!premioEncontrado
+
 
 };
+
 
 
 }
 
 
 
-// =====================================================
+
+
+// ======================================================
+// LIBERAR RASPADINHA
+// ======================================================
+
+async function liberar(numero){
+
+
+await validarParticipante(numero);
+
+
+await participantesRef
+.child(numero)
+.child("raspadinha")
+.update({
+
+liberada:true
+
+});
+
+
+return true;
+
+
+}
+
+
+
+
+
+// ======================================================
 // EXPORTAR
-// =====================================================
+// ======================================================
+
 
 window.RaspadinhaFirebase = {
 
@@ -311,9 +286,9 @@ buscarParticipante,
 
 validarParticipante,
 
-liberarRaspadinha,
+liberar,
 
-sortearPremio
+revelarRaspadinha
 
 
 };
