@@ -1,25 +1,58 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Raspadinha Solidária</title>
+
+
+<style>
+
+
+*{
+box-sizing:border-box;
+}
+
+
+
 body{
 
 margin:0;
+
 min-height:100vh;
 
-background:
-linear-gradient(135deg,#0f172a,#1e293b);
+overflow:hidden;
 
 font-family:Arial,sans-serif;
 
 display:flex;
+
 justify-content:center;
+
 align-items:center;
 
-overflow:hidden;
+background:
+
+linear-gradient(
+135deg,
+#0f172a,
+#1e293b
+);
 
 color:white;
 
 }
 
 
-/* TREVOS FLUTUANDO */
+
+/* ==========================
+   TREVOS FLUTUANDO
+========================== */
+
 
 .trevo{
 
@@ -27,15 +60,17 @@ position:absolute;
 
 font-size:35px;
 
-animation:
-flutuar 8s infinite linear;
+opacity:.35;
 
-opacity:.5;
+animation:
+
+subir 10s linear infinite;
 
 }
 
 
-@keyframes flutuar{
+
+@keyframes subir{
 
 
 0%{
@@ -45,6 +80,7 @@ translateY(100vh)
 rotate(0deg);
 
 }
+
 
 
 100%{
@@ -60,59 +96,51 @@ rotate(360deg);
 
 
 
-.trevo:nth-child(1){
-
+.t1{
 left:10%;
-
-animation-duration:9s;
-
+animation-duration:8s;
 }
 
 
-.trevo:nth-child(2){
-
-left:35%;
-
+.t2{
+left:30%;
 animation-duration:12s;
-
 }
 
 
-.trevo:nth-child(3){
-
-left:70%;
-
+.t3{
+left:60%;
 animation-duration:10s;
-
 }
 
 
-.trevo:nth-child(4){
-
+.t4{
 left:85%;
-
 animation-duration:14s;
-
 }
 
 
 
+
+
+/* ==========================
+   CONTAINER
+========================== */
 
 
 .container{
 
-
 position:relative;
 
-z-index:2;
+z-index:5;
 
-width:90%;
+width:95%;
 
 max-width:450px;
 
 background:
 
-rgba(31,41,55,.92);
+rgba(31,41,55,.94);
 
 padding:25px;
 
@@ -122,16 +150,41 @@ text-align:center;
 
 box-shadow:
 
-0 0 30px rgba(255,255,255,.15);
-
+0 0 35px rgba(255,255,255,.15);
 
 }
 
 
 
+/* ==========================
+   TITULO
+========================== */
+
+
+h1{
+
+color:#facc15;
+
+margin-bottom:5px;
+
+}
+
+
+
+.sub{
+
+color:#d1d5db;
+
+}
+
+
+
+/* ==========================
+   PREMIOS
+========================== */
+
 
 .premios{
-
 
 display:flex;
 
@@ -141,15 +194,13 @@ justify-content:center;
 
 margin:20px 0;
 
-
 }
 
 
 
 .premio{
 
-
-width:45%;
+width:50%;
 
 background:#374151;
 
@@ -160,8 +211,8 @@ padding:10px;
 }
 
 
-.premio img{
 
+.premio img{
 
 width:90px;
 
@@ -169,29 +220,237 @@ height:90px;
 
 object-fit:contain;
 
+}
+
+
+
+.premio p{
+
+margin:5px;
+
+font-size:14px;
 
 }
 
 
+
+/* ==========================
+   INPUT
+========================== */
+
+
+input{
+
+
+width:100%;
+
+padding:15px;
+
+border-radius:12px;
+
+border:none;
+
+font-size:20px;
+
+text-align:center;
+
+margin-top:10px;
+
+
+}
+
+
+
+
+button{
+
+
+width:100%;
+
+padding:16px;
+
+margin-top:15px;
+
+background:#16a34a;
+
+border:none;
+
+border-radius:12px;
+
+color:white;
+
+font-size:18px;
+
+font-weight:bold;
+
+cursor:pointer;
+
+}
+
+
+
+
+button:active{
+
+transform:scale(.97);
+
+}
+
+
+
+
+
+/* ==========================
+   CANVAS
+========================== */
 
 
 #raspadinha{
 
 
+margin-top:20px;
+
+background:white;
+
 border-radius:15px;
 
-margin-top:20px;
+width:100%;
+
+max-width:350px;
 
 box-shadow:
 
-0 0 20px rgba(250,204,21,.5);
-
+0 0 25px rgba(250,204,21,.5);
 
 }
 
-<!-- =====================================
+
+
+/* RESULTADO */
+
+
+#resultado{
+
+margin-top:20px;
+
+font-size:22px;
+
+font-weight:bold;
+
+color:#facc15;
+
+}
+
+
+
+</style>
+
+
+</head>
+
+
+<body>
+
+
+
+<!-- TREVOS -->
+
+<div class="trevo t1">🍀</div>
+
+<div class="trevo t2">🍀</div>
+
+<div class="trevo t3">🍀</div>
+
+<div class="trevo t4">🍀</div>
+
+
+
+
+<div class="container">
+
+
+
+<h1>🎟️ Raspadinha Solidária</h1>
+
+
+<p class="sub">
+
+Digite seu número e descubra seu prêmio
+
+</p>
+
+
+
+<div class="premios">
+
+
+
+<div class="premio">
+
+<img src="img/Ferro.png">
+
+<p>Ferro elétrico</p>
+
+</div>
+
+
+
+<div class="premio">
+
+<img src="img/Liquidificador.png">
+
+<p>Liquidificador</p>
+
+</div>
+
+
+
+</div>
+
+
+
+<input
+
+id="numero"
+
+maxlength="4"
+
+placeholder="0001"
+
+
+
+>
+
+
+<button onclick="abrirRaspadinha()">
+
+🎁 COMEÇAR RASPAGEM
+
+</button>
+
+
+
+<canvas
+
+id="raspadinha"
+
+width="350"
+
+height="200">
+
+</canvas>
+
+
+
+<div id="resultado"></div>
+
+     </div>
+
+
+
+<!-- ==========================
      FIREBASE SDK
-===================================== -->
+========================== -->
 
 
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
@@ -203,28 +462,33 @@ box-shadow:
 <script>
 
 
-// =====================================
-// CONFIG FIREBASE RASPADINHA2
-// =====================================
+// =================================
+// CONFIGURAÇÃO FIREBASE RASPADINHA2
+// =================================
 
 
 const firebaseConfig = {
 
 
-apiKey: "COLE_SUA_API_KEY",
+apiKey: "AIzaSyDrc6NkWKXBLKCczw3PiwH9Rt0NE0-DEXY",
 
-authDomain: "raspadinha2.firebaseapp.com",
+authDomain:
+"raspadinha2.firebaseapp.com",
 
 databaseURL:
 "https://raspadinha2-default-rtdb.firebaseio.com",
 
-projectId:"raspadinha2",
+projectId:
+"raspadinha2",
 
-storageBucket:"raspadinha2.appspot.com",
+storageBucket:
+"raspadinha2.firebasestorage.app",
 
-messagingSenderId:"COLE_SEU_ID",
+messagingSenderId:
+"421282276814",
 
-appId:"COLE_SEU_APP_ID"
+appId:
+"1:421282276814:web:faa850a5817eadfb5a779f"
 
 
 };
@@ -239,15 +503,73 @@ firebase.initializeApp(firebaseConfig);
 
 
 
-<!-- =====================================
+
+
+<!-- ==========================
      SISTEMA RASPADINHA
-===================================== -->
+========================== -->
 
 
 <script src="firebase-raspadinha.js"></script>
 
-
 <script src="raspadinha.js"></script>
+
+
+
+
+<script>
+
+
+// ================================
+// BOTÃO INICIAR
+// ================================
+
+
+function abrirRaspadinha(){
+
+
+
+const numero =
+
+document
+
+.getElementById("numero")
+
+.value
+
+.trim();
+
+
+
+
+
+if(numero.length !== 4){
+
+
+alert(
+
+"Digite um número válido com 4 dígitos."
+
+);
+
+
+return;
+
+
+}
+
+
+
+
+Raspadinha.iniciarRaspadinha(numero);
+
+
+
+}
+
+
+
+</script>
 
 
 
