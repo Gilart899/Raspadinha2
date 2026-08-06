@@ -1,77 +1,79 @@
 /* ==========================================================
    RASPADINHA SOLIDÁRIA 5.0
-   APP PRINCIPAL
+   Controlador Principal
 ========================================================== */
 
-import CONFIG from "./config.js";
+import CanvasEngine from "./canvas.js";
 
-import {
-    iniciarRaspadinha,
-    abrirRaspadinha
-} from "./raspadinha/raspadinha.js";
+import { realizarSorteio } from "./sorteio.js";
 
-import {
-    getDB
-} from "./firebase/firebase.js";
-
-import {
-    ref,
-    get,
-    set,
-    serverTimestamp
-} from "https://www.gstatic.com/firebasejs/10.13.2/firebase-database.js";
+import { obterImagemResultado } from "./resultado.js";
 
 /* ==========================================================
    ELEMENTOS
 ========================================================== */
 
-const btnParticipar = document.getElementById("btnParticipar");
-const statusSistema = document.getElementById("statusSistema");
+let modal = null;
+
+let btnFechar = null;
+
+let imagemPremio = null;
+
+/* ==========================================================
+   MOTOR
+========================================================== */
+
+let canvasEngine = null;
 
 /* ==========================================================
    ESTADO
 ========================================================== */
 
-let sistemaInicializado = false;
+let inicializado = false;
+
+let aberta = false;
 
 /* ==========================================================
-   INICIALIZAÇÃO
+   INICIAR
 ========================================================== */
 
-document.addEventListener("DOMContentLoaded", iniciarSistema);
+export async function iniciarRaspadinha() {
 
-/* ==========================================================
-   SISTEMA
-========================================================== */
+    if (inicializado) return;
 
-async function iniciarSistema() {
+    modal =
+        document.getElementById(
+            "modalRaspadinha"
+        );
 
-    if (sistemaInicializado) return;
+    btnFechar =
+        document.getElementById(
+            "btnFecharRaspadinha"
+        );
 
-    escreverStatus("Inicializando sistema...");
+    imagemPremio =
+        document.getElementById(
+            "imagemPremio"
+        );
 
-    console.log("================================");
-    console.log(CONFIG.nome);
-    console.log("Versão:", CONFIG.versao);
-    console.log("================================");
+    if (!modal) {
 
-    const conectado = await testarFirebase();
-
-    if (!conectado) {
-
-        escreverStatus("Sistema indisponível.");
-
-        return;
+        throw new Error(
+            "Modal da raspadinha não encontrado."
+        );
 
     }
 
-    await iniciarRaspadinha();
+    canvasEngine =
+        new CanvasEngine(
+            "canvasRaspadinha"
+        );
+
+    await canvasEngine.iniciar();
 
     registrarEventos();
 
-    sistemaInicializado = true;
-
-    escreverStatus("Sistema pronto.");
+    inicializado = true;
 
 }
 
@@ -81,91 +83,82 @@ async function iniciarSistema() {
 
 function registrarEventos() {
 
-    if (!btnParticipar) return;
+    if (btnFechar) {
 
-    btnParticipar.removeEventListener(
+        btnFechar.addEventListener(
 
-        "click",
+            "click",
 
-        abrirSistemaRaspadinha
-
-    );
-
-    btnParticipar.addEventListener(
-
-        "click",
-
-        abrirSistemaRaspadinha
-
-    );
-
-}
-
-/* ==========================================================
-   ABRIR RASPADINHA
-========================================================== */
-
-async function abrirSistemaRaspadinha() {
-
-    try {
-
-        bloquearBotao(true);
-
-        escreverStatus("Preparando raspadinha...");
-
-        await abrirRaspadinha();
-
-        escreverStatus("Boa sorte! 🍀");
-
-    }
-
-    catch (erro) {
-
-        console.error(erro);
-
-        escreverStatus("Erro ao abrir.");
-
-        alert(
-
-            "Não foi possível abrir a raspadinha."
+            fecharRaspadinha
 
         );
 
     }
 
-    finally {
+}
 
-        bloquearBotao(false);
+/* ==========================================================
+   ABRIR
+========================================================== */
+
+export async function abrirRaspadinha() {
+
+    if (!inicializado) {
+
+        await iniciarRaspadinha();
 
     }
+
+    await realizarSorteio();
+
+    atualizarImagemPremio();
+
+    await canvasEngine.reiniciar();
+
+    modal.classList.remove(
+        "hidden"
+    );
+
+    aberta = true;
 
 }
 
 /* ==========================================================
-   BOTÃO
+   IMAGEM
 ========================================================== */
 
-function bloquearBotao(bloquear) {
+function atualizarImagemPremio() {
 
-    if (!btnParticipar) return;
+    if (!imagemPremio) return;
 
-    btnParticipar.disabled = bloquear;
+    imagemPremio.src =
+        obterImagemResultado();
 
-    btnParticipar.style.cursor =
+}
 
-        bloquear
+/* ==========================================================
+   FECHAR
+========================================================== */
 
-            ? "not-allowed"
+export function fecharRaspadinha() {
 
-            : "pointer";
+    if (!modal) return;
 
-    btnParticipar.classList.toggle(
+    modal.classList.add("hidden");
 
-        "desabilitado",
+    aberta = false;
 
-        bloquear
+}
 
-    );
+/* ==========================================================
+   REINICIAR
+========================================================== */
+
+export async function reiniciarRaspadinha() {
+
+    if (!canvasEngine) return;
+
+    await canvasEngine.reiniciar();
 
 }
 
@@ -173,134 +166,92 @@ function bloquearBotao(bloquear) {
    STATUS
 ========================================================== */
 
-function escreverStatus(texto) {
+export function raspadinhaAberta() {
 
-    console.log(texto);
+    return aberta;
 
-    if (!statusSistema) return;
+}
 
-    statusSistema.innerHTML = `
+export function raspadinhaInicializada() {
 
-        <div>${texto}</div>
+    return inicializado;
 
-    `;
+}
+
+export function obterCanvasEngine() {
+
+    return canvasEngine;
 
 }
 
 /* ==========================================================
-   FIREBASE
+   DESTRUIR
 ========================================================== */
 
-async function testarFirebase() {
+export function destruirRaspadinha() {
 
-    try {
+    if (canvasEngine) {
 
-        escreverStatus(
+        canvasEngine.destruir();
 
-            "Conectando ao Firebase..."
-
-        );
-
-        const db = getDB();
-
-        const sistemaRef = ref(
-
-            db,
-
-            "sistema"
-
-        );
-
-        await set(
-
-            sistemaRef,
-
-            {
-
-                nome: CONFIG.nome,
-
-                versao: CONFIG.versao,
-
-                iniciadoEm: serverTimestamp(),
-
-                status: "online"
-
-            }
-
-        );
-
-        const snap = await get(sistemaRef);
-
-        if (!snap.exists()) {
-
-            throw new Error(
-
-                "Firebase retornou vazio."
-
-            );
-
-        }
-
-        console.table(snap.val());
-
-        escreverStatus(
-
-            "Firebase conectado."
-
-        );
-
-        return true;
+        canvasEngine = null;
 
     }
 
-    catch (erro) {
+    aberta = false;
 
-        console.error(
-
-            "Erro Firebase:",
-
-            erro
-
-        );
-
-        escreverStatus(
-
-            "Falha na conexão."
-
-        );
-
-        return false;
-
-    }
+    inicializado = false;
 
 }
 
 /* ==========================================================
-   EXPORTAÇÕES
+   UTILITÁRIOS
 ========================================================== */
 
-export function sistemaPronto() {
+export function mostrarModal() {
 
-    return sistemaInicializado;
+    if (!modal) return;
+
+    modal.classList.remove("hidden");
+
+    aberta = true;
 
 }
 
-export function obterConfiguracao() {
+export function ocultarModal() {
 
-    return CONFIG;
+    if (!modal) return;
+
+    modal.classList.add("hidden");
+
+    aberta = false;
 
 }
 
 /* ==========================================================
-   FIM
+   GETTERS
 ========================================================== */
 
-console.log(
+export function obterStatusRaspadinha() {
 
-    "%cRaspadinha Solidária 5.0",
+    return {
 
-    "color:#0B7D2B;font-size:16px;font-weight:bold;"
+        inicializado,
 
-);
+        aberta,
 
-console.log("Aplicação carregada.");
+        porcentagem: canvasEngine
+            ? canvasEngine.porcentagem
+            : 0,
+
+        finalizado: canvasEngine
+            ? canvasEngine.finalizado
+            : false
+
+    };
+
+}
+
+/* ==========================================================
+   FIM DO CONTROLADOR
+========================================================== */
