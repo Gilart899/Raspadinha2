@@ -6,50 +6,27 @@
 import CONFIG from "./config.js";
 
 import {
-
     iniciarRaspadinha,
-
     abrirRaspadinha
-
 } from "./raspadinha/raspadinha.js";
 
 import {
-
     getDB
-
 } from "./firebase/firebase.js";
 
 import {
-
     ref,
-
     get,
-
     set,
-
     serverTimestamp
-
 } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-database.js";
 
 /* ==========================================================
    ELEMENTOS
 ========================================================== */
 
-const btnParticipar =
-
-    document.getElementById(
-
-        "btnParticipar"
-
-    );
-
-const statusSistema =
-
-    document.getElementById(
-
-        "statusSistema"
-
-    );
+const btnParticipar = document.getElementById("btnParticipar");
+const statusSistema = document.getElementById("statusSistema");
 
 /* ==========================================================
    ESTADO
@@ -58,16 +35,10 @@ const statusSistema =
 let sistemaInicializado = false;
 
 /* ==========================================================
-   START
+   INICIALIZAÇÃO
 ========================================================== */
 
-document.addEventListener(
-
-    "DOMContentLoaded",
-
-    iniciarSistema
-
-);
+document.addEventListener("DOMContentLoaded", iniciarSistema);
 
 /* ==========================================================
    SISTEMA
@@ -77,23 +48,22 @@ async function iniciarSistema() {
 
     if (sistemaInicializado) return;
 
-    escreverStatus(
-
-        "Inicializando sistema..."
-
-    );
-
-    console.clear();
+    escreverStatus("Inicializando sistema...");
 
     console.log("================================");
-
     console.log(CONFIG.nome);
-
-    console.log(CONFIG.versao);
-
+    console.log("Versão:", CONFIG.versao);
     console.log("================================");
 
-    await testarFirebase();
+    const conectado = await testarFirebase();
+
+    if (!conectado) {
+
+        escreverStatus("Sistema indisponível.");
+
+        return;
+
+    }
 
     await iniciarRaspadinha();
 
@@ -101,11 +71,7 @@ async function iniciarSistema() {
 
     sistemaInicializado = true;
 
-    escreverStatus(
-
-        "Sistema pronto."
-
-    );
+    escreverStatus("Sistema pronto.");
 
 }
 
@@ -115,17 +81,23 @@ async function iniciarSistema() {
 
 function registrarEventos() {
 
-    if (btnParticipar) {
+    if (!btnParticipar) return;
 
-        btnParticipar.addEventListener(
+    btnParticipar.removeEventListener(
 
-            "click",
+        "click",
 
-            abrirSistemaRaspadinha
+        abrirSistemaRaspadinha
 
-        );
+    );
 
-    }
+    btnParticipar.addEventListener(
+
+        "click",
+
+        abrirSistemaRaspadinha
+
+    );
 
 }
 
@@ -139,35 +111,19 @@ async function abrirSistemaRaspadinha() {
 
         bloquearBotao(true);
 
-        escreverStatus(
-
-            "Preparando raspadinha..."
-
-        );
+        escreverStatus("Preparando raspadinha...");
 
         await abrirRaspadinha();
 
-        escreverStatus(
+        escreverStatus("Boa sorte! 🍀");
 
-            "Boa sorte! 🍀"
+    }
 
-        );
+    catch (erro) {
 
-    } catch (erro) {
+        console.error(erro);
 
-        console.error(
-
-            "Erro ao abrir raspadinha:",
-
-            erro
-
-        );
-
-        escreverStatus(
-
-            "Erro ao abrir a raspadinha."
-
-        );
+        escreverStatus("Erro ao abrir.");
 
         alert(
 
@@ -175,7 +131,9 @@ async function abrirSistemaRaspadinha() {
 
         );
 
-    } finally {
+    }
+
+    finally {
 
         bloquearBotao(false);
 
@@ -193,23 +151,21 @@ function bloquearBotao(bloquear) {
 
     btnParticipar.disabled = bloquear;
 
-    if (bloquear) {
+    btnParticipar.style.cursor =
 
-        btnParticipar.classList.add(
+        bloquear
 
-            "desabilitado"
+            ? "not-allowed"
 
-        );
+            : "pointer";
 
-    } else {
+    btnParticipar.classList.toggle(
 
-        btnParticipar.classList.remove(
+        "desabilitado",
 
-            "desabilitado"
+        bloquear
 
-        );
-
-    }
+    );
 
 }
 
@@ -219,9 +175,15 @@ function bloquearBotao(bloquear) {
 
 function escreverStatus(texto) {
 
+    console.log(texto);
+
     if (!statusSistema) return;
 
-    statusSistema.textContent = texto;
+    statusSistema.innerHTML = `
+
+        <div>${texto}</div>
+
+    `;
 
 }
 
@@ -234,53 +196,64 @@ async function testarFirebase() {
     try {
 
         escreverStatus(
+
             "Conectando ao Firebase..."
+
         );
 
         const db = getDB();
 
         const sistemaRef = ref(
+
             db,
+
             "sistema"
+
         );
 
-        await set(sistemaRef, {
+        await set(
 
-            nome: CONFIG.nome,
+            sistemaRef,
 
-            versao: CONFIG.versao,
+            {
 
-            iniciadoEm: serverTimestamp(),
+                nome: CONFIG.nome,
 
-            status: "online"
+                versao: CONFIG.versao,
 
-        });
+                iniciadoEm: serverTimestamp(),
+
+                status: "online"
+
+            }
+
+        );
 
         const snap = await get(sistemaRef);
 
         if (!snap.exists()) {
 
             throw new Error(
+
                 "Firebase retornou vazio."
+
             );
 
         }
 
-        console.log("================================");
-
-        console.log("Firebase conectado.");
-
         console.table(snap.val());
 
-        console.log("================================");
-
         escreverStatus(
+
             "Firebase conectado."
+
         );
 
         return true;
 
-    } catch (erro) {
+    }
+
+    catch (erro) {
 
         console.error(
 
@@ -291,7 +264,9 @@ async function testarFirebase() {
         );
 
         escreverStatus(
+
             "Falha na conexão."
+
         );
 
         return false;
@@ -301,7 +276,7 @@ async function testarFirebase() {
 }
 
 /* ==========================================================
-   UTILITÁRIOS
+   EXPORTAÇÕES
 ========================================================== */
 
 export function sistemaPronto() {
@@ -317,7 +292,7 @@ export function obterConfiguracao() {
 }
 
 /* ==========================================================
-   LOG
+   FIM
 ========================================================== */
 
 console.log(
@@ -328,12 +303,4 @@ console.log(
 
 );
 
-console.log(
-
-    "Aplicação carregada."
-
-);
-
-/* ==========================================================
-   FIM DO APP
-===============================
+console.log("Aplicação carregada.");
