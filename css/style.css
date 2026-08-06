@@ -1,292 +1,488 @@
 /* ==========================================================
-   RASPADINHA DA AMIZADE 2.0
+   RASPADINHA DA AMIZADE 5.0
+   GILFEST
+========================================================== */
+
+/* ==========================================================
+   RESET
 ========================================================== */
 
 *{
+
     margin:0;
+
     padding:0;
+
     box-sizing:border-box;
+
+}
+
+html{
+
+    scroll-behavior:smooth;
+
 }
 
 body{
 
-    font-family:Arial,Helvetica,sans-serif;
+    font-family:
+    "Segoe UI",
+    Arial,
+    sans-serif;
 
-    background:linear-gradient(180deg,#0B7D2B,#0F9D3D);
+    background:
+    linear-gradient(
+        180deg,
+        #011b07 0%,
+        #063a16 40%,
+        #0b7d2b 100%
+    );
 
     color:#FFF;
 
     min-height:100vh;
 
-}
+    overflow-x:hidden;
 
-.topo{
-
-    text-align:center;
-
-    padding:30px 20px;
-
-}
-
-.logo{
-
-    width:120px;
-
-    margin-bottom:15px;
-
-}
-
-.topo h1{
-
-    font-size:2rem;
-
-    margin-bottom:10px;
-
-}
-
-.topo p{
-
-    font-size:1rem;
-
-    opacity:.9;
-
-}
-
-main{
-
-    width:100%;
-
-    max-width:900px;
-
-    margin:auto;
-
-    padding:20px;
-
-}
-
-.premios{
-
-    display:flex;
-
-    justify-content:center;
-
-    align-items:center;
-
-    gap:30px;
-
-    flex-wrap:wrap;
-
-    margin-top:30px;
-
-}
-
-.premio{
-
-    width:220px;
-
-    background:#FFFFFF;
-
-    color:#222;
-
-    border-radius:15px;
-
-    padding:20px;
-
-    text-align:center;
-
-    box-shadow:0 10px 25px rgba(0,0,0,.25);
-
-}
-
-.premio img{
-
-    width:150px;
-
-    height:auto;
-
-    margin-bottom:15px;
-
-}
-
-.ou{
-
-    font-size:2rem;
-
-    font-weight:bold;
-
-}
-
-.acao{
-
-    margin-top:50px;
-
-    text-align:center;
-
-}
-
-#btnParticipar{
-
-    border:none;
-
-    background:#FFD700;
-
-    color:#222;
-
-    font-size:1.2rem;
-
-    font-weight:bold;
-
-    padding:18px 40px;
-
-    border-radius:50px;
-
-    cursor:pointer;
-
-    transition:.3s;
-
-}
-
-#btnParticipar:hover{
-
-    transform:scale(1.05);
-
-}
-
-@media(max-width:768px){
-
-    .premios{
-
-        flex-direction:column;
-
-    }
-
-}
-
-#statusSistema{
-
-    position:fixed;
-
-    left:10px;
-
-    bottom:10px;
-
-    width:320px;
-
-    max-width:90%;
-
-    background:#111;
-
-    color:#00ff66;
-
-    font-size:14px;
-
-    padding:12px;
-
-    border-radius:8px;
-
-    font-family:monospace;
-
-    box-shadow:0 0 10px rgba(0,0,0,.4);
-
-    z-index:99999;
+    position:relative;
 
 }
 
 /* ==========================================================
-   MODAL DA RASPADINHA
+   VARIÁVEIS
 ========================================================== */
 
-.hidden{
+:root{
 
-    display:none;
+    --verde:#20ff5d;
+
+    --verdeEscuro:#0b7d2b;
+
+    --verdeNeon:#6dff8f;
+
+    --prata1:#f5f5f5;
+
+    --prata2:#d6d6d6;
+
+    --prata3:#a5a5a5;
+
+    --cinza:#2f2f2f;
+
+    --preto:#111;
+
+    --sombra:
+
+        0 15px 40px
+
+        rgba(0,0,0,.45);
 
 }
 
-.modal{
+/* ==========================================================
+   FUNDO
+========================================================== */
+
+body::before{
+
+    content:"";
 
     position:fixed;
 
-    top:0;
+    inset:0;
 
-    left:0;
+    background:
 
-    width:100%;
+    radial-gradient(
 
-    height:100%;
+        circle at center,
 
-    background:rgba(0,0,0,.75);
+        rgba(40,255,100,.18),
 
-    display:flex;
+        transparent 65%
 
-    justify-content:center;
+    );
 
-    align-items:center;
-
-    z-index:9999;
+    z-index:-5;
 
 }
 
-.modal.hidden{
+body::after{
 
-    display:none;
+    content:"";
+
+    position:fixed;
+
+    inset:0;
+
+    background:
+
+    linear-gradient(
+
+        rgba(255,255,255,.02),
+
+        rgba(255,255,255,0)
+
+    );
+
+    pointer-events:none;
+
+    z-index:-4;
 
 }
 
-.janela{
+/* ==========================================================
+   BACKGROUND
+========================================================== */
 
-    width:95%;
+#background{
 
-    max-width:450px;
+    position:fixed;
 
-    background:#ffffff;
+    inset:0;
 
-    color:#222;
+    overflow:hidden;
 
-    border-radius:20px;
+    z-index:-3;
 
-    padding:25px;
+}
+
+/* ==========================================================
+   PARTÍCULAS
+========================================================== */
+
+.particulas{
+
+    position:absolute;
+
+    inset:0;
+
+    background-image:
+
+    radial-gradient(
+
+        #6cff89 1px,
+
+        transparent 1px
+
+    );
+
+    background-size:
+
+        70px 70px;
+
+    opacity:.20;
+
+}
+
+/* ==========================================================
+   LUZES
+========================================================== */
+
+.luzes{
+
+    position:absolute;
+
+    inset:0;
+
+    background:
+
+    radial-gradient(
+
+        circle,
+
+        rgba(0,255,100,.18),
+
+        transparent 70%
+
+    );
+
+    animation:
+
+        brilhoFundo
+
+        8s
+
+        ease-in-out
+
+        infinite;
+
+}
+
+/* ==========================================================
+   CONTAINER
+========================================================== */
+
+.container{
+
+    width:min(1200px,92%);
+
+    margin:auto;
+
+    padding:
+
+        40px
+
+        0
+
+        100px;
 
     text-align:center;
 
-    box-shadow:0 15px 40px rgba(0,0,0,.35);
+}
+
+/* ==========================================================
+   LOGO
+========================================================== */
+
+.logo{
+
+    width:130px;
+
+    margin-bottom:20px;
+
+    filter:
+
+        drop-shadow(0 0 20px rgba(0,255,120,.45));
+
+    transition:.35s;
 
 }
 
-#canvasRaspadinha{
+.logo:hover{
 
-    width:100%;
-
-    max-width:380px;
-
-    height:380px;
-
-    background:#cfcfcf;
-
-    border-radius:12px;
-
-    margin:20px auto;
-
-    display:block;
+    transform:scale(1.08);
 
 }
 
-#btnFecharRaspadinha{
+/* ==========================================================
+   TÍTULO
+========================================================== */
 
-    border:none;
+h1{
 
-    background:#d32f2f;
+    font-size:4rem;
 
-    color:#fff;
+    font-weight:900;
 
-    padding:14px 28px;
+    text-transform:uppercase;
 
-    border-radius:10px;
+    letter-spacing:2px;
 
-    cursor:pointer;
+    color:#ffffff;
 
-    font-size:16px;
+    text-shadow:
+
+        0 0 20px rgba(255,255,255,.35),
+
+        0 0 40px rgba(0,255,120,.20);
+
+}
+
+.subtitulo{
+
+    margin-top:18px;
+
+    font-size:1.45rem;
+
+    color:#f8f8f8;
+
+}
+
+.subtitulo span{
+
+    color:var(--verdeNeon);
 
     font-weight:bold;
+
+}
+
+/* ==========================================================
+   CARTÃO METÁLICO
+========================================================== */
+
+.cartao{
+
+    position:relative;
+
+    margin:55px auto;
+
+    width:420px;
+
+    max-width:100%;
+
+    padding:30px;
+
+    border-radius:28px;
+
+    overflow:hidden;
+
+    background:
+
+    linear-gradient(
+
+        180deg,
+
+        var(--prata1),
+
+        var(--prata2),
+
+        var(--prata3)
+
+    );
+
+    box-shadow:
+
+        0 25px 60px rgba(0,0,0,.45),
+
+        0 0 35px rgba(0,255,120,.25);
+
+}
+
+/* ==========================================================
+   TEXTURA DO AÇO
+========================================================== */
+
+.cartao::before{
+
+    content:"";
+
+    position:absolute;
+
+    inset:0;
+
+    background:
+
+    repeating-linear-gradient(
+
+        90deg,
+
+        rgba(255,255,255,.08) 0px,
+
+        rgba(255,255,255,.08) 2px,
+
+        rgba(0,0,0,.04) 4px,
+
+        rgba(255,255,255,.08) 6px
+
+    );
+
+    opacity:.40;
+
+    pointer-events:none;
+
+}
+
+/* ==========================================================
+   BRILHO PASSANDO
+========================================================== */
+
+.brilho{
+
+    position:absolute;
+
+    top:-100%;
+
+    left:-50%;
+
+    width:60%;
+
+    height:300%;
+
+    transform:rotate(25deg);
+
+    background:
+
+    linear-gradient(
+
+        transparent,
+
+        rgba(255,255,255,.65),
+
+        transparent
+
+    );
+
+    animation:
+
+        brilhoCartao
+
+        5s
+
+        linear
+
+        infinite;
+
+}
+
+/* ==========================================================
+   TREVO CENTRAL
+========================================================== */
+
+.trevoCentro{
+
+    width:140px;
+
+    height:140px;
+
+    margin:auto;
+
+    border-radius:50%;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    background:
+
+    radial-gradient(
+
+        #fdfdfd,
+
+        #d8d8d8
+
+    );
+
+    box-shadow:
+
+        inset 0 0 20px rgba(255,255,255,.70),
+
+        0 0 25px rgba(0,255,120,.35);
+
+}
+
+.trevoCentro i{
+
+    font-size:85px;
+
+    color:#3c3c3c;
+
+}
+
+/* ==========================================================
+   TÍTULOS DO CARTÃO
+========================================================== */
+
+.cartao h2{
+
+    margin-top:25px;
+
+    color:#222;
+
+    font-size:2rem;
+
+    font-weight:900;
+
+}
+
+.cartao p{
+
+    margin-top:12px;
+
+    color:#555;
+
+    font-size:1rem;
 
 }
 
@@ -302,25 +498,26 @@ main{
 
     height:380px;
 
-    margin:20px auto;
+    margin:35px auto;
 
-}
+    border-radius:22px;
 
-#imagemPremio{
+    overflow:hidden;
 
-    position:absolute;
+    background:
 
-    top:0;
-    left:0;
+        linear-gradient(
+            180deg,
+            #dcdcdc,
+            #bdbdbd,
+            #ececec
+        );
 
-    width:100%;
-    height:100%;
+    box-shadow:
 
-    object-fit:cover;
+        inset 0 0 25px rgba(255,255,255,.75),
 
-    border-radius:12px;
-
-    z-index:1;
+        0 15px 35px rgba(0,0,0,.30);
 
 }
 
@@ -328,14 +525,634 @@ main{
 
     position:absolute;
 
-    top:0;
-    left:0;
+    inset:0;
 
     width:100%;
+
     height:100%;
+
+    cursor:pointer;
+
+    z-index:3;
+
+}
+
+.textoRaspe{
+
+    position:absolute;
+
+    inset:0;
+
+    display:flex;
+
+    flex-direction:column;
+
+    justify-content:center;
+
+    align-items:center;
+
+    color:#202020;
+
+    font-weight:900;
+
+    letter-spacing:2px;
+
+    text-transform:uppercase;
 
     z-index:2;
 
+    pointer-events:none;
+
+}
+
+.textoRaspe i{
+
+    font-size:70px;
+
+    margin-bottom:15px;
+
+}
+
+.textoRaspe span{
+
+    font-size:2.3rem;
+
+}
+
+/* ==========================================================
+   BOTÃO PRINCIPAL
+========================================================== */
+
+.btnPrincipal{
+
+    margin-top:35px;
+
+    border:none;
+
     cursor:pointer;
+
+    padding:20px 55px;
+
+    border-radius:60px;
+
+    font-size:1.25rem;
+
+    font-weight:900;
+
+    color:#FFF;
+
+    background:
+
+        linear-gradient(
+            180deg,
+            #38ff63,
+            #0b7d2b
+        );
+
+    box-shadow:
+
+        0 0 18px rgba(0,255,80,.55),
+
+        0 10px 25px rgba(0,0,0,.35);
+
+    transition:.30s;
+
+}
+
+.btnPrincipal:hover{
+
+    transform:
+
+        translateY(-3px)
+
+        scale(1.04);
+
+    box-shadow:
+
+        0 0 35px rgba(0,255,120,.80);
+
+}
+
+.btnPrincipal i{
+
+    margin-right:10px;
+
+}
+
+/* ==========================================================
+   TÍTULO DOS PRÊMIOS
+========================================================== */
+
+.tituloPremios{
+
+    margin-top:60px;
+
+    margin-bottom:25px;
+
+    font-size:1.8rem;
+
+    font-weight:bold;
+
+}
+
+/* ==========================================================
+   PRÊMIOS
+========================================================== */
+
+.premios{
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    gap:35px;
+
+    flex-wrap:wrap;
+
+}
+
+.premio{
+
+    width:250px;
+
+    padding:20px;
+
+    border-radius:22px;
+
+    background:
+
+        rgba(255,255,255,.08);
+
+    backdrop-filter:blur(8px);
+
+    border:
+
+        1px solid
+
+        rgba(255,255,255,.18);
+
+    transition:.35s;
+
+}
+
+.premio:hover{
+
+    transform:
+
+        translateY(-10px)
+
+        scale(1.03);
+
+}
+
+.premio img{
+
+    width:170px;
+
+    height:auto;
+
+}
+
+.premio h2{
+
+    margin-top:20px;
+
+    font-size:1.4rem;
+
+    color:#FFF;
+
+}
+
+.ou{
+
+    font-size:2.4rem;
+
+    color:#7dff8e;
+
+    font-weight:900;
+
+}
+
+/* ==========================================================
+   CARDS
+========================================================== */
+
+.informacoes{
+
+    margin-top:60px;
+
+    display:flex;
+
+    justify-content:center;
+
+    gap:25px;
+
+    flex-wrap:wrap;
+
+}
+
+.cardInfo{
+
+    width:280px;
+
+    padding:25px;
+
+    border-radius:18px;
+
+    background:
+
+        rgba(255,255,255,.08);
+
+    border:
+
+        1px solid
+
+        rgba(255,255,255,.15);
+
+    backdrop-filter:blur(12px);
+
+    transition:.30s;
+
+}
+
+.cardInfo:hover{
+
+    transform:
+
+        translateY(-8px);
+
+}
+
+.cardInfo i{
+
+    font-size:48px;
+
+    color:#63ff7b;
+
+    margin-bottom:18px;
+
+}
+
+.cardInfo h3{
+
+    margin-bottom:12px;
+
+    font-size:1.35rem;
+
+}
+
+.cardInfo p{
+
+    color:#ececec;
+
+    line-height:1.5;
+
+}
+
+/* ==========================================================
+   MODAIS
+========================================================== */
+
+.hidden{
+
+    display:none !important;
+
+}
+
+.modal{
+
+    position:fixed;
+
+    inset:0;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    background:rgba(0,0,0,.82);
+
+    backdrop-filter:blur(8px);
+
+    z-index:99999;
+
+    padding:20px;
+
+}
+
+.janela{
+
+    width:100%;
+
+    max-width:500px;
+
+    background:
+
+        linear-gradient(
+            180deg,
+            #ffffff,
+            #efefef
+        );
+
+    color:#222;
+
+    border-radius:25px;
+
+    padding:35px;
+
+    text-align:center;
+
+    box-shadow:
+
+        0 20px 60px rgba(0,0,0,.45);
+
+    animation:subir .45s ease;
+
+}
+
+.janela h2{
+
+    font-size:2rem;
+
+    margin-bottom:15px;
+
+}
+
+.janela p{
+
+    color:#666;
+
+    line-height:1.6;
+
+}
+
+#imagemPremio{
+
+    width:220px;
+
+    max-width:90%;
+
+    margin:25px auto;
+
+    display:block;
+
+}
+
+.btnFechar{
+
+    position:absolute;
+
+    top:15px;
+
+    right:15px;
+
+    width:42px;
+
+    height:42px;
+
+    border:none;
+
+    border-radius:50%;
+
+    cursor:pointer;
+
+    color:#FFF;
+
+    background:#d32f2f;
+
+    font-size:20px;
+
+}
+
+/* ==========================================================
+   LOADING
+========================================================== */
+
+.loading{
+
+    position:fixed;
+
+    inset:0;
+
+    display:flex;
+
+    flex-direction:column;
+
+    justify-content:center;
+
+    align-items:center;
+
+    background:#021407;
+
+    z-index:999999;
+
+}
+
+.spinner{
+
+    width:80px;
+
+    height:80px;
+
+    border:8px solid rgba(255,255,255,.15);
+
+    border-top:8px solid #35ff65;
+
+    border-radius:50%;
+
+    animation:girar 1s linear infinite;
+
+}
+
+.loading p{
+
+    margin-top:25px;
+
+    font-size:1.2rem;
+
+}
+
+/* ==========================================================
+   STATUS
+========================================================== */
+
+.statusSistema{
+
+    position:fixed;
+
+    left:15px;
+
+    bottom:15px;
+
+    width:330px;
+
+    max-width:92%;
+
+    background:#111;
+
+    color:#59ff83;
+
+    padding:15px;
+
+    border-radius:12px;
+
+    font-family:Consolas,monospace;
+
+    font-size:13px;
+
+    line-height:1.5;
+
+    box-shadow:
+
+        0 10px 25px rgba(0,0,0,.35);
+
+    z-index:999999;
+
+}
+
+/* ==========================================================
+   RESPONSIVO
+========================================================== */
+
+@media(max-width:768px){
+
+    h1{
+
+        font-size:2.4rem;
+
+    }
+
+    .subtitulo{
+
+        font-size:1.1rem;
+
+    }
+
+    .cartao{
+
+        width:100%;
+
+        padding:25px;
+
+    }
+
+    .areaRaspadinha{
+
+        width:300px;
+
+        height:300px;
+
+    }
+
+    .textoRaspe span{
+
+        font-size:1.8rem;
+
+    }
+
+    .textoRaspe i{
+
+        font-size:50px;
+
+    }
+
+    .btnPrincipal{
+
+        width:100%;
+
+        padding:18px;
+
+    }
+
+    .premios{
+
+        flex-direction:column;
+
+    }
+
+    .informacoes{
+
+        flex-direction:column;
+
+        align-items:center;
+
+    }
+
+    .cardInfo{
+
+        width:100%;
+
+        max-width:340px;
+
+    }
+
+}
+
+/* ==========================================================
+   ANIMAÇÕES
+========================================================== */
+
+@keyframes brilhoCartao{
+
+    0%{
+
+        left:-80%;
+
+    }
+
+    100%{
+
+        left:180%;
+
+    }
+
+}
+
+@keyframes brilhoFundo{
+
+    0%,100%{
+
+        opacity:.25;
+
+    }
+
+    50%{
+
+        opacity:.50;
+
+    }
+
+}
+
+@keyframes subir{
+
+    from{
+
+        transform:translateY(40px);
+
+        opacity:0;
+
+    }
+
+    to{
+
+        transform:translateY(0);
+
+        opacity:1;
+
+    }
+
+}
+
+@keyframes girar{
+
+    to{
+
+        transform:rotate(360deg);
+
+    }
 
 }
