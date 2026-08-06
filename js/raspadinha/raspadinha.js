@@ -1,754 +1,306 @@
-// =====================================================
-// RASPADINHA.JS V2 PROFISSIONAL
-// Canvas + Firebase + Camada Real
-// Projeto Raspadinha2
-// =====================================================
+/* ==========================================================
+   RASPADINHA SOLIDÁRIA 5.0
+   APP PRINCIPAL
+========================================================== */
 
+import CONFIG from "./config.js";
 
+import {
+    iniciarRaspadinha,
+    abrirRaspadinha
+} from "./raspadinha/raspadinha.js";
 
-let canvas;
+import {
+    getDB
+} from "./firebase/firebase.js";
 
-let ctx;
+import {
+    ref,
+    get,
+    set,
+    serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.13.2/firebase-database.js";
 
+/* ==========================================================
+   ELEMENTOS
+========================================================== */
 
-let raspando = false;
+const btnParticipar = document.getElementById("btnParticipar");
+const statusSistema = document.getElementById("statusSistema");
 
+/* ==========================================================
+   ESTADO
+========================================================== */
 
-let terminou = false;
+let sistemaInicializado = false;
 
+/* ==========================================================
+   INICIALIZAÇÃO
+========================================================== */
 
-let percentualRaspado = 0;
+document.addEventListener("DOMContentLoaded", iniciarSistema);
 
+/* ==========================================================
+   SISTEMA
+========================================================== */
 
-let numeroParticipante = null;
+async function iniciarSistema() {
 
+    if (sistemaInicializado) return;
 
+    escreverStatus("Inicializando sistema...");
 
-let camada = new Image();
+    console.log("================================");
+    console.log(CONFIG.nome);
+    console.log("Versão:", CONFIG.versao);
+    console.log("================================");
 
+    const conectado = await testarFirebase();
 
+    if (!conectado) {
 
-let eventosAtivos = false;
+        escreverStatus("Sistema indisponível.");
 
+        return;
 
+    }
 
-// Sons
+    await iniciarRaspadinha();
 
-const somRaspar = new Audio(
-"sounds/raspar.mp3"
-);
+    registrarEventos();
 
+    sistemaInicializado = true;
 
-const somVitoria = new Audio(
-"sounds/vitoria.mp3"
-);
-
-
-const somPerdeu = new Audio(
-"sounds/perdeu.mp3"
-);
-
-
-
-
-
-// =====================================================
-// INICIAR RASPADINHA
-// =====================================================
-
-
-function iniciarRaspadinha(numero){
-
-
-numeroParticipante = numero;
-
-
-canvas =
-document.getElementById(
-"raspadinha"
-);
-
-
-
-ctx =
-canvas.getContext(
-"2d"
-);
-
-
-
-terminou=false;
-
-percentualRaspado=0;
-
-
-
-carregarCamada();
-
-
-
-if(!eventosAtivos){
-
-adicionarEventos();
-
-eventosAtivos=true;
+    escreverStatus("Sistema pronto.");
 
 }
 
+/* ==========================================================
+   EVENTOS
+========================================================== */
 
+function registrarEventos() {
 
-}
+    if (!btnParticipar) return;
 
+    btnParticipar.removeEventListener(
 
+        "click",
 
+        abrirSistemaRaspadinha
 
+    );
 
+    btnParticipar.addEventListener(
 
+        "click",
 
-// =====================================================
-// CARREGAR CAMADA REAL
-// =====================================================
+        abrirSistemaRaspadinha
 
-
-function carregarCamada(){
-
-
-
-camada.onload=function(){
-
-
-ctx.clearRect(
-
-0,
-
-0,
-
-canvas.width,
-
-canvas.height
-
-);
-
-
-
-ctx.drawImage(
-
-camada,
-
-0,
-
-0,
-
-canvas.width,
-
-canvas.height
-
-);
-
-
-
-};
-
-
-
-camada.src =
-"img/camada-raspadinha.png";
-
-
+    );
 
 }
 
+/* ==========================================================
+   ABRIR RASPADINHA
+========================================================== */
 
+async function abrirSistemaRaspadinha() {
 
+    try {
 
+        bloquearBotao(true);
 
+        escreverStatus("Preparando raspadinha...");
 
-// =====================================================
-// EVENTOS
-// =====================================================
+        await abrirRaspadinha();
 
+        escreverStatus("Boa sorte! 🍀");
 
-function adicionarEventos(){
+    }
 
+    catch (erro) {
 
+        console.error(erro);
 
-canvas.addEventListener(
+        escreverStatus("Erro ao abrir.");
 
-"mousedown",
+        alert(
 
-iniciarRaspagem
+            "Não foi possível abrir a raspadinha."
 
-);
+        );
 
+    }
 
+    finally {
 
-canvas.addEventListener(
+        bloquearBotao(false);
 
-"mousemove",
-
-raspar
-
-);
-
-
-
-canvas.addEventListener(
-
-"mouseup",
-
-pararRaspagem
-
-);
-
-
-
-
-canvas.addEventListener(
-
-"touchstart",
-
-iniciarRaspagem
-
-);
-
-
-
-canvas.addEventListener(
-
-"touchmove",
-
-raspar
-
-);
-
-
-
-canvas.addEventListener(
-
-"touchend",
-
-pararRaspagem
-
-);
-
-
+    }
 
 }
 
+/* ==========================================================
+   BOTÃO
+========================================================== */
 
+function bloquearBotao(bloquear) {
 
+    if (!btnParticipar) return;
 
+    btnParticipar.disabled = bloquear;
 
-// =====================================================
-// COMEÇAR
-// =====================================================
+    btnParticipar.style.cursor =
 
+        bloquear
 
-function iniciarRaspagem(e){
+            ? "not-allowed"
 
+            : "pointer";
 
-if(terminou)return;
+    btnParticipar.classList.toggle(
 
+        "desabilitado",
 
+        bloquear
 
-raspando=true;
-
-
-
-somRaspar.currentTime=0;
-
-
-somRaspar.play()
-.catch(()=>{});
-
-
+    );
 
 }
 
+/* ==========================================================
+   STATUS
+========================================================== */
 
+function escreverStatus(texto) {
 
+    console.log(texto);
 
+    if (!statusSistema) return;
 
-// =====================================================
-// RASPAGEM
-// =====================================================
+    statusSistema.innerHTML = `
 
+        <div>${texto}</div>
 
-function raspar(e){
+    `;
 
+}
 
+/* ==========================================================
+   FIREBASE
+========================================================== */
 
-if(!raspando)return;
+async function testarFirebase() {
 
+    try {
 
-if(terminou)return;
+        escreverStatus(
 
+            "Conectando ao Firebase..."
 
+        );
 
-let pos =
-obterPosicao(e);
+        const db = getDB();
 
+        const sistemaRef = ref(
 
+            db,
 
-ctx.globalCompositeOperation =
+            "sistema"
 
-"destination-out";
+        );
 
+        await set(
 
+            sistemaRef,
 
-ctx.beginPath();
+            {
 
+                nome: CONFIG.nome,
 
+                versao: CONFIG.versao,
 
-ctx.arc(
+                iniciadoEm: serverTimestamp(),
 
-pos.x,
+                status: "online"
 
-pos.y,
+            }
 
-22,
+        );
 
-0,
+        const snap = await get(sistemaRef);
 
-Math.PI*2
+        if (!snap.exists()) {
+
+            throw new Error(
+
+                "Firebase retornou vazio."
+
+            );
+
+        }
+
+        console.table(snap.val());
+
+        escreverStatus(
+
+            "Firebase conectado."
+
+        );
+
+        return true;
+
+    }
+
+    catch (erro) {
+
+        console.error(
+
+            "Erro Firebase:",
+
+            erro
+
+        );
+
+        escreverStatus(
+
+            "Falha na conexão."
+
+        );
+
+        return false;
+
+    }
+
+}
+
+/* ==========================================================
+   EXPORTAÇÕES
+========================================================== */
+
+export function sistemaPronto() {
+
+    return sistemaInicializado;
+
+}
+
+export function obterConfiguracao() {
+
+    return CONFIG;
+
+}
+
+/* ==========================================================
+   FIM
+========================================================== */
+
+console.log(
+
+    "%cRaspadinha Solidária 5.0",
+
+    "color:#0B7D2B;font-size:16px;font-weight:bold;"
 
 );
 
-
-
-ctx.fill();
-
-
-
-calcularArea();
-
-
-
-}
-
-
-
-
-// =====================================================
-// POSIÇÃO DO TOQUE
-// =====================================================
-
-
-function obterPosicao(e){
-
-
-
-let rect =
-canvas.getBoundingClientRect();
-
-
-
-let x;
-
-let y;
-
-
-
-if(e.touches){
-
-
-
-x =
-e.touches[0].clientX
--
-rect.left;
-
-
-
-y =
-e.touches[0].clientY
--
-rect.top;
-
-
-
-}else{
-
-
-
-x =
-e.clientX
--
-rect.left;
-
-
-
-y =
-e.clientY
--
-rect.top;
-
-
-}
-
-
-
-return {
-
-x:x,
-
-y:y
-
-};
-
-
-
-}
-
-
-
-// CONTINUA NA PARTE 2
-
-// =====================================================
-// PARAR RASPAGEM
-// =====================================================
-
-
-function pararRaspagem(){
-
-
-raspando=false;
-
-
-
-if(percentualRaspado >= 60){
-
-
-revelarResultado();
-
-
-}
-
-
-
-}
-
-
-
-
-
-// =====================================================
-// CALCULAR ÁREA RASPADA
-// =====================================================
-
-
-function calcularArea(){
-
-
-let pixels =
-
-ctx.getImageData(
-
-0,
-
-0,
-
-canvas.width,
-
-canvas.height
-
-).data;
-
-
-
-let transparentes = 0;
-
-
-
-for(
-
-let i = 3;
-
-i < pixels.length;
-
-i += 4
-
-){
-
-
-if(pixels[i] === 0){
-
-transparentes++;
-
-}
-
-
-}
-
-
-
-percentualRaspado =
-
-(
-
-transparentes /
-
-(pixels.length / 4)
-
-)
-
-*
-
-100;
-
-
-
-}
-
-
-
-
-
-// =====================================================
-// CONSULTAR FIREBASE
-// =====================================================
-
-
-async function revelarResultado(){
-
-
-
-if(terminou)return;
-
-
-
-terminou=true;
-
-
-
-try{
-
-
-const resultado =
-
-await RaspadinhaFirebase.revelarRaspadinha(
-
-numeroParticipante
-
-);
-
-
-
-mostrarResultado(resultado);
-
-
-
-}
-
-catch(erro){
-
-
-
-terminou=false;
-
-
-alert(
-
-erro.message
-
-);
-
-
-
-}
-
-
-
-}
-
-
-
-
-
-// =====================================================
-// MOSTRAR RESULTADO
-// =====================================================
-
-
-function mostrarResultado(resultado){
-
-
-
-const area =
-
-document.getElementById(
-
-"resultado"
-
-);
-
-
-
-if(!area)return;
-
-
-
-
-
-if(resultado.ganhou){
-
-
-
-somVitoria.play()
-.catch(()=>{});
-
-
-
-let imagem="";
-
-
-
-if(
-resultado.premio
-.includes("Ferro")
-){
-
-
-imagem="img/ferro.png";
-
-
-}
-
-
-
-if(
-resultado.premio
-.includes("Liquidificador")
-){
-
-
-imagem="img/liquidificador.png";
-
-
-}
-
-
-
-
-area.innerHTML = `
-
-<div class="vitoria">
-
-🎉 PARABÉNS! 🎉
-
-<br><br>
-
-Você ganhou:
-
-<br><br>
-
-<img src="${imagem}" width="120">
-
-<br><br>
-
-<b>${resultado.premio}</b>
-
-
-</div>
-
-`;
-
-
-
-
-}else{
-
-
-
-somPerdeu.play()
-.catch(()=>{});
-
-
-
-area.innerHTML = `
-
-
-<div class="derrota">
-
-
-<img src="img/perdeu.png" width="120">
-
-
-<br><br>
-
-
-😔 Não foi dessa vez.
-
-
-<br>
-
-
-Continue participando!
-
-
-</div>
-
-
-`;
-
-
-
-}
-
-
-
-
-}
-
-
-
-// =====================================================
-// LIMPAR
-// =====================================================
-
-
-function resetarRaspadinha(){
-
-
-
-ctx.clearRect(
-
-0,
-
-0,
-
-canvas.width,
-
-canvas.height
-
-);
-
-
-
-percentualRaspado=0;
-
-
-terminou=false;
-
-
-
-}
-
-
-
-
-
-// =====================================================
-// EXPORTAR
-// =====================================================
-
-
-window.Raspadinha = {
-
-
-iniciarRaspadinha,
-
-resetarRaspadinha
-
-
-};
+console.log("Aplicação carregada.");
