@@ -3,394 +3,538 @@
 
 <head>
 
-    <meta charset="UTF-8">
+<meta charset="UTF-8">
 
-    <meta name="viewport"
-        content="width=device-width, initial-scale=1.0">
+<meta
+name="viewport"
+content="width=device-width, initial-scale=1.0">
 
-    <meta name="theme-color"
-        content="#0B6E2E">
+<meta
+name="theme-color"
+content="#0a8f2f">
 
-    <meta name="description"
-        content="Raspadinha da Amizade">
+<meta
+name="description"
+content="Raspadinha da Amizade - GilFest">
 
-    <title>🍀 Raspadinha da Amizade</title>
+<title>🍀 Raspadinha da Amizade</title>
 
-    <!-- CSS -->
+<link
+rel="icon"
+href="icons/favicon.png">
 
-    <link rel="stylesheet"
-        href="css/style.css">
-
-    <link rel="stylesheet"
-        href="css/animacoes.css">
-
-    <!-- Ícones -->
-
-    <link rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+<link
+rel="stylesheet"
+href="css/style.css">
 
 </head>
 
 <body>
 
-    <!-- ===========================================
-         FUNDO ANIMADO
-    ============================================ -->
+<!-- ===================================== -->
+<!-- LOADING -->
+<!-- ===================================== -->
 
-    <div id="background">
+<div id="loading">
 
-        <div class="luzes"></div>
+<div class="spinner"></div>
 
-        <div class="particulas"></div>
+<p>
 
-        <div class="trevos">
+Carregando...
 
-            <span></span>
-            <span></span>
-            <span></span>
-            <span></span>
-            <span></span>
-            <span></span>
-            <span></span>
-            <span></span>
+</p>
 
-        </div>
+</div>
 
-    </div>
+<!-- ===================================== -->
+<!-- FUNDO -->
+<!-- ===================================== -->
 
-    <!-- ===========================================
-         CONTAINER PRINCIPAL
-    ============================================ -->
+<div id="background"></div>
 
-    <main class="container">
+<!-- ===================================== -->
+<!-- CONTAINER -->
+<!-- ===================================== -->
 
-        <!-- Logo -->
+<div class="container">
 
-        <img
+<!-- ===================================== -->
+<!-- CABEÇALHO -->
+<!-- ===================================== -->
 
-            src="img/logo.png"
+<header>
 
-            class="logo"
+<div class="logo">
 
-            alt="Logo">
+<img
+src="img/logo.png"
+alt="GilFest">
 
-        <!-- Título -->
+</div>
 
-        <h1>
+<div class="titulo">
 
-            🍀 RASPADINHA DA AMIZADE
+<h1>
 
-        </h1>
+🍀 RASPADINHA DA AMIZADE
 
-        <p class="subtitulo">
+</h1>
 
-            Raspe e descubra se você ganhou!
+<p>
 
-        </p>
+Raspe e descubra se você ganhou!
 
-        <!-- Cartão metálico -->
+</p>
 
-        <section
+</div>
 
-            class="cartao"
+</header>
 
-            id="cartaoRaspadinha">
+<!-- ===================================== -->
+<!-- CAMPANHA -->
+<!-- ===================================== -->
 
-            <div class="brilho"></div>
+<section class="campanha">
 
-            <div class="trevoCentro">
+<div class="card">
 
-                <i class="fa-solid fa-clover"></i>
+<h2>
 
-            </div>
+🎁 Prêmio Principal
 
-            <h2>
+</h2>
 
-                SUA SORTE PODE MUDAR TUDO!
+<p id="premioPrincipal">
 
-            </h2>
+Carregando...
 
-            <p>
+</p>
 
-                Raspe a área abaixo.
+</div>
 
-            </p>
+<div class="card">
 
-                        <!-- ===========================================
-                 ÁREA DA RASPADINHA
-            ============================================ -->
+<h2>
 
-            <div class="areaRaspadinha">
+📅 Sorteio
 
-                <canvas
-                    id="canvasRaspadinha"
-                    width="380"
-                    height="380">
-                </canvas>
+</h2>
 
-                <div class="textoRaspe">
+<p id="dataSorteio">
 
-                    <i class="fa-solid fa-hand-pointer"></i>
+Carregando...
 
-                    <span>
+</p>
 
-                        RASPE AQUI
+</div>
 
-                    </span>
+<div class="card">
 
-                </div>
+<h2>
 
-            </div>
+🏆 Resultado
 
-            <!-- Botão Principal -->
+</h2>
 
-            <button
+<p id="tipoSorteio">
 
-                id="btnParticipar"
+Carregando...
 
-                class="btnPrincipal">
+</p>
 
-                <i class="fa-solid fa-clover"></i>
+</div>
 
-                QUERO RASPAR AGORA!
+</section>
 
-            </button>
+<!-- ===================================== -->
+<!-- STATUS -->
+<!-- ===================================== -->
 
-        </section>
+<section class="status">
 
-        <!-- ===========================================
-             INFORMAÇÕES
-        ============================================ -->
+<div>
 
-        <section class="informacoes">
+Número da Rifa
 
-            <div class="cardInfo">
+</div>
 
-                <i class="fa-solid fa-shield-halved"></i>
+<strong id="numeroRifa">
 
-                <h3>
+Não informado
 
-                    100% Seguro
+</strong>
 
-                </h3>
+</section>
 
-                <p>
+<!-- ===================================== -->
+<!-- ÁREA DA RASPADINHA -->
+<!-- ===================================== -->
 
-                    Seus dados são protegidos.
+<section
+class="raspadinha-area">
 
-                </p>
+<h2>
 
-            </div>
+✨ SUA SORTE PODE MUDAR HOJE!
 
-            <div class="cardInfo">
+</h2>
 
-                <i class="fa-solid fa-gift"></i>
+<p>
 
-                <h3>
+Raspe a área abaixo para descobrir seu prêmio.
 
-                    Ganhe Prêmios
+</p>
 
-                </h3>
+<button
+id="btnRaspar"
+class="botao-principal">
 
-                <p>
+🎲 QUERO RASPAR AGORA
 
-                    Ferro Elétrico ou Liquidificador.
+</button>
 
-                </p>
+<div class="canvas-box">
 
-            </div>
+<canvas
+id="raspadinha"
+width="320"
+height="320">
 
-            <div class="cardInfo">
+</canvas>
 
-                <i class="fa-solid fa-bolt"></i>
+</div>
 
-                <h3>
+</section>
 
-                    Resultado Imediato
+    <!-- ===================================== -->
+<!-- RESULTADO -->
+<!-- ===================================== -->
 
-                </h3>
+<section id="resultado" class="resultado">
 
-                <p>
+<div class="resultado-card">
 
-                    Raspe e descubra na hora.
+<img
+id="imagemPremio"
+src="img/logo.png"
+alt="Resultado">
 
-                </p>
+<h2 id="tituloResultado">
 
-            </div>
+Boa sorte!
 
-        </section>
+</h2>
 
-        <!-- ===========================================
-             STATUS
-        ============================================ -->
+<p id="textoResultado">
 
-        <div
+Sua raspadinha aparecerá aqui.
 
-            id="statusSistema"
+</p>
 
-            class="statusSistema">
+</div>
 
-        </div>
+</section>
 
-                <!-- ===========================================
-             MODAL DA RASPADINHA
-        ============================================ -->
+<!-- ===================================== -->
+<!-- MODAL GANHADOR -->
+<!-- ===================================== -->
 
-        <div id="modalRaspadinha" class="modal hidden">
+<div
+id="modalGanhador"
+class="modal">
 
-            <div class="janela">
+<div class="modal-content">
 
-                <button
-                    id="btnFecharRaspadinha"
-                    class="btnFechar">
+<div class="modal-topo">
 
-                    <i class="fa-solid fa-xmark"></i>
+<h2>
 
-                </button>
+🎉 PARABÉNS!
 
-                <h2>
+</h2>
 
-                    🍀 Boa Sorte!
+<p>
 
-                </h2>
+Você encontrou um prêmio.
 
-                <p>
+</p>
 
-                    Raspe completamente a área para descobrir seu prêmio.
+</div>
 
-                </p>
+<div class="modal-premio">
 
-                <div class="canvasModal">
+<img
+id="imagemPremioModal"
+src="img/logo.png"
+alt="Prêmio">
 
-                    <canvas
-                        id="canvasRaspagem"
-                        width="380"
-                        height="380">
-                    </canvas>
+<h3 id="nomePremio">
 
-                </div>
+Prêmio
 
-            </div>
+</h3>
 
-        </div>
+</div>
 
-        <!-- ===========================================
-             MODAL DO VENCEDOR
-        ============================================ -->
+<form
+id="formGanhador">
 
-        <div id="modalPremio" class="modal hidden">
+<div class="campo">
 
-            <div class="janela premio">
+<label>
 
-                <h2>
+Nome completo
 
-                    🎉 PARABÉNS!
+</label>
 
-                </h2>
+<input
+type="text"
+id="nomeGanhador"
+placeholder="Digite seu nome"
+required>
 
-                <img
+</div>
 
-                    id="imagemPremio"
+<div class="campo">
 
-                    src=""
+<label>
 
-                    alt="Prêmio">
+WhatsApp
 
-                <h3 id="tituloPremio">
+</label>
 
-                    Você ganhou!
+<input
+type="tel"
+id="telefoneGanhador"
+placeholder="(79) 99999-9999"
+required>
 
-                </h3>
+</div>
 
-                <p>
+<div class="campo">
 
-                    Nossa equipe entrará em contato para entregar seu prêmio.
+<label>
 
-                </p>
+Cidade
 
-                <button
+</label>
 
-                    id="btnFecharPremio"
+<input
+type="text"
+id="cidadeGanhador"
+placeholder="Sua cidade">
 
-                    class="btnPrincipal">
+</div>
 
-                    Fechar
+<button
+type="submit"
+class="botao-principal">
 
-                </button>
+Salvar Dados
 
-            </div>
+</button>
 
-        </div>
+</form>
 
-        <!-- ===========================================
-             MODAL NÃO PREMIADO
-        ============================================ -->
+</div>
 
-        <div id="modalPerdeu" class="modal hidden">
+</div>
 
-            <div class="janela perdeu">
+<!-- ===================================== -->
+<!-- MODAL AVISO -->
+<!-- ===================================== -->
 
-                <h2>
+<div
+id="modalMensagem"
+class="modal">
 
-                    😊 Não foi dessa vez...
+<div class="modal-content">
 
-                </h2>
+<h2 id="tituloMensagem">
 
-                <p>
+Mensagem
 
-                    Continue participando.
+</h2>
 
-                    Em breve teremos novas campanhas.
+<p id="textoMensagem">
 
-                </p>
+...
 
-                <button
+</p>
 
-                    id="btnFecharPerdeu"
+<button
+id="btnFecharMensagem"
+class="botao-secundario">
 
-                    class="btnPrincipal">
+Fechar
 
-                    Fechar
+</button>
 
-                </button>
+</div>
 
-            </div>
+</div>
 
-        </div>
+<!-- ===================================== -->
+<!-- ÁREA DOS EFEITOS -->
+<!-- ===================================== -->
 
-    </main>
+<div id="confetes"></div>
 
-    <!-- ===========================================
-         TELA DE CARREGAMENTO
-    ============================================ -->
+<div id="trevosFlutuando"></div>
 
-    <div id="loading" class="loading hidden">
+<div id="brilhoTela"></div>
 
-        <div class="spinner"></div>
+<!-- ===================================== -->
+<!-- RODAPÉ -->
+<!-- ===================================== -->
 
-        <p>
+<footer>
 
-            Carregando...
+<img
+src="img/logo.png"
+alt="GilFest">
 
-        </p>
+<p>
 
-    </div>
+© 2026 GilFest
 
-    <!-- ===========================================
-         JAVASCRIPT
-    ============================================ -->
+</p>
 
-    <script
-        type="module"
-        src="js/app.js"></script>
+<p>
 
-    <script
-        type="module"
-        src="js/background.js"></script>
+Raspadinha da Amizade
 
-    <script
-        type="module"
-        src="js/efeitos.js"></script>
+</p>
+
+</footer>
+
+    <!-- ===================================== -->
+<!-- FIREBASE -->
+<!-- ===================================== -->
+
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
+
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-database-compat.js"></script>
+
+<!-- ===================================== -->
+<!-- CONFIGURAÇÃO -->
+<!-- ===================================== -->
+
+<script src="js/config.js"></script>
+
+<script src="js/firebase-raspadinha.js"></script>
+
+<!-- ===================================== -->
+<!-- SISTEMA -->
+<!-- ===================================== -->
+
+<script src="js/app.js"></script>
+
+<script src="js/raspadinha.js"></script>
+
+<!-- ===================================== -->
+<!-- INICIALIZAÇÃO -->
+<!-- ===================================== -->
+
+<script>
+
+window.addEventListener("load", async ()=>{
+
+    const loading =
+    document.getElementById("loading");
+
+    try{
+
+        // Carrega informações da campanha
+        if(typeof carregarCampanha==="function"){
+
+            await carregarCampanha();
+
+        }
+
+        // Esconde o loading
+        loading.style.opacity="0";
+
+        setTimeout(()=>{
+
+            loading.style.display="none";
+
+        },500);
+
+    }
+
+    catch(erro){
+
+        console.error(erro);
+
+        alert(
+
+            "Erro ao conectar com o Firebase."
+
+        );
+
+    }
+
+});
+
+// =====================================
+// BOTÃO RASPAR
+// =====================================
+
+const btnRaspar =
+
+document.getElementById("btnRaspar");
+
+if(btnRaspar){
+
+    btnRaspar.addEventListener("click",()=>{
+
+        if(typeof iniciarFluxoRaspadinha==="function"){
+
+            iniciarFluxoRaspadinha();
+
+        }
+
+    });
+
+}
+
+</script>
+
+<!-- ===================================== -->
+<!-- PWA -->
+<!-- ===================================== -->
+
+<script>
+
+if("serviceWorker" in navigator){
+
+    window.addEventListener("load",()=>{
+
+        navigator.serviceWorker
+        .register("sw.js")
+        .then(()=>{
+
+            console.log(
+
+                "Service Worker registrado."
+
+            );
+
+        })
+
+        .catch((erro)=>{
+
+            console.log(erro);
+
+        });
+
+    });
+
+}
+
+</script>
 
 </body>
 
