@@ -1,17 +1,29 @@
 /* ==========================================================
-   RASPADINHA DA AMIZADE 3.0
+   RASPADINHA SOLIDÁRIA 6.0
    CONFIGURAÇÕES GERAIS
 ========================================================== */
 
 export const CONFIG = {
 
+    /* ======================================================
+       SISTEMA
+    ====================================================== */
+
     sistema: {
 
         nome: "Raspadinha da Amizade",
 
-        versao: "3.0"
+        versao: "6.0",
+
+        desenvolvedor: "GilArt",
+
+        ambiente: "producao"
 
     },
+
+    /* ======================================================
+       RASPADINHA
+    ====================================================== */
 
     raspadinha: {
 
@@ -23,9 +35,15 @@ export const CONFIG = {
 
         porcentagemRevelacao: 70,
 
-        camada: "img/camada-raspadinha.png"
+        camada: "img/camada-raspadinha.png",
+
+        animacao: true
 
     },
+
+    /* ======================================================
+       PRÊMIOS
+    ====================================================== */
 
     premios: {
 
@@ -36,6 +54,10 @@ export const CONFIG = {
         liquidificador: "img/liquidificador.png"
 
     },
+
+    /* ======================================================
+       SONS
+    ====================================================== */
 
     sons: {
 
@@ -49,10 +71,28 @@ export const CONFIG = {
 
     },
 
+    /* ======================================================
+       FIREBASE
+    ====================================================== */
+
     firebase: {
 
-        campanha: "Campanha01"
+        campanha: "Campanha01",
+
+        participantes: "participantes",
+
+        vencedores: "vencedores",
+
+        premios: "premios",
+
+        estatisticas: "estatisticas",
+
+        sistema: "sistema"
 
     }
 
 };
+
+/* ==========================================================
+   FIM DO CONFIG
+========================================================== */
