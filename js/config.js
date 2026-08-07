@@ -5,25 +5,29 @@
 
 export const CONFIG = {
 
-    /* ======================================================
-       SISTEMA
-    ====================================================== */
-
     sistema: {
 
         nome: "Raspadinha da Amizade",
 
         versao: "6.0",
 
-        desenvolvedor: "GilArt",
+        empresa: "GilFest",
 
-        ambiente: "producao"
+        desenvolvedor: "GilArt"
 
     },
 
-    /* ======================================================
-       RASPADINHA
-    ====================================================== */
+    campanha: {
+
+        nome: "Campanha01",
+
+        titulo: "Raspadinha da Amizade",
+
+        premioPrincipal: "Ferro Elétrico",
+
+        premioSecundario: "Liquidificador"
+
+    },
 
     raspadinha: {
 
@@ -31,19 +35,13 @@ export const CONFIG = {
 
         altura: 380,
 
-        raioRaspagem: 25,
+        raioRaspagem: 28,
 
         porcentagemRevelacao: 70,
 
-        camada: "img/camada-raspadinha.png",
-
-        animacao: true
+        imagemCobertura: "img/camada-raspadinha.png"
 
     },
-
-    /* ======================================================
-       PRÊMIOS
-    ====================================================== */
 
     premios: {
 
@@ -55,9 +53,13 @@ export const CONFIG = {
 
     },
 
-    /* ======================================================
-       SONS
-    ====================================================== */
+    probabilidades: {
+
+        ferro: 0.001,
+
+        liquidificador: 0.002
+
+    },
 
     sons: {
 
@@ -71,28 +73,28 @@ export const CONFIG = {
 
     },
 
-    /* ======================================================
-       FIREBASE
-    ====================================================== */
-
     firebase: {
-
-        campanha: "Campanha01",
 
         participantes: "participantes",
 
+        premios: "premios",
+
         vencedores: "vencedores",
 
-        premios: "premios",
+        sistema: "sistema",
+
+        campanha: "campanha",
 
         estatisticas: "estatisticas",
 
-        sistema: "sistema"
+        teste: "teste"
 
-    }
+    },
+
+    modoTeste: false
 
 };
 
 /* ==========================================================
-   FIM DO CONFIG
+   FIM
 ========================================================== */
