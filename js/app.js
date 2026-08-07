@@ -1,24 +1,34 @@
 /* ==========================================================
-   RASPADINHA SOLIDÁRIA 5.0
+   RASPADINHA SOLIDÁRIA 6.0
    APP PRINCIPAL
 ========================================================== */
 
-import CONFIG from "./config.js";
+import { CONFIG } from "./config.js";
 
 import {
+
     iniciarRaspadinha,
+
     abrirRaspadinha
+
 } from "./raspadinha/raspadinha.js";
 
 import {
+
     getDB
+
 } from "./firebase/firebase.js";
 
 import {
+
     ref,
+
     get,
+
     set,
+
     serverTimestamp
+
 } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-database.js";
 
 /* ==========================================================
@@ -26,6 +36,7 @@ import {
 ========================================================== */
 
 const btnParticipar = document.getElementById("btnParticipar");
+
 const statusSistema = document.getElementById("statusSistema");
 
 /* ==========================================================
@@ -35,10 +46,16 @@ const statusSistema = document.getElementById("statusSistema");
 let sistemaInicializado = false;
 
 /* ==========================================================
-   INICIALIZAÇÃO
+   INICIAR
 ========================================================== */
 
-document.addEventListener("DOMContentLoaded", iniciarSistema);
+document.addEventListener(
+
+    "DOMContentLoaded",
+
+    iniciarSistema
+
+);
 
 /* ==========================================================
    SISTEMA
@@ -50,16 +67,21 @@ async function iniciarSistema() {
 
     escreverStatus("Inicializando sistema...");
 
+    console.clear();
+
     console.log("================================");
-    console.log(CONFIG.nome);
-    console.log("Versão:", CONFIG.versao);
+
+    console.log(CONFIG.sistema.nome);
+
+    console.log("Versão:", CONFIG.sistema.versao);
+
     console.log("================================");
 
     const conectado = await testarFirebase();
 
     if (!conectado) {
 
-        escreverStatus("Sistema indisponível.");
+        escreverStatus("Falha na conexão com Firebase.");
 
         return;
 
@@ -82,14 +104,6 @@ async function iniciarSistema() {
 function registrarEventos() {
 
     if (!btnParticipar) return;
-
-    btnParticipar.removeEventListener(
-
-        "click",
-
-        abrirSistemaRaspadinha
-
-    );
 
     btnParticipar.addEventListener(
 
@@ -117,13 +131,17 @@ async function abrirSistemaRaspadinha() {
 
         escreverStatus("Boa sorte! 🍀");
 
-    }
+    } catch (erro) {
 
-    catch (erro) {
+        console.error(
 
-        console.error(erro);
+            "Erro ao abrir raspadinha:",
 
-        escreverStatus("Erro ao abrir.");
+            erro
+
+        );
+
+        escreverStatus("Erro ao abrir raspadinha.");
 
         alert(
 
@@ -131,17 +149,13 @@ async function abrirSistemaRaspadinha() {
 
         );
 
-    }
-
-    finally {
+    } finally {
 
         bloquearBotao(false);
 
     }
 
-}
-
-/* ==========================================================
+}/* ==========================================================
    BOTÃO
 ========================================================== */
 
@@ -150,14 +164,6 @@ function bloquearBotao(bloquear) {
     if (!btnParticipar) return;
 
     btnParticipar.disabled = bloquear;
-
-    btnParticipar.style.cursor =
-
-        bloquear
-
-            ? "not-allowed"
-
-            : "pointer";
 
     btnParticipar.classList.toggle(
 
@@ -175,15 +181,9 @@ function bloquearBotao(bloquear) {
 
 function escreverStatus(texto) {
 
-    console.log(texto);
-
     if (!statusSistema) return;
 
-    statusSistema.innerHTML = `
-
-        <div>${texto}</div>
-
-    `;
+    statusSistema.textContent = texto;
 
 }
 
@@ -195,11 +195,7 @@ async function testarFirebase() {
 
     try {
 
-        escreverStatus(
-
-            "Conectando ao Firebase..."
-
-        );
+        escreverStatus("Conectando ao Firebase...");
 
         const db = getDB();
 
@@ -207,27 +203,21 @@ async function testarFirebase() {
 
             db,
 
-            "sistema"
+            CONFIG.firebase.sistema
 
         );
 
-        await set(
+        await set(sistemaRef, {
 
-            sistemaRef,
+            nome: CONFIG.sistema.nome,
 
-            {
+            versao: CONFIG.sistema.versao,
 
-                nome: CONFIG.nome,
+            status: "online",
 
-                versao: CONFIG.versao,
+            iniciadoEm: serverTimestamp()
 
-                iniciadoEm: serverTimestamp(),
-
-                status: "online"
-
-            }
-
-        );
+        });
 
         const snap = await get(sistemaRef);
 
@@ -235,25 +225,25 @@ async function testarFirebase() {
 
             throw new Error(
 
-                "Firebase retornou vazio."
+                "Não foi possível acessar o Firebase."
 
             );
 
         }
 
+        console.log("================================");
+
+        console.log("Firebase conectado com sucesso.");
+
         console.table(snap.val());
 
-        escreverStatus(
+        console.log("================================");
 
-            "Firebase conectado."
-
-        );
+        escreverStatus("Firebase conectado.");
 
         return true;
 
-    }
-
-    catch (erro) {
+    } catch (erro) {
 
         console.error(
 
@@ -263,44 +253,10 @@ async function testarFirebase() {
 
         );
 
-        escreverStatus(
-
-            "Falha na conexão."
-
-        );
+        escreverStatus("Falha na conexão com Firebase.");
 
         return false;
 
     }
 
 }
-
-/* ==========================================================
-   EXPORTAÇÕES
-========================================================== */
-
-export function sistemaPronto() {
-
-    return sistemaInicializado;
-
-}
-
-export function obterConfiguracao() {
-
-    return CONFIG;
-
-}
-
-/* ==========================================================
-   FIM
-========================================================== */
-
-console.log(
-
-    "%cRaspadinha Solidária 5.0",
-
-    "color:#0B7D2B;font-size:16px;font-weight:bold;"
-
-);
-
-console.log("Aplicação carregada.");
