@@ -1,5 +1,5 @@
 /* ==========================================================
-   RASPADINHA SOLIDÁRIA 6.0
+   RASPADINHA DA AMIZADE 6.0
    FIREBASE — CONEXÃO PRINCIPAL
 ========================================================== */
 
@@ -10,6 +10,7 @@ import {
 import {
     getDatabase
 } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-database.js";
+
 
 /* ==========================================================
    CONFIGURAÇÃO REAL DO FIREBASE
@@ -40,17 +41,26 @@ const firebaseConfig = {
 
 };
 
+
 /* ==========================================================
-   INICIALIZAÇÃO DO FIREBASE
+   INICIALIZAÇÃO
 ========================================================== */
 
-const app = initializeApp(firebaseConfig);
+const app =
+    initializeApp(
+        firebaseConfig
+    );
+
 
 /* ==========================================================
    REALTIME DATABASE
 ========================================================== */
 
-const db = getDatabase(app);
+const db =
+    getDatabase(
+        app
+    );
+
 
 /* ==========================================================
    GET DATABASE
@@ -62,8 +72,9 @@ export function getDB() {
 
 }
 
+
 /* ==========================================================
-   GET APP
+   GET FIREBASE APP
 ========================================================== */
 
 export function getFirebaseApp() {
@@ -71,6 +82,22 @@ export function getFirebaseApp() {
     return app;
 
 }
+
+
+/* ==========================================================
+   CONFIGURAÇÃO
+========================================================== */
+
+export function getFirebaseConfig() {
+
+    return {
+
+        ...firebaseConfig
+
+    };
+
+}
+
 
 /* ==========================================================
    INFORMAÇÕES DO FIREBASE
@@ -82,7 +109,8 @@ export function firebaseInfo() {
 
         conectado: true,
 
-        projeto: "raspadinha2",
+        projeto:
+            firebaseConfig.projectId,
 
         banco:
             "raspadinha2-default-rtdb",
@@ -93,6 +121,24 @@ export function firebaseInfo() {
     };
 
 }
+
+
+/* ==========================================================
+   TESTE LOCAL DA CONEXÃO
+========================================================== */
+
+export function firebaseConfigurado() {
+
+    return Boolean(
+
+        firebaseConfig.apiKey &&
+        firebaseConfig.projectId &&
+        firebaseConfig.databaseURL
+
+    );
+
+}
+
 
 /* ==========================================================
    FIM DO FIREBASE
