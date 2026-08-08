@@ -1,7 +1,7 @@
 /* ==========================================================
    RASPADINHA DA AMIZADE 6.0
    FIREBASE — CONEXÃO PRINCIPAL
-========================================================== */
+   ========================================================== */
 
 import {
     initializeApp
@@ -11,10 +11,9 @@ import {
     getDatabase
 } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-database.js";
 
-
 /* ==========================================================
    CONFIGURAÇÃO REAL DO FIREBASE
-========================================================== */
+   ========================================================== */
 
 const firebaseConfig = {
 
@@ -41,30 +40,27 @@ const firebaseConfig = {
 
 };
 
-
 /* ==========================================================
-   INICIALIZAÇÃO
-========================================================== */
+   INICIALIZAR FIREBASE
+   ========================================================== */
 
 const app =
     initializeApp(
         firebaseConfig
     );
 
-
 /* ==========================================================
-   REALTIME DATABASE
-========================================================== */
+   INICIALIZAR REALTIME DATABASE
+   ========================================================== */
 
 const db =
     getDatabase(
         app
     );
 
-
 /* ==========================================================
-   GET DATABASE
-========================================================== */
+   OBTER DATABASE
+   ========================================================== */
 
 export function getDB() {
 
@@ -72,10 +68,9 @@ export function getDB() {
 
 }
 
-
 /* ==========================================================
-   GET FIREBASE APP
-========================================================== */
+   OBTER APLICAÇÃO FIREBASE
+   ========================================================== */
 
 export function getFirebaseApp() {
 
@@ -83,25 +78,9 @@ export function getFirebaseApp() {
 
 }
 
-
-/* ==========================================================
-   CONFIGURAÇÃO
-========================================================== */
-
-export function getFirebaseConfig() {
-
-    return {
-
-        ...firebaseConfig
-
-    };
-
-}
-
-
 /* ==========================================================
    INFORMAÇÕES DO FIREBASE
-========================================================== */
+   ========================================================== */
 
 export function firebaseInfo() {
 
@@ -113,33 +92,33 @@ export function firebaseInfo() {
             firebaseConfig.projectId,
 
         banco:
-            "raspadinha2-default-rtdb",
+            "Realtime Database",
 
-        versaoSDK:
+        sdk:
             "10.13.2"
 
     };
 
 }
 
-
 /* ==========================================================
-   TESTE LOCAL DA CONEXÃO
-========================================================== */
+   CONFIGURAÇÃO
+   ========================================================== */
 
-export function firebaseConfigurado() {
+export function obterFirebaseConfig() {
 
-    return Boolean(
+    return {
 
-        firebaseConfig.apiKey &&
-        firebaseConfig.projectId &&
-        firebaseConfig.databaseURL
+        projectId:
+            firebaseConfig.projectId,
 
-    );
+        databaseURL:
+            firebaseConfig.databaseURL
+
+    };
 
 }
 
-
 /* ==========================================================
-   FIM DO FIREBASE
-========================================================== */
+   FIM DO FIREBASE.JS
+   ========================================================== */
