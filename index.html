@@ -3,538 +3,667 @@
 
 <head>
 
-<meta charset="UTF-8">
+    <meta charset="UTF-8">
 
-<meta
-name="viewport"
-content="width=device-width, initial-scale=1.0">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
-<meta
-name="theme-color"
-content="#0a8f2f">
+    <meta
+        name="theme-color"
+        content="#0B7D2B"
+    >
 
-<meta
-name="description"
-content="Raspadinha da Amizade - GilFest">
+    <meta
+        name="description"
+        content="Raspadinha da Amizade - Raspe e descubra seu prêmio!"
+    >
 
-<title>🍀 Raspadinha da Amizade</title>
+    <title>
+        Raspadinha da Amizade
+    </title>
 
-<link
-rel="icon"
-href="icons/favicon.png">
+    <!-- =====================================================
+         CSS PRINCIPAL
+    ====================================================== -->
 
-<link
-rel="stylesheet"
-href="css/style.css">
+    <link
+        rel="stylesheet"
+        href="css/style.css"
+    >
 
 </head>
 
+
 <body>
 
-<!-- ===================================== -->
-<!-- LOADING -->
-<!-- ===================================== -->
 
-<div id="loading">
+<!-- ========================================================
+     FUNDO ANIMADO
+========================================================= -->
 
-<div class="spinner"></div>
+<div
+    class="fundo-animado"
+    aria-hidden="true"
+>
 
-<p>
-
-Carregando...
-
-</p>
-
-</div>
-
-<!-- ===================================== -->
-<!-- FUNDO -->
-<!-- ===================================== -->
-
-<div id="background"></div>
-
-<!-- ===================================== -->
-<!-- CONTAINER -->
-<!-- ===================================== -->
-
-<div class="container">
-
-<!-- ===================================== -->
-<!-- CABEÇALHO -->
-<!-- ===================================== -->
-
-<header>
-
-<div class="logo">
-
-<img
-src="img/logo.png"
-alt="GilFest">
+    <span>🍀</span>
+    <span>🍀</span>
+    <span>🍀</span>
+    <span>🍀</span>
+    <span>🍀</span>
+    <span>🍀</span>
+    <span>🍀</span>
+    <span>🍀</span>
+    <span>🍀</span>
+    <span>🍀</span>
 
 </div>
 
-<div class="titulo">
 
-<h1>
+<!-- ========================================================
+     CABEÇALHO
+========================================================= -->
 
-🍀 RASPADINHA DA AMIZADE
+<header class="topo">
 
-</h1>
+    <div class="logo-area">
 
-<p>
+        <div class="logo-trevo">
+            🍀
+        </div>
 
-Raspe e descubra se você ganhou!
+        <h1>
+            RASPADINHA DA AMIZADE
+        </h1>
 
-</p>
+        <p>
+            Raspe e descubra se você ganhou!
+        </p>
 
-</div>
+    </div>
 
 </header>
 
-<!-- ===================================== -->
-<!-- CAMPANHA -->
-<!-- ===================================== -->
 
-<section class="campanha">
+<!-- ========================================================
+     CONTEÚDO PRINCIPAL
+========================================================= -->
 
-<div class="card">
+<main class="principal">
 
-<h2>
 
-🎁 Prêmio Principal
+    <!-- ====================================================
+         CARD PRINCIPAL
+    ===================================================== -->
 
-</h2>
+    <section class="card-principal">
 
-<p id="premioPrincipal">
 
-Carregando...
+        <div class="selo-seguranca">
 
-</p>
+            🔒
+            100% SEGURO
 
-</div>
+        </div>
 
-<div class="card">
 
-<h2>
+        <h2>
+            Sua sorte pode mudar hoje!
+        </h2>
 
-📅 Sorteio
 
-</h2>
+        <p class="descricao">
 
-<p id="dataSorteio">
+            Participe da Raspadinha da Amizade
+            e descubra na hora se você ganhou
+            um dos nossos prêmios.
 
-Carregando...
+        </p>
 
-</p>
 
-</div>
+        <!-- =================================================
+             PRÊMIOS
+        ================================================== -->
 
-<div class="card">
+        <div class="premios">
 
-<h2>
 
-🏆 Resultado
+            <!-- FERRO -->
 
-</h2>
+            <article class="premio-card">
 
-<p id="tipoSorteio">
+                <div class="premio-imagem">
 
-Carregando...
+                    <img
+                        src="img/ferro.png"
+                        alt="Ferro elétrico"
+                    >
 
-</p>
+                </div>
 
-</div>
+                <div class="premio-info">
 
-</section>
+                    <span>
+                        PRÊMIO
+                    </span>
 
-<!-- ===================================== -->
-<!-- STATUS -->
-<!-- ===================================== -->
+                    <h3>
+                        Ferro Elétrico
+                    </h3>
 
-<section class="status">
+                </div>
 
-<div>
+            </article>
 
-Número da Rifa
 
-</div>
+            <!-- OU -->
 
-<strong id="numeroRifa">
+            <div class="premio-ou">
 
-Não informado
+                OU
 
-</strong>
+            </div>
 
-</section>
 
-<!-- ===================================== -->
-<!-- ÁREA DA RASPADINHA -->
-<!-- ===================================== -->
+            <!-- LIQUIDIFICADOR -->
 
-<section
-class="raspadinha-area">
+            <article class="premio-card">
 
-<h2>
+                <div class="premio-imagem">
 
-✨ SUA SORTE PODE MUDAR HOJE!
+                    <img
+                        src="img/liquidificador.png"
+                        alt="Liquidificador"
+                    >
 
-</h2>
+                </div>
 
-<p>
+                <div class="premio-info">
 
-Raspe a área abaixo para descobrir seu prêmio.
+                    <span>
+                        PRÊMIO
+                    </span>
 
-</p>
+                    <h3>
+                        Liquidificador
+                    </h3>
 
-<button
-id="btnRaspar"
-class="botao-principal">
+                </div>
 
-🎲 QUERO RASPAR AGORA
+            </article>
 
-</button>
 
-<div class="canvas-box">
+        </div>
 
-<canvas
-id="raspadinha"
-width="320"
-height="320">
 
-</canvas>
+        <!-- =================================================
+             INFORMAÇÕES
+        ================================================== -->
 
-</div>
+        <div class="informacoes">
 
-</section>
 
-    <!-- ===================================== -->
-<!-- RESULTADO -->
-<!-- ===================================== -->
+            <div class="informacao">
 
-<section id="resultado" class="resultado">
+                <strong>
+                    📅 Sorteio
+                </strong>
 
-<div class="resultado-card">
+                <span id="dataSorteio">
+                    Carregando...
+                </span>
 
-<img
-id="imagemPremio"
-src="img/logo.png"
-alt="Resultado">
+            </div>
 
-<h2 id="tituloResultado">
 
-Boa sorte!
+            <div class="informacao">
 
-</h2>
+                <strong>
+                    🏆 Resultado
+                </strong>
 
-<p id="textoResultado">
+                <span id="resultadoSorteio">
+                    Carregando...
+                </span>
 
-Sua raspadinha aparecerá aqui.
+            </div>
 
-</p>
 
-</div>
+            <div class="informacao">
 
-</section>
+                <strong>
+                    🎟️ Número da Rifa
+                </strong>
 
-<!-- ===================================== -->
-<!-- MODAL GANHADOR -->
-<!-- ===================================== -->
+                <span id="numeroRifaPrincipal">
+                    Não informado
+                </span>
+
+            </div>
+
+
+        </div>
+
+
+        <!-- =================================================
+             CHAMADA
+        ================================================== -->
+
+        <div class="chamada">
+
+            <div class="chamada-icone">
+                ✨
+            </div>
+
+            <h2>
+                SUA SORTE PODE MUDAR HOJE!
+            </h2>
+
+            <p>
+                Raspe a área abaixo para descobrir
+                seu prêmio.
+            </p>
+
+        </div>
+
+
+        <!-- =================================================
+             BOTÃO
+        ================================================== -->
+
+        <button
+            id="btnParticipar"
+            class="btn-participar"
+            type="button"
+        >
+
+            🎲
+            QUERO RASPAR AGORA
+
+        </button>
+
+
+        <!-- =================================================
+             STATUS
+        ================================================== -->
+
+        <div
+            id="statusSistema"
+            class="status-sistema"
+            role="status"
+            aria-live="polite"
+        >
+
+            Carregando sistema...
+
+        </div>
+
+
+    </section>
+
+
+</main>
+
+
+<!-- ========================================================
+     MODAL DA RASPADINHA
+========================================================= -->
 
 <div
-id="modalGanhador"
-class="modal">
+    id="modalRaspadinha"
+    class="modal hidden"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="tituloRaspadinha"
+>
 
-<div class="modal-content">
 
-<div class="modal-topo">
+    <!-- ====================================================
+         JANELA
+    ===================================================== -->
 
-<h2>
+    <div class="janela-raspadinha">
 
-🎉 PARABÉNS!
 
-</h2>
+        <!-- =================================================
+             CABEÇALHO DO MODAL
+        ================================================== -->
 
-<p>
+        <div class="modal-topo">
 
-Você encontrou um prêmio.
+            <div>
 
-</p>
+                <span class="modal-subtitulo">
+                    🍀 RASPADINHA DA AMIZADE
+                </span>
+
+                <h2 id="tituloRaspadinha">
+                    Raspe aqui!
+                </h2>
+
+            </div>
+
+
+            <button
+                id="btnFecharRaspadinha"
+                class="btn-fechar"
+                type="button"
+                aria-label="Fechar raspadinha"
+            >
+
+                ×
+
+            </button>
+
+        </div>
+
+
+        <!-- =================================================
+             NÚMERO
+        ================================================== -->
+
+        <div class="numero-modal">
+
+            <span>
+                Número da Rifa
+            </span>
+
+            <strong id="numeroRifa">
+                Não informado
+            </strong>
+
+        </div>
+
+
+        <!-- =================================================
+             ÁREA DA RASPADINHA
+        ================================================== -->
+
+        <div class="areaRaspadinha">
+
+
+            <!-- ---------------------------------------------
+                 IMAGEM DO PRÊMIO
+            ---------------------------------------------- -->
+
+            <img
+                id="imagemPremio"
+                src="img/perdeu.png"
+                alt="Resultado da raspadinha"
+            >
+
+
+            <!-- ---------------------------------------------
+                 CANVAS
+            ---------------------------------------------- -->
+
+            <canvas
+                id="canvasRaspadinha"
+                width="380"
+                height="380"
+                tabindex="0"
+                aria-label="Área para raspar"
+            >
+            </canvas>
+
+
+        </div>
+
+
+        <!-- =================================================
+             TEXTO DO PRÊMIO
+        ================================================== -->
+
+        <div class="resultado-texto">
+
+            <span>
+                Resultado
+            </span>
+
+            <strong id="textoPremio">
+                Raspe para descobrir!
+            </strong>
+
+        </div>
+
+
+        <!-- =================================================
+             INSTRUÇÃO
+        ================================================== -->
+
+        <p class="instrucao">
+
+            ✨ Passe o dedo ou o mouse
+            sobre a área prateada.
+
+        </p>
+
+
+        <!-- =================================================
+             RODAPÉ DO MODAL
+        ================================================== -->
+
+        <div class="modal-rodape">
+
+            Boa sorte! 🍀
+
+        </div>
+
+
+    </div>
 
 </div>
 
-<div class="modal-premio">
 
-<img
-id="imagemPremioModal"
-src="img/logo.png"
-alt="Prêmio">
-
-<h3 id="nomePremio">
-
-Prêmio
-
-</h3>
-
-</div>
-
-<form
-id="formGanhador">
-
-<div class="campo">
-
-<label>
-
-Nome completo
-
-</label>
-
-<input
-type="text"
-id="nomeGanhador"
-placeholder="Digite seu nome"
-required>
-
-</div>
-
-<div class="campo">
-
-<label>
-
-WhatsApp
-
-</label>
-
-<input
-type="tel"
-id="telefoneGanhador"
-placeholder="(79) 99999-9999"
-required>
-
-</div>
-
-<div class="campo">
-
-<label>
-
-Cidade
-
-</label>
-
-<input
-type="text"
-id="cidadeGanhador"
-placeholder="Sua cidade">
-
-</div>
-
-<button
-type="submit"
-class="botao-principal">
-
-Salvar Dados
-
-</button>
-
-</form>
-
-</div>
-
-</div>
-
-<!-- ===================================== -->
-<!-- MODAL AVISO -->
-<!-- ===================================== -->
+<!-- ========================================================
+     CADASTRO DO GANHADOR
+========================================================= -->
 
 <div
-id="modalMensagem"
-class="modal">
+    id="modalCadastro"
+    class="modal hidden"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="tituloCadastro"
+>
 
-<div class="modal-content">
 
-<h2 id="tituloMensagem">
+    <div class="janela-cadastro">
 
-Mensagem
 
-</h2>
+        <h2 id="tituloCadastro">
+            🎉 PARABÉNS!
+        </h2>
 
-<p id="textoMensagem">
 
-...
+        <p>
+            Você encontrou um prêmio.
+        </p>
 
-</p>
 
-<button
-id="btnFecharMensagem"
-class="botao-secundario">
+        <form
+            id="formCadastro"
+        >
 
-Fechar
 
-</button>
+            <label for="nomeCompleto">
+                Nome completo
+            </label>
+
+            <input
+                id="nomeCompleto"
+                name="nome"
+                type="text"
+                placeholder="Digite seu nome completo"
+                autocomplete="name"
+                required
+            >
+
+
+            <label for="whatsapp">
+                WhatsApp
+            </label>
+
+            <input
+                id="whatsapp"
+                name="whatsapp"
+                type="tel"
+                placeholder="(79) 99999-9999"
+                autocomplete="tel"
+                required
+            >
+
+
+            <label for="cidade">
+                Cidade
+            </label>
+
+            <input
+                id="cidade"
+                name="cidade"
+                type="text"
+                placeholder="Digite sua cidade"
+                autocomplete="address-level2"
+                required
+            >
+
+
+            <button
+                id="btnSalvarDados"
+                type="submit"
+            >
+
+                Salvar Dados
+
+            </button>
+
+
+        </form>
+
+
+    </div>
 
 </div>
 
+
+<!-- ========================================================
+     MENSAGEM
+========================================================= -->
+
+<div
+    id="modalMensagem"
+    class="modal hidden"
+    role="dialog"
+    aria-modal="true"
+>
+
+
+    <div class="janela-mensagem">
+
+
+        <h2>
+            Mensagem
+        </h2>
+
+
+        <p id="textoMensagem">
+            ...
+        </p>
+
+
+        <button
+            id="btnFecharMensagem"
+            type="button"
+        >
+
+            Fechar
+
+        </button>
+
+
+    </div>
+
 </div>
 
-<!-- ===================================== -->
-<!-- ÁREA DOS EFEITOS -->
-<!-- ===================================== -->
 
-<div id="confetes"></div>
+<!-- ========================================================
+     RODAPÉ
+========================================================= -->
 
-<div id="trevosFlutuando"></div>
+<footer class="rodape">
 
-<div id="brilhoTela"></div>
+    <p>
+        © 2026 GilFest
+    </p>
 
-<!-- ===================================== -->
-<!-- RODAPÉ -->
-<!-- ===================================== -->
-
-<footer>
-
-<img
-src="img/logo.png"
-alt="GilFest">
-
-<p>
-
-© 2026 GilFest
-
-</p>
-
-<p>
-
-Raspadinha da Amizade
-
-</p>
+    <p>
+        Raspadinha da Amizade
+    </p>
 
 </footer>
 
-    <!-- ===================================== -->
-<!-- FIREBASE -->
-<!-- ===================================== -->
 
-<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
+<!-- ========================================================
+     APP JAVASCRIPT
+========================================================= -->
 
-<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-database-compat.js"></script>
+<script
+    type="module"
+    src="js/app.js"
+></script>
 
-<!-- ===================================== -->
-<!-- CONFIGURAÇÃO -->
-<!-- ===================================== -->
 
-<script src="js/config.js"></script>
-
-<script src="js/firebase-raspadinha.js"></script>
-
-<!-- ===================================== -->
-<!-- SISTEMA -->
-<!-- ===================================== -->
-
-<script src="js/app.js"></script>
-
-<script src="js/raspadinha.js"></script>
-
-<!-- ===================================== -->
-<!-- INICIALIZAÇÃO -->
-<!-- ===================================== -->
+<!-- ========================================================
+     CONFIGURAÇÕES INICIAIS DA PÁGINA
+========================================================= -->
 
 <script>
 
-window.addEventListener("load", async ()=>{
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
 
-    const loading =
-    document.getElementById("loading");
+        /*
+         * Estes valores são apenas
+         * informações visuais iniciais.
+         *
+         * O Firebase poderá atualizá-los
+         * posteriormente.
+         */
 
-    try{
-
-        // Carrega informações da campanha
-        if(typeof carregarCampanha==="function"){
-
-            await carregarCampanha();
-
-        }
-
-        // Esconde o loading
-        loading.style.opacity="0";
-
-        setTimeout(()=>{
-
-            loading.style.display="none";
-
-        },500);
-
-    }
-
-    catch(erro){
-
-        console.error(erro);
-
-        alert(
-
-            "Erro ao conectar com o Firebase."
-
-        );
-
-    }
-
-});
-
-// =====================================
-// BOTÃO RASPAR
-// =====================================
-
-const btnRaspar =
-
-document.getElementById("btnRaspar");
-
-if(btnRaspar){
-
-    btnRaspar.addEventListener("click",()=>{
-
-        if(typeof iniciarFluxoRaspadinha==="function"){
-
-            iniciarFluxoRaspadinha();
-
-        }
-
-    });
-
-}
-
-</script>
-
-<!-- ===================================== -->
-<!-- PWA -->
-<!-- ===================================== -->
-
-<script>
-
-if("serviceWorker" in navigator){
-
-    window.addEventListener("load",()=>{
-
-        navigator.serviceWorker
-        .register("sw.js")
-        .then(()=>{
-
-            console.log(
-
-                "Service Worker registrado."
-
+        const data =
+            document.getElementById(
+                "dataSorteio"
             );
 
-        })
+        const resultado =
+            document.getElementById(
+                "resultadoSorteio"
+            );
 
-        .catch((erro)=>{
 
-            console.log(erro);
+        if (data) {
 
-        });
+            data.textContent =
+                "Consulte a campanha";
 
-    });
+        }
 
-}
+
+        if (resultado) {
+
+            resultado.textContent =
+                "Aguardando";
+
+        }
+
+    }
+);
 
 </script>
+
 
 </body>
 
