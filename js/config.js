@@ -1,9 +1,13 @@
 /* ==========================================================
-   RASPADINHA SOLIDÁRIA 6.0
+   RASPADINHA DA AMIZADE 6.0
    CONFIGURAÇÕES GERAIS
 ========================================================== */
 
 export const CONFIG = {
+
+    /* ======================================================
+       SISTEMA
+    ====================================================== */
 
     sistema: {
 
@@ -17,17 +21,32 @@ export const CONFIG = {
 
     },
 
+
+    /* ======================================================
+       CAMPANHA
+    ====================================================== */
+
     campanha: {
 
         nome: "Campanha01",
 
         titulo: "Raspadinha da Amizade",
 
-        premioPrincipal: "Ferro Elétrico",
+        subtitulo:
+            "Raspe e descubra se você ganhou!",
 
-        premioSecundario: "Liquidificador"
+        premioPrincipal:
+            "Ferro Elétrico",
+
+        premioSecundario:
+            "Liquidificador"
 
     },
+
+
+    /* ======================================================
+       RASPADINHA
+    ====================================================== */
 
     raspadinha: {
 
@@ -39,19 +58,37 @@ export const CONFIG = {
 
         porcentagemRevelacao: 70,
 
-        imagemCobertura: "img/camada-raspadinha.png"
+        imagemCobertura:
+            "img/camada-raspadinha.png"
 
     },
+
+
+    /* ======================================================
+       PRÊMIOS
+    ====================================================== */
 
     premios: {
 
-        perdeu: "img/perdeu.png",
+        perdeu:
+            "img/perdeu.png",
 
-        ferro: "img/ferro.png",
+        ferro:
+            "img/ferro.png",
 
-        liquidificador: "img/liquidificador.png"
+        liquidificador:
+            "img/liquidificador.png"
 
     },
+
+
+    /* ======================================================
+       PROBABILIDADES
+       
+       OBS:
+       O sorteio oficial será controlado pelo Firebase.
+       Estes valores servem apenas para modo de teste.
+    ====================================================== */
 
     probabilidades: {
 
@@ -61,40 +98,93 @@ export const CONFIG = {
 
     },
 
+
+    /* ======================================================
+       SONS
+    ====================================================== */
+
     sons: {
 
-        raspar: "sounds/raspar.mp3",
+        raspar:
+            "sounds/raspar.mp3",
 
-        ganhou: "sounds/vitoria.mp3",
+        ganhou:
+            "sounds/vitoria.mp3",
 
-        perdeu: "sounds/perdeu.mp3",
+        perdeu:
+            "sounds/perdeu.mp3",
 
-        click: "sounds/click.mp3"
+        click:
+            "sounds/click.mp3"
 
     },
+
+
+    /* ======================================================
+       FIREBASE
+    ====================================================== */
 
     firebase: {
 
-        participantes: "participantes",
+        participantes:
+            "participantes",
 
-        premios: "premios",
+        premios:
+            "premios",
 
-        vencedores: "vencedores",
+        vencedores:
+            "vencedores",
 
-        sistema: "sistema",
+        sistema:
+            "sistema",
 
-        campanha: "campanha",
+        campanha:
+            "campanha",
 
-        estatisticas: "estatisticas",
-
-        teste: "teste"
+        estatisticas:
+            "estatisticas"
 
     },
+
+
+    /* ======================================================
+       BANCO
+    ====================================================== */
+
+    banco: {
+
+        totalNumeros: 1000,
+
+        numeroMinimo: 1,
+
+        numeroMaximo: 1000
+
+    },
+
+
+    /* ======================================================
+       MODO DE TESTE
+       
+       FALSE = SORTEIO REAL
+       TRUE  = TESTE LOCAL
+    ====================================================== */
 
     modoTeste: false
 
 };
 
+
 /* ==========================================================
-   FIM
+   FUNÇÃO AUXILIAR
+========================================================== */
+
+export function obterConfiguracao() {
+
+    return CONFIG;
+
+}
+
+
+/* ==========================================================
+   FIM DO CONFIG
 ========================================================== */
