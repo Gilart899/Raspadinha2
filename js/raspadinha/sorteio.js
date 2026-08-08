@@ -1,21 +1,20 @@
 /* ==========================================================
-   RASPADINHA SOLIDÁRIA 6.0
+   RASPADINHA DA AMIZADE 6.0
    MOTOR DE SORTEIO
+   Firebase = autoridade do resultado
 ========================================================== */
 
 import { CONFIG } from "../config.js";
 
 import {
-    validarParticipacao,
-    registrarResultado,
-    registrarVencedor,
-    registrarEstatistica,
-    buscarPremios
+    validarParticipante,
+    revelarRaspadinha
 } from "../firebase/firebase-raspadinha.js";
 
 import {
     definirResultado
 } from "./resultado.js";
+
 
 /* ==========================================================
    ESTADO
@@ -28,6 +27,7 @@ let participanteAtual = null;
 let numeroAtual = null;
 
 let executando = false;
+
 
 /* ==========================================================
    INICIAR
@@ -45,6 +45,7 @@ export function iniciarSorteio() {
 
 }
 
+
 /* ==========================================================
    DEFINIR NÚMERO
 ========================================================== */
@@ -53,7 +54,8 @@ export function definirNumero(numero) {
 
     if (
         numero === null ||
-        numero === undefined
+        numero === undefined ||
+        numero === ""
     ) {
 
         numeroAtual = null;
@@ -62,9 +64,11 @@ export function definirNumero(numero) {
 
     }
 
+
     const valor =
         String(numero)
             .replace(/\D/g, "");
+
 
     if (!valor) {
 
@@ -74,12 +78,22 @@ export function definirNumero(numero) {
 
     }
 
+
+    /*
+     * Mantemos o número sem zeros à esquerda
+     * para coincidir com as chaves do Firebase.
+     */
+
     numeroAtual =
-        valor.padStart(4, "0");
+        String(
+            Number(valor)
+        );
+
 
     return numeroAtual;
 
 }
+
 
 /* ==========================================================
    OBTER NÚMERO
@@ -90,6 +104,7 @@ export function obterNumero() {
     return numeroAtual;
 
 }
+
 
 /* ==========================================================
    DEFINIR PARTICIPANTE
@@ -102,9 +117,10 @@ export function definirParticipante(
     participanteAtual =
         participante || null;
 
+
     if (
         participante &&
-        participante.numero
+        participante.numero !== undefined
     ) {
 
         definirNumero(
@@ -113,9 +129,11 @@ export function definirParticipante(
 
     }
 
+
     return participanteAtual;
 
 }
+
 
 /* ==========================================================
    OBTER PARTICIPANTE
@@ -126,6 +144,7 @@ export function obterParticipanteAtual() {
     return participanteAtual;
 
 }
+
 
 /* ==========================================================
    REALIZAR SORTEIO
@@ -143,19 +162,22 @@ export async function realizarSorteio(
 
     }
 
+
     executando = true;
+
 
     try {
 
-        /* --------------------------------------------------
+        /* ==================================================
            DEFINIR NÚMERO
-        -------------------------------------------------- */
+        ================================================== */
 
         if (numero !== null) {
 
             definirNumero(numero);
 
         }
+
 
         if (!numeroAtual) {
 
@@ -165,143 +187,124 @@ export async function realizarSorteio(
 
         }
 
-        /* --------------------------------------------------
-           MODO TESTE
-        -------------------------------------------------- */
+
+        /* ==================================================
+           MODO DE TESTE
+        ================================================== */
 
         if (CONFIG.modoTeste === true) {
 
             resultadoAtual =
                 realizarSorteioTeste();
 
+
             definirResultado(
                 resultadoAtual
             );
+
 
             return resultadoAtual;
 
         }
 
-        /* --------------------------------------------------
-           VALIDAR PARTICIPAÇÃO
-        -------------------------------------------------- */
 
-        const validacao =
-            await validarParticipacao(
+        /* ==================================================
+           VALIDAR PARTICIPANTE
+        ================================================== */
+
+        participanteAtual =
+            await validarParticipante(
                 numeroAtual
             );
 
-        if (
-            !validacao.permitido
-        ) {
 
-            console.warn(
-
-                "Participação bloqueada:",
-
-                validacao.motivo
-
-            );
-
-            participanteAtual =
-                validacao.participante;
+        if (!participanteAtual) {
 
             throw new Error(
-                validacao.motivo
+                "Participante não encontrado."
             );
 
         }
 
-        /* --------------------------------------------------
-           GUARDAR PARTICIPANTE
-        -------------------------------------------------- */
 
-        participanteAtual =
-            validacao.participante;
+        /* ==================================================
+           RESULTADO OFICIAL
+           
+           O Firebase decide.
+        ================================================== */
 
-        /* --------------------------------------------------
-           REALIZAR SORTEIO
-        -------------------------------------------------- */
+        const resultado =
+            await revelarRaspadinha(
+                numeroAtual
+            );
 
-        resultadoAtual =
-            await sortearPremio();
 
-        /* --------------------------------------------------
+        if (!resultado) {
+
+            throw new Error(
+                "Firebase não retornou resultado."
+            );
+
+        }
+
+
+        /* ==================================================
+           NORMALIZAR RESULTADO
+        ================================================== */
+
+        if (
+            resultado.ganhou === true
+        ) {
+
+            resultadoAtual =
+                resultado.premio;
+
+        } else {
+
+            resultadoAtual =
+                "perdeu";
+
+        }
+
+
+        /* ==================================================
            DEFINIR RESULTADO
-        -------------------------------------------------- */
+        ================================================== */
 
         definirResultado(
             resultadoAtual
         );
 
-        /* --------------------------------------------------
-           REGISTRAR PARTICIPANTE
-        -------------------------------------------------- */
 
-        await registrarResultado(
-
-            numeroAtual,
-
+        console.log(
+            "Resultado oficial:",
             resultadoAtual
-
         );
 
-        /* --------------------------------------------------
-           REGISTRAR VENCEDOR
-        -------------------------------------------------- */
-
-        if (
-            resultadoAtual !==
-            "perdeu"
-        ) {
-
-            await registrarVencedor(
-
-                numeroAtual,
-
-                resultadoAtual,
-
-                participanteAtual
-
-            );
-
-        }
-
-        /* --------------------------------------------------
-           ESTATÍSTICAS
-        -------------------------------------------------- */
-
-        await registrarEstatistica(
-
-            resultadoAtual
-
-        );
 
         return resultadoAtual;
 
     } catch (erro) {
 
         console.error(
-
             "Erro no sorteio:",
-
             erro
-
         );
 
+
         /*
-         * IMPORTANTE:
-         * Se houve erro de validação/Firebase,
-         * não vamos transformar silenciosamente
-         * o erro em uma derrota.
+         * NÃO transformar erro de Firebase
+         * silenciosamente em prêmio ou resultado.
          */
 
         resultadoAtual =
             "perdeu";
 
+
         definirResultado(
             "perdeu"
         );
+
 
         throw erro;
 
@@ -313,135 +316,6 @@ export async function realizarSorteio(
 
 }
 
-/* ==========================================================
-   SORTEIO DO PRÊMIO
-========================================================== */
-
-async function sortearPremio() {
-
-    const premios =
-        await buscarPremios();
-
-    /*
-     * Se o Firebase tiver estoque configurado,
-     * verificamos a disponibilidade.
-     */
-
-    const ferro =
-        obterEstoquePremio(
-            premios,
-            "ferro"
-        );
-
-    const liquidificador =
-        obterEstoquePremio(
-            premios,
-            "liquidificador"
-        );
-
-    const chanceFerro =
-        Number(
-            CONFIG.probabilidades?.ferro ||
-            0.001
-        );
-
-    const chanceLiquidificador =
-        Number(
-            CONFIG.probabilidades?.liquidificador ||
-            0.002
-        );
-
-    const sorteio =
-        Math.random();
-
-    /*
-     * Ferro
-     */
-
-    if (
-        ferro > 0 &&
-        sorteio < chanceFerro
-    ) {
-
-        return "ferro";
-
-    }
-
-    /*
-     * Liquidificador
-     */
-
-    if (
-        liquidificador > 0 &&
-        sorteio <
-            (
-                chanceFerro +
-                chanceLiquidificador
-            )
-    ) {
-
-        return "liquidificador";
-
-    }
-
-    return "perdeu";
-
-}
-
-/* ==========================================================
-   ESTOQUE DO PRÊMIO
-========================================================== */
-
-function obterEstoquePremio(
-    premios,
-    id
-) {
-
-    if (!premios) {
-
-        /*
-         * Caso a estrutura de prêmios
-         * ainda não tenha estoque,
-         * consideramos disponível.
-         */
-
-        return 1;
-
-    }
-
-    const premio =
-        premios[id];
-
-    if (!premio) {
-
-        return 1;
-
-    }
-
-    /*
-     * Aceita diferentes formatos:
-     *
-     * quantidade
-     * estoque
-     * disponivel
-     */
-
-    const estoque =
-        premio.quantidade ??
-        premio.estoque ??
-        premio.disponivel;
-
-    if (
-        estoque === undefined
-    ) {
-
-        return 1;
-
-    }
-
-    return Number(estoque) || 0;
-
-}
 
 /* ==========================================================
    SORTEIO DE TESTE
@@ -455,24 +329,26 @@ export function realizarSorteioTeste() {
             0.001
         );
 
+
     const chanceLiquidificador =
         Number(
-            CONFIG.probabilidades
-                ?.liquidificador ||
+            CONFIG.probabilidades?.liquidificador ||
             0.002
         );
+
 
     const numero =
         Math.random();
 
+
     if (
-        numero <
-        chanceFerro
+        numero < chanceFerro
     ) {
 
         return "ferro";
 
     }
+
 
     if (
         numero <
@@ -486,9 +362,11 @@ export function realizarSorteioTeste() {
 
     }
 
+
     return "perdeu";
 
 }
+
 
 /* ==========================================================
    MODO TESTE
@@ -503,6 +381,7 @@ export function alterarModoTeste(
 
 }
 
+
 /* ==========================================================
    VERIFICAR EXECUÇÃO
 ========================================================== */
@@ -512,6 +391,7 @@ export function sorteioEmAndamento() {
     return executando;
 
 }
+
 
 /* ==========================================================
    RESULTADO
@@ -523,8 +403,9 @@ export function obterResultadoAtual() {
 
 }
 
+
 /* ==========================================================
-   LIMPAR
+   LIMPAR SORTEIO
 ========================================================== */
 
 export function limparSorteio() {
@@ -541,8 +422,14 @@ export function limparSorteio() {
     executando =
         false;
 
+
+    definirResultado(
+        "perdeu"
+    );
+
 }
 
+
 /* ==========================================================
-   FIM DO SORTEIO
+   FIM DO MOTOR
 ========================================================== */
