@@ -1,13 +1,25 @@
 /* ==========================================================
-   RASPADINHA SOLIDÁRIA 5.0
-   Controlador Principal
+   RASPADINHA SOLIDÁRIA 6.0
+   CONTROLADOR PRINCIPAL DA RASPADINHA
 ========================================================== */
 
 import CanvasEngine from "./canvas.js";
 
-import { realizarSorteio } from "./sorteio.js";
+import {
+    realizarSorteio,
+    iniciarSorteio,
+    definirNumero,
+    obterNumero,
+    obterParticipanteAtual
+} from "./sorteio.js";
 
-import { obterImagemResultado } from "./resultado.js";
+import {
+    obterResultado,
+    obterImagemResultado,
+    obterNomePremio,
+    limparResultado,
+    ganhouPremio
+} from "./resultado.js";
 
 /* ==========================================================
    ELEMENTOS
@@ -18,6 +30,10 @@ let modal = null;
 let btnFechar = null;
 
 let imagemPremio = null;
+
+let textoPremio = null;
+
+let numeroRifa = null;
 
 /* ==========================================================
    MOTOR
@@ -33,13 +49,23 @@ let inicializado = false;
 
 let aberta = false;
 
+let abrindo = false;
+
 /* ==========================================================
    INICIAR
 ========================================================== */
 
 export async function iniciarRaspadinha() {
 
-    if (inicializado) return;
+    if (inicializado) {
+
+        return true;
+
+    }
+
+    /* ------------------------------------------------------
+       LOCALIZAR ELEMENTOS
+    ------------------------------------------------------ */
 
     modal =
         document.getElementById(
@@ -56,13 +82,31 @@ export async function iniciarRaspadinha() {
             "imagemPremio"
         );
 
+    textoPremio =
+        document.getElementById(
+            "textoPremio"
+        );
+
+    numeroRifa =
+        document.getElementById(
+            "numeroRifa"
+        );
+
+    /* ------------------------------------------------------
+       MODAL É OBRIGATÓRIO
+    ------------------------------------------------------ */
+
     if (!modal) {
 
         throw new Error(
-            "Modal da raspadinha não encontrado."
+            "Elemento #modalRaspadinha não encontrado."
         );
 
     }
+
+    /* ------------------------------------------------------
+       CANVAS
+    ------------------------------------------------------ */
 
     canvasEngine =
         new CanvasEngine(
@@ -71,14 +115,31 @@ export async function iniciarRaspadinha() {
 
     await canvasEngine.iniciar();
 
+    /* ------------------------------------------------------
+       ESTADO INICIAL
+    ------------------------------------------------------ */
+
+    limparResultado();
+
+    iniciarSorteio();
+
+    atualizarInterface();
+
+    /* ------------------------------------------------------
+       EVENTOS
+    ------------------------------------------------------ */
+
     registrarEventos();
 
-    inicializado = true;
+    inicializado =
+        true;
+
+    return true;
 
 }
 
 /* ==========================================================
-   EVENTOS
+   REGISTRAR EVENTOS
 ========================================================== */
 
 function registrarEventos() {
@@ -95,44 +156,280 @@ function registrarEventos() {
 
     }
 
+    /*
+     * Permite fechar o modal clicando
+     * fora da janela principal.
+     */
+
+    modal.addEventListener(
+
+        "click",
+
+        evento => {
+
+            if (
+                evento.target === modal
+            ) {
+
+                fecharRaspadinha();
+
+            }
+
+        }
+
+    );
+
 }
 
 /* ==========================================================
-   ABRIR
+   ABRIR RASPADINHA
 ========================================================== */
 
-export async function abrirRaspadinha() {
+export async function abrirRaspadinha(
+    numero = null
+) {
 
-    if (!inicializado) {
+    if (abrindo) {
 
-        await iniciarRaspadinha();
+        return false;
 
     }
 
-    await realizarSorteio();
+    abrindo = true;
 
-    atualizarImagemPremio();
+    try {
 
-    await canvasEngine.reiniciar();
+        /* --------------------------------------------------
+           GARANTIR INICIALIZAÇÃO
+        -------------------------------------------------- */
 
-    modal.classList.remove(
-        "hidden"
-    );
+        if (!inicializado) {
 
-    aberta = true;
+            await iniciarRaspadinha();
+
+        }
+
+        /* --------------------------------------------------
+           NÚMERO
+        -------------------------------------------------- */
+
+        if (
+            numero !== null &&
+            numero !== undefined
+        ) {
+
+            definirNumero(
+                numero
+            );
+
+        }
+
+        /* --------------------------------------------------
+           LIMPAR ESTADO ANTERIOR
+        -------------------------------------------------- */
+
+        limparResultado();
+
+        iniciarSorteio();
+
+        /* --------------------------------------------------
+           SORTEIO
+        -------------------------------------------------- */
+
+        const resultado =
+            await realizarSorteio(
+                obterNumero()
+            );
+
+        console.log(
+            "Resultado da raspadinha:",
+            resultado
+        );
+
+        /* --------------------------------------------------
+           ATUALIZAR IMAGEM
+        -------------------------------------------------- */
+
+        atualizarImagemPremio();
+
+        atualizarInterface();
+
+        /* --------------------------------------------------
+           REINICIAR CANVAS
+        -------------------------------------------------- */
+
+        await canvasEngine.reiniciar();
+
+        /* --------------------------------------------------
+           MOSTRAR MODAL
+        -------------------------------------------------- */
+
+        modal.classList.remove(
+            "hidden"
+        );
+
+        /*
+         * Alguns projetos utilizam
+         * display:none no CSS.
+         */
+
+        modal.style.display =
+            "flex";
+
+        aberta =
+            true;
+
+        /* --------------------------------------------------
+           FOCO
+        -------------------------------------------------- */
+
+        if (
+            canvasEngine.canvas
+        ) {
+
+            try {
+
+                canvasEngine.canvas
+                    .focus();
+
+            } catch (erro) {
+
+                console.warn(
+                    "Canvas sem foco."
+                );
+
+            }
+
+        }
+
+        return resultado;
+
+    } catch (erro) {
+
+        console.error(
+
+            "Erro ao abrir raspadinha:",
+
+            erro
+
+        );
+
+        /*
+         * IMPORTANTE:
+         *
+         * Não exibimos uma derrota falsa.
+         */
+
+        alert(
+
+            erro?.message ||
+            "Não foi possível abrir a raspadinha."
+
+        );
+
+        return false;
+
+    } finally {
+
+        abrindo =
+            false;
+
+    }
 
 }
 
 /* ==========================================================
-   IMAGEM
+   ATUALIZAR IMAGEM
 ========================================================== */
 
 function atualizarImagemPremio() {
 
-    if (!imagemPremio) return;
+    if (!imagemPremio) {
+
+        return;
+
+    }
+
+    const imagem =
+        obterImagemResultado();
+
+    if (!imagem) {
+
+        return;
+
+    }
 
     imagemPremio.src =
-        obterImagemResultado();
+        imagem;
+
+    imagemPremio.alt =
+        obterNomePremio();
+
+}
+
+/* ==========================================================
+   ATUALIZAR INTERFACE
+========================================================== */
+
+function atualizarInterface() {
+
+    const resultado =
+        obterResultado();
+
+    const premio =
+        obterNomePremio();
+
+    /* ------------------------------------------------------
+       NÚMERO
+    ------------------------------------------------------ */
+
+    if (numeroRifa) {
+
+        numeroRifa.textContent =
+            obterNumero() ||
+            "Não informado";
+
+    }
+
+    /* ------------------------------------------------------
+       PRÊMIO
+    ------------------------------------------------------ */
+
+    if (textoPremio) {
+
+        textoPremio.textContent =
+            premio;
+
+    }
+
+    /* ------------------------------------------------------
+       IMAGEM
+    ------------------------------------------------------ */
+
+    if (imagemPremio) {
+
+        imagemPremio.src =
+            obterImagemResultado();
+
+    }
+
+    /* ------------------------------------------------------
+       LOG
+    ------------------------------------------------------ */
+
+    console.log({
+
+        numero:
+            obterNumero(),
+
+        resultado,
+
+        premio,
+
+        ganhou:
+            ganhouPremio()
+
+    });
 
 }
 
@@ -142,28 +439,99 @@ function atualizarImagemPremio() {
 
 export function fecharRaspadinha() {
 
-    if (!modal) return;
+    if (!modal) {
 
-    modal.classList.add("hidden");
+        return;
 
-    aberta = false;
+    }
+
+    modal.classList.add(
+        "hidden"
+    );
+
+    modal.style.display =
+        "none";
+
+    aberta =
+        false;
+
+    /*
+     * Não destruímos o Canvas.
+     * Apenas fechamos o modal.
+     */
 
 }
 
 /* ==========================================================
-   REINICIAR
+   MOSTRAR MODAL
+========================================================== */
+
+export function mostrarModal() {
+
+    if (!modal) {
+
+        return;
+
+    }
+
+    modal.classList.remove(
+        "hidden"
+    );
+
+    modal.style.display =
+        "flex";
+
+    aberta =
+        true;
+
+}
+
+/* ==========================================================
+   OCULTAR MODAL
+========================================================== */
+
+export function ocultarModal() {
+
+    fecharRaspadinha();
+
+}
+
+/* ==========================================================
+   REINICIAR RASPADINHA
 ========================================================== */
 
 export async function reiniciarRaspadinha() {
 
-    if (!canvasEngine) return;
+    if (!canvasEngine) {
+
+        return false;
+
+    }
+
+    limparResultado();
+
+    iniciarSorteio();
+
+    atualizarInterface();
 
     await canvasEngine.reiniciar();
+
+    return true;
 
 }
 
 /* ==========================================================
-   STATUS
+   OBTER MOTOR
+========================================================== */
+
+export function obterCanvasEngine() {
+
+    return canvasEngine;
+
+}
+
+/* ==========================================================
+   VERIFICAR SE ESTÁ ABERTA
 ========================================================== */
 
 export function raspadinhaAberta() {
@@ -172,15 +540,53 @@ export function raspadinhaAberta() {
 
 }
 
+/* ==========================================================
+   VERIFICAR INICIALIZAÇÃO
+========================================================== */
+
 export function raspadinhaInicializada() {
 
     return inicializado;
 
 }
 
-export function obterCanvasEngine() {
+/* ==========================================================
+   OBTER STATUS
+========================================================== */
 
-    return canvasEngine;
+export function obterStatusRaspadinha() {
+
+    return {
+
+        inicializado,
+
+        aberta,
+
+        abrindo,
+
+        numero:
+            obterNumero(),
+
+        resultado:
+            obterResultado(),
+
+        premio:
+            obterNomePremio(),
+
+        ganhou:
+            ganhouPremio(),
+
+        porcentagem:
+            canvasEngine
+                ? canvasEngine.porcentagem
+                : 0,
+
+        finalizado:
+            canvasEngine
+                ? canvasEngine.finalizado
+                : false
+
+    };
 
 }
 
@@ -194,61 +600,38 @@ export function destruirRaspadinha() {
 
         canvasEngine.destruir();
 
-        canvasEngine = null;
+        canvasEngine =
+            null;
 
     }
 
-    aberta = false;
+    modal =
+        null;
 
-    inicializado = false;
+    btnFechar =
+        null;
 
-}
+    imagemPremio =
+        null;
 
-/* ==========================================================
-   UTILITÁRIOS
-========================================================== */
+    textoPremio =
+        null;
 
-export function mostrarModal() {
+    numeroRifa =
+        null;
 
-    if (!modal) return;
+    inicializado =
+        false;
 
-    modal.classList.remove("hidden");
+    aberta =
+        false;
 
-    aberta = true;
+    abrindo =
+        false;
 
-}
+    limparResultado();
 
-export function ocultarModal() {
-
-    if (!modal) return;
-
-    modal.classList.add("hidden");
-
-    aberta = false;
-
-}
-
-/* ==========================================================
-   GETTERS
-========================================================== */
-
-export function obterStatusRaspadinha() {
-
-    return {
-
-        inicializado,
-
-        aberta,
-
-        porcentagem: canvasEngine
-            ? canvasEngine.porcentagem
-            : 0,
-
-        finalizado: canvasEngine
-            ? canvasEngine.finalizado
-            : false
-
-    };
+    iniciarSorteio();
 
 }
 
