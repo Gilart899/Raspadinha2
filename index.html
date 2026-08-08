@@ -12,7 +12,7 @@
 
     <meta
         name="theme-color"
-        content="#061706"
+        content="#7b1fa2"
     >
 
     <meta
@@ -20,527 +20,1653 @@
         content="Raspadinha da Amizade - GilFest"
     >
 
-    <title>Raspadinha da Amizade | GilFest</title>
+    <title>
+        Raspadinha da Amizade | GilFest
+    </title>
+
 
     <!-- ==================================================
-         CSS PRINCIPAL
-    =================================================== -->
+         ESTILOS
+    ================================================== -->
 
-    <link
-        rel="stylesheet"
-        href="./style.css"
-    >
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+
+        body {
+
+            min-height: 100vh;
+
+            font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #4a148c,
+                    #7b1fa2,
+                    #ab47bc
+                );
+
+            color: #ffffff;
+
+            display: flex;
+
+            justify-content: center;
+
+            align-items: center;
+
+            padding: 20px;
+
+        }
+
+
+        .container {
+
+            width: 100%;
+
+            max-width: 480px;
+
+            background:
+                rgba(255, 255, 255, 0.97);
+
+            color: #333333;
+
+            border-radius: 25px;
+
+            overflow: hidden;
+
+            box-shadow:
+                0 20px 60px
+                rgba(0, 0, 0, 0.35);
+
+        }
+
+
+        /* ==================================================
+           CABEÇALHO
+        ================================================== */
+
+        .header {
+
+            text-align: center;
+
+            padding: 28px 20px 24px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #6a1b9a,
+                    #8e24aa
+                );
+
+            color: #ffffff;
+
+        }
+
+
+        .logo {
+
+            font-size: 14px;
+
+            font-weight: bold;
+
+            letter-spacing: 2px;
+
+            opacity: 0.9;
+
+            margin-bottom: 10px;
+
+        }
+
+
+        .header h1 {
+
+            font-size: 30px;
+
+            line-height: 1.15;
+
+            margin-bottom: 8px;
+
+        }
+
+
+        .header p {
+
+            font-size: 15px;
+
+            opacity: 0.95;
+
+        }
+
+
+        /* ==================================================
+           CONTEÚDO
+        ================================================== */
+
+        .content {
+
+            padding: 24px 20px 28px;
+
+        }
+
+
+        .status {
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            gap: 8px;
+
+            padding: 10px 14px;
+
+            border-radius: 50px;
+
+            background: #f3e5f5;
+
+            color: #6a1b9a;
+
+            font-size: 13px;
+
+            font-weight: bold;
+
+            margin-bottom: 20px;
+
+        }
+
+
+        .status-dot {
+
+            width: 9px;
+
+            height: 9px;
+
+            border-radius: 50%;
+
+            background: #ff9800;
+
+        }
+
+
+        .status.online .status-dot {
+
+            background: #2e7d32;
+
+        }
+
+
+        .status.error {
+
+            background: #ffebee;
+
+            color: #c62828;
+
+        }
+
+
+        .status.error .status-dot {
+
+            background: #c62828;
+
+        }
+
+
+        /* ==================================================
+           CARDS
+        ================================================== */
+
+        .info-grid {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(2, 1fr);
+
+            gap: 12px;
+
+            margin-bottom: 22px;
+
+        }
+
+
+        .info-card {
+
+            background: #fafafa;
+
+            border: 1px solid #eeeeee;
+
+            border-radius: 16px;
+
+            padding: 16px 12px;
+
+            text-align: center;
+
+        }
+
+
+        .info-card .icon {
+
+            font-size: 25px;
+
+            margin-bottom: 7px;
+
+        }
+
+
+        .info-card .label {
+
+            display: block;
+
+            color: #777777;
+
+            font-size: 11px;
+
+            text-transform: uppercase;
+
+            letter-spacing: 0.5px;
+
+            margin-bottom: 5px;
+
+        }
+
+
+        .info-card .value {
+
+            display: block;
+
+            color: #4a148c;
+
+            font-size: 15px;
+
+            font-weight: bold;
+
+        }
+
+
+        /* ==================================================
+           DESTAQUE
+        ================================================== */
+
+        .highlight {
+
+            text-align: center;
+
+            padding: 20px;
+
+            border-radius: 18px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #fff8e1,
+                    #fff3cd
+                );
+
+            border: 1px solid #ffe082;
+
+            margin-bottom: 22px;
+
+        }
+
+
+        .highlight .emoji {
+
+            font-size: 40px;
+
+            margin-bottom: 8px;
+
+        }
+
+
+        .highlight h2 {
+
+            color: #5d4037;
+
+            font-size: 20px;
+
+            margin-bottom: 6px;
+
+        }
+
+
+        .highlight p {
+
+            color: #795548;
+
+            font-size: 14px;
+
+        }
+
+
+        /* ==================================================
+           BOTÃO PRINCIPAL
+        ================================================== */
+
+        #btnParticipar {
+
+            width: 100%;
+
+            border: none;
+
+            border-radius: 16px;
+
+            padding: 18px 20px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #7b1fa2,
+                    #ab47bc
+                );
+
+            color: #ffffff;
+
+            font-size: 17px;
+
+            font-weight: bold;
+
+            cursor: pointer;
+
+            box-shadow:
+                0 8px 20px
+                rgba(123, 31, 162, 0.3);
+
+            transition:
+                transform 0.2s,
+                box-shadow 0.2s,
+                opacity 0.2s;
+
+        }
+
+
+        #btnParticipar:hover {
+
+            transform:
+                translateY(-2px);
+
+            box-shadow:
+                0 12px 26px
+                rgba(123, 31, 162, 0.4);
+
+        }
+
+
+        #btnParticipar:active {
+
+            transform:
+                translateY(0);
+
+        }
+
+
+        #btnParticipar:disabled {
+
+            opacity: 0.55;
+
+            cursor: not-allowed;
+
+            transform: none;
+
+        }
+
+
+        /* ==================================================
+           RODAPÉ
+        ================================================== */
+
+        .footer {
+
+            text-align: center;
+
+            padding: 18px;
+
+            border-top:
+                1px solid #eeeeee;
+
+            color: #999999;
+
+            font-size: 12px;
+
+        }
+
+
+        .footer strong {
+
+            color: #7b1fa2;
+
+        }
+
+
+        /* ==================================================
+           MODAL
+        ================================================== */
+
+        #modalRaspadinha {
+
+            position: fixed;
+
+            inset: 0;
+
+            z-index: 9999;
+
+            background:
+                rgba(0, 0, 0, 0.78);
+
+            display: none;
+
+            align-items: center;
+
+            justify-content: center;
+
+            padding: 15px;
+
+            overflow-y: auto;
+
+        }
+
+
+        #modalRaspadinha.hidden {
+
+            display: none !important;
+
+        }
+
+
+        .modal-box {
+
+            width: 100%;
+
+            max-width: 470px;
+
+            max-height: 95vh;
+
+            overflow-y: auto;
+
+            background: #ffffff;
+
+            color: #333333;
+
+            border-radius: 24px;
+
+            box-shadow:
+                0 25px 70px
+                rgba(0, 0, 0, 0.45);
+
+            padding: 20px;
+
+            position: relative;
+
+        }
+
+
+        /* ==================================================
+           BOTÃO FECHAR
+        ================================================== */
+
+        #btnFecharRaspadinha {
+
+            position: absolute;
+
+            top: 12px;
+
+            right: 12px;
+
+            width: 38px;
+
+            height: 38px;
+
+            border: none;
+
+            border-radius: 50%;
+
+            background: #eeeeee;
+
+            color: #555555;
+
+            font-size: 21px;
+
+            cursor: pointer;
+
+            z-index: 5;
+
+        }
+
+
+        #btnFecharRaspadinha:hover {
+
+            background: #dddddd;
+
+        }
+
+
+        /* ==================================================
+           CABEÇALHO DO MODAL
+        ================================================== */
+
+        .modal-title {
+
+            text-align: center;
+
+            padding: 8px 40px 18px;
+
+        }
+
+
+        .modal-title h2 {
+
+            color: #6a1b9a;
+
+            font-size: 24px;
+
+            margin-bottom: 5px;
+
+        }
+
+
+        .modal-title p {
+
+            color: #777777;
+
+            font-size: 13px;
+
+        }
+
+
+        /* ==================================================
+           NÚMERO
+        ================================================== */
+
+        .numero-box {
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #f3e5f5,
+                    #ede7f6
+                );
+
+            border-radius: 14px;
+
+            text-align: center;
+
+            padding: 12px;
+
+            margin-bottom: 15px;
+
+        }
+
+
+        .numero-box span {
+
+            display: block;
+
+            color: #777777;
+
+            font-size: 11px;
+
+            text-transform: uppercase;
+
+            margin-bottom: 4px;
+
+        }
+
+
+        #numeroRifa {
+
+            color: #6a1b9a;
+
+            font-size: 22px;
+
+            font-weight: bold;
+
+        }
+
+
+        /* ==================================================
+           ÁREA DA RASPADINHA
+        ================================================== */
+
+        .scratch-area {
+
+            width: 100%;
+
+            display: flex;
+
+            justify-content: center;
+
+            margin: 10px 0 18px;
+
+        }
+
+
+        .canvas-wrapper {
+
+            width: min(
+                380px,
+                100%
+            );
+
+            aspect-ratio: 1 / 1;
+
+            border-radius: 18px;
+
+            overflow: hidden;
+
+            background: #eeeeee;
+
+            box-shadow:
+                0 8px 25px
+                rgba(0, 0, 0, 0.15);
+
+        }
+
+
+        #canvasRaspadinha {
+
+            display: block;
+
+            width: 100%;
+
+            height: 100%;
+
+            cursor: crosshair;
+
+            touch-action: none;
+
+        }
+
+
+        /* ==================================================
+           RESULTADO
+        ================================================== */
+
+        .resultado-box {
+
+            text-align: center;
+
+            padding: 16px;
+
+            border-radius: 16px;
+
+            background: #fafafa;
+
+            border: 1px solid #eeeeee;
+
+            margin-bottom: 15px;
+
+        }
+
+
+        .resultado-box img {
+
+            display: none;
+
+            max-width: 150px;
+
+            max-height: 100px;
+
+            object-fit: contain;
+
+            margin: 0 auto 10px;
+
+        }
+
+
+        .resultado-label {
+
+            color: #888888;
+
+            font-size: 11px;
+
+            text-transform: uppercase;
+
+            margin-bottom: 5px;
+
+        }
+
+
+        #textoPremio {
+
+            color: #6a1b9a;
+
+            font-size: 20px;
+
+            font-weight: bold;
+
+        }
+
+
+        /* ==================================================
+           FORMULÁRIO DO GANHADOR
+        ================================================== */
+
+        .form-ganhador {
+
+            display: none;
+
+            margin-top: 15px;
+
+            padding: 18px;
+
+            border-radius: 17px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #f3e5f5,
+                    #ffffff
+                );
+
+            border: 1px solid #e1bee7;
+
+        }
+
+
+        .form-ganhador h3 {
+
+            color: #6a1b9a;
+
+            text-align: center;
+
+            margin-bottom: 14px;
+
+        }
+
+
+        .form-group {
+
+            margin-bottom: 12px;
+
+        }
+
+
+        .form-group label {
+
+            display: block;
+
+            font-size: 12px;
+
+            color: #555555;
+
+            font-weight: bold;
+
+            margin-bottom: 5px;
+
+        }
+
+
+        .form-group input {
+
+            width: 100%;
+
+            padding: 12px;
+
+            border: 1px solid #dddddd;
+
+            border-radius: 10px;
+
+            outline: none;
+
+            font-size: 14px;
+
+        }
+
+
+        .form-group input:focus {
+
+            border-color: #9c27b0;
+
+            box-shadow:
+                0 0 0 3px
+                rgba(156, 39, 176, 0.1);
+
+        }
+
+
+        #btnSalvarDados {
+
+            width: 100%;
+
+            border: none;
+
+            border-radius: 11px;
+
+            padding: 13px;
+
+            background: #6a1b9a;
+
+            color: #ffffff;
+
+            font-weight: bold;
+
+            cursor: pointer;
+
+        }
+
+
+        /* ==================================================
+           MENSAGEM
+        ================================================== */
+
+        #mensagem {
+
+            text-align: center;
+
+            font-size: 13px;
+
+            margin-top: 12px;
+
+            min-height: 18px;
+
+            color: #777777;
+
+        }
+
+
+        /* ==================================================
+           RESPONSIVO
+        ================================================== */
+
+        @media (max-width: 420px) {
+
+            body {
+
+                padding: 10px;
+
+            }
+
+
+            .container {
+
+                border-radius: 20px;
+
+            }
+
+
+            .header h1 {
+
+                font-size: 26px;
+
+            }
+
+
+            .content {
+
+                padding:
+                    20px 15px 24px;
+
+            }
+
+
+            .info-grid {
+
+                gap: 8px;
+
+            }
+
+
+            .info-card {
+
+                padding: 13px 8px;
+
+            }
+
+
+            .modal-box {
+
+                padding: 15px;
+
+                border-radius: 20px;
+
+            }
+
+        }
+
+    </style>
 
 </head>
 
 
 <body>
 
-<!-- ======================================================
-     FUNDO PRINCIPAL
-======================================================= -->
-
-<div class="pagina">
 
     <!-- ==================================================
-         CABEÇALHO
-    =================================================== -->
+         APP PRINCIPAL
+    ================================================== -->
 
-    <header class="topo">
+    <main class="container">
 
-        <!-- LOGO -->
 
-        <div class="logo-area">
+        <!-- CABEÇALHO -->
 
-            <img
-                src="./img/logo-gilfest.png"
-                alt="GilFest"
-                class="logo"
-                onerror="this.style.display='none'"
-            >
+        <header class="header">
 
-            <div class="logo-fallback">
+            <div class="logo">
 
-                <span class="logo-trevo">🍀</span>
-
-                <div>
-
-                    <strong>GILFEST</strong>
-
-                    <small>
-                        SUA SORTE, NOSSA FESTA!
-                    </small>
-
-                </div>
+                🍀 GILFEST
 
             </div>
 
-        </div>
-
-
-        <!-- STATUS -->
-
-        <div
-            id="statusOnline"
-            class="status-online"
-        >
-
-            <span class="status-bolinha"></span>
-
-            <span>Online</span>
-
-        </div>
-
-    </header>
-
-
-    <!-- ==================================================
-         CONTEÚDO PRINCIPAL
-    =================================================== -->
-
-    <main class="conteudo">
-
-        <!-- TREVO CENTRAL -->
-
-        <div class="trevo-central">
-
-            🍀
-
-        </div>
-
-
-        <!-- TÍTULO -->
-
-        <section class="titulo-area">
 
             <h1>
-                RASPADINHA
+
+                🍀 Raspadinha da Amizade
+
             </h1>
 
-            <h2>
-                DA AMIZADE
-            </h2>
 
             <p>
-                Raspe e descubra se
-                <strong>você ganhou!</strong>
+
+                Raspe e descubra se você ganhou!
+
             </p>
 
-        </section>
+        </header>
 
 
-        <!-- ==================================================
-             ÁREA PRINCIPAL DA RASPADINHA
-        =================================================== -->
+        <!-- CONTEÚDO -->
 
-        <section class="area-raspadinha">
+        <section class="content">
 
-            <div class="moldura-raspadinha">
 
-                <div class="brilho-raspadinha"></div>
+            <!-- STATUS -->
 
-                <div class="raspadinha-preview">
+            <div
+                id="statusSistema"
+                class="status"
+            >
 
-                    <div class="icone-trevo">
-                        🍀
+                <span
+                    class="status-dot"
+                ></span>
+
+                <span
+                    id="textoStatus"
+                >
+                    Carregando sistema...
+                </span>
+
+            </div>
+
+
+            <!-- INFORMAÇÕES -->
+
+            <div class="info-grid">
+
+
+                <div class="info-card">
+
+                    <div class="icon">
+                        🎁
                     </div>
 
-                    <div class="texto-raspe">
-                        RASPE AQUI
+                    <span class="label">
+                        Prêmio Principal
+                    </span>
+
+                    <span
+                        class="value"
+                        id="premioPrincipal"
+                    >
+                        Ferro Elétrico
+                    </span>
+
+                </div>
+
+
+                <div class="info-card">
+
+                    <div class="icon">
+                        🥤
                     </div>
 
-                    <div class="pontos-decorativos">
-                        ✦
+                    <span class="label">
+                        Prêmio Secundário
+                    </span>
+
+                    <span
+                        class="value"
+                        id="premioSecundario"
+                    >
+                        Liquidificador
+                    </span>
+
+                </div>
+
+
+                <div class="info-card">
+
+                    <div class="icon">
+                        📅
                     </div>
+
+                    <span class="label">
+                        Sorteio
+                    </span>
+
+                    <span
+                        class="value"
+                        id="dataSorteio"
+                    >
+                        2026
+                    </span>
+
+                </div>
+
+
+                <div class="info-card">
+
+                    <div class="icon">
+                        🏆
+                    </div>
+
+                    <span class="label">
+                        Resultado
+                    </span>
+
+                    <span
+                        class="value"
+                        id="resultadoSorteio"
+                    >
+                        Loteria Federal
+                    </span>
 
                 </div>
 
             </div>
 
-        </section>
 
+            <!-- DESTAQUE -->
 
-        <!-- ==================================================
-             BOTÃO PRINCIPAL
-        =================================================== -->
+            <div class="highlight">
 
-        <button
-            type="button"
-            id="btnQueroRaspar"
-            class="btn-raspar"
-        >
+                <div class="emoji">
+                    ✨
+                </div>
 
-            <span class="btn-icone">
-                🍀
-            </span>
+                <h2>
+                    Sua sorte pode mudar hoje!
+                </h2>
 
-            <span>
-                QUERO RASPAR AGORA!
-            </span>
-
-        </button>
-
-
-        <!-- ==================================================
-             CHAMADA DOS PRÊMIOS
-        =================================================== -->
-
-        <section class="premios-section">
-
-            <div class="linha-titulo">
-
-                <span></span>
-
-                <h3>
-                    CONCORRA A PRÊMIOS INCRÍVEIS!
-                </h3>
-
-                <span></span>
+                <p>
+                    Tenha seu número em mãos
+                    e participe da raspadinha.
+                </p>
 
             </div>
 
 
-            <!-- ==================================================
-                 CARDS DOS PRÊMIOS
-            =================================================== -->
+            <!-- BOTÃO -->
 
-            <div class="premios-grid">
+            <button
+                id="btnParticipar"
+                type="button"
+            >
 
+                🎲 QUERO RASPAR AGORA
 
-                <!-- FERRO -->
-
-                <article class="premio-card">
-
-                    <div class="premio-imagem-area">
-
-                        <img
-                            src="./img/ferro.png"
-                            alt="Ferro Elétrico"
-                            class="premio-imagem"
-                        >
-
-                    </div>
-
-                    <div class="premio-nome">
-
-                        <span>🍀</span>
-
-                        <span>
-                            FERRO ELÉTRICO
-                        </span>
-
-                    </div>
-
-                </article>
-
-
-                <!-- OU -->
-
-                <div class="premio-ou">
-
-                    <span>
-                        OU
-                    </span>
-
-                </div>
-
-
-                <!-- LIQUIDIFICADOR -->
-
-                <article class="premio-card">
-
-                    <div class="premio-imagem-area">
-
-                        <img
-                            src="./img/liquidificador.png"
-                            alt="Liquidificador"
-                            class="premio-imagem"
-                        >
-
-                    </div>
-
-                    <div class="premio-nome">
-
-                        <span>🍀</span>
-
-                        <span>
-                            LIQUIDIFICADOR
-                        </span>
-
-                    </div>
-
-                </article>
-
-
-            </div>
-
-        </section>
-
-
-        <!-- ==================================================
-             BENEFÍCIOS
-        =================================================== -->
-
-        <section class="beneficios">
-
-
-            <!-- SEGURANÇA -->
-
-            <article class="beneficio-card">
-
-                <div class="beneficio-icone">
-                    🛡️
-                </div>
-
-                <div class="beneficio-texto">
-
-                    <strong>
-                        100% SEGURO
-                    </strong>
-
-                    <span>
-                        Seus dados protegidos
-                        com total segurança.
-                    </span>
-
-                </div>
-
-            </article>
-
-
-            <!-- PRÊMIOS -->
-
-            <article class="beneficio-card">
-
-                <div class="beneficio-icone">
-                    🎁
-                </div>
-
-                <div class="beneficio-texto">
-
-                    <strong>
-                        GANHE PRÊMIOS
-                    </strong>
-
-                    <span>
-                        Ferro elétrico ou
-                        liquidificador te esperam!
-                    </span>
-
-                </div>
-
-            </article>
-
-
-            <!-- RAPIDEZ -->
-
-            <article class="beneficio-card">
-
-                <div class="beneficio-icone">
-                    ⚡
-                </div>
-
-                <div class="beneficio-texto">
-
-                    <strong>
-                        RÁPIDO
-                    </strong>
-
-                    <span>
-                        Raspe, descubra
-                        e comemore!
-                    </span>
-
-                </div>
-
-            </article>
+            </button>
 
 
         </section>
 
 
-        <!-- ==================================================
-             RODAPÉ
-        =================================================== -->
+        <!-- RODAPÉ -->
 
-        <footer class="rodape">
+        <footer class="footer">
 
-            <span class="cadeado">
-                🔒
-            </span>
+            © 2026
+            <strong>GilFest</strong>
 
-            <span>
-                Transparência e
-                <strong>confiança</strong>
-                em primeiro lugar!
-            </span>
+            <br>
+
+            Raspadinha da Amizade
 
         </footer>
 
     </main>
 
-</div>
 
 
+    <!-- ==================================================
+         MODAL DA RASPADINHA
+    ================================================== -->
 
-<!-- ======================================================
-     MODAL DA RASPADINHA
-======================================================= -->
-
-<div
-    id="modalRaspadinha"
-    class="modal-raspadinha hidden"
->
-
-    <div class="modal-conteudo">
+    <div
+        id="modalRaspadinha"
+        class="hidden"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="tituloModal"
+    >
 
 
-        <!-- ==================================================
-             CABEÇALHO DO MODAL
-        =================================================== -->
+        <div class="modal-box">
 
-        <div class="modal-header">
 
-            <div>
+            <!-- FECHAR -->
 
-                <span class="modal-mini-titulo">
-                    🍀 RASPADINHA DA AMIZADE
-                </span>
+            <button
+                id="btnFecharRaspadinha"
+                type="button"
+                aria-label="Fechar"
+            >
 
-                <h2>
-                    Sua raspadinha
+                ×
+
+            </button>
+
+
+            <!-- TÍTULO -->
+
+            <div class="modal-title">
+
+                <h2 id="tituloModal">
+
+                    🍀 Raspadinha da Amizade
+
                 </h2>
+
+                <p>
+
+                    Raspe toda a área para
+                    descobrir seu resultado.
+
+                </p>
 
             </div>
 
 
-            <button
-                type="button"
-                id="btnFecharRaspadinha"
-                class="btn-fechar"
-                aria-label="Fechar"
-            >
-                ×
-            </button>
+            <!-- NÚMERO -->
 
-        </div>
-
-
-        <!-- ==================================================
-             NÚMERO
-        =================================================== -->
-
-        <div class="numero-container">
-
-            <span>
-                NÚMERO DA RIFA
-            </span>
-
-            <strong id="numeroRifa">
-                Não informado
-            </strong>
-
-        </div>
-
-
-        <!-- ==================================================
-             ÁREA DO CANVAS
-        =================================================== -->
-
-        <div class="canvas-container">
-
-            <canvas
-                id="canvasRaspadinha"
-                width="380"
-                height="380"
-                tabindex="0"
-                aria-label="Raspadinha"
-            ></canvas>
-
-        </div>
-
-
-        <!-- ==================================================
-             ORIENTAÇÃO
-        =================================================== -->
-
-        <p class="instrucao-raspadinha">
-
-            ✨ Passe o dedo ou o mouse
-            sobre a raspadinha para revelar.
-
-        </p>
-
-
-        <!-- ==================================================
-             RESULTADO
-        =================================================== -->
-
-        <div class="resultado-container">
-
-            <img
-                id="imagemPremio"
-                src="./img/perdeu.png"
-                alt="Resultado da raspadinha"
-                class="imagem-resultado"
-            >
-
-            <div class="resultado-texto">
+            <div class="numero-box">
 
                 <span>
-                    RESULTADO
+                    Número da Rifa
                 </span>
 
-                <strong id="textoPremio">
-                    Não ganhou desta vez
+                <strong id="numeroRifa">
+                    Não informado
                 </strong>
 
             </div>
 
+
+            <!-- CANVAS -->
+
+            <div class="scratch-area">
+
+                <div class="canvas-wrapper">
+
+                    <canvas
+                        id="canvasRaspadinha"
+                        width="380"
+                        height="380"
+                        tabindex="0"
+                    ></canvas>
+
+                </div>
+
+            </div>
+
+
+            <!-- RESULTADO -->
+
+            <div class="resultado-box">
+
+                <div class="resultado-label">
+
+                    Resultado
+
+                </div>
+
+
+                <img
+                    id="imagemPremio"
+                    src=""
+                    alt=""
+                >
+
+
+                <div id="textoPremio">
+
+                    Sua raspadinha aparecerá aqui.
+
+                </div>
+
+            </div>
+
+
+            <!-- FORMULÁRIO -->
+
+            <div
+                id="formGanhador"
+                class="form-ganhador"
+            >
+
+                <h3>
+
+                    🎉 Parabéns!
+
+                </h3>
+
+
+                <div class="form-group">
+
+                    <label
+                        for="nomeCompleto"
+                    >
+                        Nome completo
+                    </label>
+
+                    <input
+                        id="nomeCompleto"
+                        type="text"
+                        autocomplete="name"
+                        placeholder="Digite seu nome"
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label
+                        for="whatsapp"
+                    >
+                        WhatsApp
+                    </label>
+
+                    <input
+                        id="whatsapp"
+                        type="tel"
+                        autocomplete="tel"
+                        placeholder="(00) 00000-0000"
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label
+                        for="cidade"
+                    >
+                        Cidade
+                    </label>
+
+                    <input
+                        id="cidade"
+                        type="text"
+                        autocomplete="address-level2"
+                        placeholder="Digite sua cidade"
+                    >
+
+                </div>
+
+
+                <button
+                    id="btnSalvarDados"
+                    type="button"
+                >
+
+                    Salvar Dados
+
+                </button>
+
+            </div>
+
+
+            <!-- MENSAGEM -->
+
+            <div
+                id="mensagem"
+                aria-live="polite"
+            ></div>
+
+
         </div>
-
-
-        <!-- ==================================================
-             BOTÃO FECHAR
-        =================================================== -->
-
-        <button
-            type="button"
-            class="btn-continuar"
-            onclick="document.getElementById('btnFecharRaspadinha').click()"
-        >
-
-            FECHAR
-
-        </button>
-
 
     </div>
 
-</div>
 
 
+    <!-- ==================================================
+         JAVASCRIPT
+    ================================================== -->
 
-<!-- ======================================================
-     MENSAGEM DE STATUS
-======================================================= -->
+    <script type="module">
 
-<div
-    id="mensagemSistema"
-    class="mensagem-sistema"
-    aria-live="polite"
-></div>
+        import CONFIG
+            from "./config.js";
+
+        import {
+            iniciarRaspadinha,
+            abrirRaspadinha
+        } from "./raspadinha/raspadinha.js";
 
 
+        /* ==================================================
+           ELEMENTOS
+        ================================================== */
 
-<!-- ======================================================
-     JAVASCRIPT PRINCIPAL
-======================================================= -->
+        const btnParticipar =
+            document.getElementById(
+                "btnParticipar"
+            );
 
-<script
-    type="module"
-    src="./app.js"
-></script>
+        const statusSistema =
+            document.getElementById(
+                "statusSistema"
+            );
+
+        const textoStatus =
+            document.getElementById(
+                "textoStatus"
+            );
+
+
+        const premioPrincipal =
+            document.getElementById(
+                "premioPrincipal"
+            );
+
+        const premioSecundario =
+            document.getElementById(
+                "premioSecundario"
+            );
+
+
+        /* ==================================================
+           STATUS
+        ================================================== */
+
+        function escreverStatus(
+            mensagem,
+            tipo = "normal"
+        ) {
+
+            if (!statusSistema) {
+                return;
+            }
+
+
+            if (textoStatus) {
+
+                textoStatus.textContent =
+                    mensagem;
+
+            }
+
+
+            statusSistema.classList
+                .remove(
+                    "online",
+                    "error"
+                );
+
+
+            if (tipo === "online") {
+
+                statusSistema.classList
+                    .add("online");
+
+            }
+
+
+            if (tipo === "error") {
+
+                statusSistema.classList
+                    .add("error");
+
+            }
+
+        }
+
+
+        /* ==================================================
+           TESTAR FIREBASE
+        ================================================== */
+
+        async function testarFirebase() {
+
+            try {
+
+                const modulo =
+                    await import(
+                        "./firebase/firebase.js"
+                    );
+
+
+                const db =
+                    modulo.getDB();
+
+
+                if (!db) {
+
+                    throw new Error(
+                        "Banco de dados não disponível."
+                    );
+
+                }
+
+
+                return true;
+
+            } catch (erro) {
+
+                console.error(
+                    "Erro Firebase:",
+                    erro
+                );
+
+
+                return false;
+
+            }
+
+        }
+
+
+        /* ==================================================
+           INICIAR SISTEMA
+        ================================================== */
+
+        async function iniciarSistema() {
+
+            try {
+
+                escreverStatus(
+                    "Conectando ao sistema..."
+                );
+
+
+                /* ------------------------------------------
+                   CONFIGURAÇÃO VISUAL
+                ------------------------------------------ */
+
+                if (
+                    CONFIG?.campanha
+                ) {
+
+                    if (
+                        premioPrincipal &&
+                        CONFIG.campanha
+                            .premioPrincipal
+                    ) {
+
+                        premioPrincipal.textContent =
+                            CONFIG.campanha
+                                .premioPrincipal;
+
+                    }
+
+
+                    if (
+                        premioSecundario &&
+                        CONFIG.campanha
+                            .premioSecundario
+                    ) {
+
+                        premioSecundario.textContent =
+                            CONFIG.campanha
+                                .premioSecundario;
+
+                    }
+
+                }
+
+
+                /* ------------------------------------------
+                   FIREBASE
+                ------------------------------------------ */
+
+                const conectado =
+                    await testarFirebase();
+
+
+                if (!conectado) {
+
+                    escreverStatus(
+                        "Sistema indisponível.",
+                        "error"
+                    );
+
+                    if (btnParticipar) {
+
+                        btnParticipar.disabled =
+                            true;
+
+                    }
+
+                    return;
+
+                }
+
+
+                /* ------------------------------------------
+                   RASPADINHA
+                ------------------------------------------ */
+
+                await iniciarRaspadinha();
+
+
+                /* ------------------------------------------
+                   EVENTO DO BOTÃO
+                ------------------------------------------ */
+
+                if (btnParticipar) {
+
+                    btnParticipar
+                        .addEventListener(
+                            "click",
+                            async () => {
+
+                                try {
+
+                                    btnParticipar.disabled =
+                                        true;
+
+
+                                    escreverStatus(
+                                        "Abrindo raspadinha..."
+                                    );
+
+
+                                    await abrirRaspadinha();
+
+
+                                    escreverStatus(
+                                        "Raspadinha pronta.",
+                                        "online"
+                                    );
+
+
+                                } catch (erro) {
+
+                                    console.error(
+                                        erro
+                                    );
+
+
+                                    escreverStatus(
+                                        erro?.message ||
+                                        "Não foi possível abrir.",
+                                        "error"
+                                    );
+
+
+                                } finally {
+
+                                    btnParticipar.disabled =
+                                        false;
+
+                                }
+
+                            }
+                        );
+
+                }
+
+
+                escreverStatus(
+                    "Sistema pronto.",
+                    "online"
+                );
+
+
+            } catch (erro) {
+
+                console.error(
+                    "Erro ao iniciar:",
+                    erro
+                );
+
+
+                escreverStatus(
+                    "Erro ao iniciar o sistema.",
+                    "error"
+                );
+
+            }
+
+        }
+
+
+        /* ==================================================
+           DOM READY
+        ================================================== */
+
+        if (
+            document.readyState ===
+            "loading"
+        ) {
+
+            document.addEventListener(
+                "DOMContentLoaded",
+                iniciarSistema,
+                {
+                    once: true
+                }
+            );
+
+        } else {
+
+            iniciarSistema();
+
+        }
+
+    </script>
 
 
 </body>
