@@ -1,33 +1,76 @@
 /* ==========================================================
-   CANVAS ENGINE 6.0
-   RASPADINHA SOLIDÁRIA
+   RASPADINHA SOLIDÁRIA 6.0
+   CANVAS ENGINE
+   Motor visual da raspadinha
 ========================================================== */
 
 import { CONFIG } from "../config.js";
-import { realizarSorteio } from "./sorteio.js";
-import { obterImagemResultado } from "./resultado.js";
+
+import {
+    obterImagemResultado
+} from "./resultado.js";
+
+/* ==========================================================
+   CLASSE PRINCIPAL
+========================================================== */
 
 export default class CanvasEngine {
 
-    constructor(canvasId = "canvasRaspadinha") {
+    constructor(
+        canvasId = "canvasRaspadinha"
+    ) {
 
         this.canvasId = canvasId;
 
         this.canvas = null;
+
         this.ctx = null;
 
         this.overlayCanvas = null;
+
         this.overlayCtx = null;
 
+        /* --------------------------------------------------
+           DIMENSÕES
+        -------------------------------------------------- */
+
         this.width =
-            CONFIG.raspadinha.largura || 380;
+            Number(
+                CONFIG?.raspadinha?.largura
+            ) || 380;
 
         this.height =
-            CONFIG.raspadinha.altura || 380;
+            Number(
+                CONFIG?.raspadinha?.altura
+            ) || 380;
 
-        this.coverImage = new Image();
+        /* --------------------------------------------------
+           RASPAGEM
+        -------------------------------------------------- */
 
-        this.prizeImage = new Image();
+        this.brushRadius =
+            Number(
+                CONFIG?.raspadinha
+                    ?.raioRaspagem
+            ) || 25;
+
+        this.limiteRevelacao =
+            Number(
+                CONFIG?.raspadinha
+                    ?.porcentagemRevelacao
+            ) || 70;
+
+        /* --------------------------------------------------
+           IMAGENS
+        -------------------------------------------------- */
+
+        this.prizeImage = null;
+
+        this.coverImage = null;
+
+        /* --------------------------------------------------
+           ESTADO
+        -------------------------------------------------- */
 
         this.initialized = false;
 
@@ -37,10 +80,13 @@ export default class CanvasEngine {
 
         this.percent = 0;
 
-        this.brushRadius =
-            CONFIG.raspadinha.raioRaspagem || 25;
-
         this.animationFrame = null;
+
+        /* --------------------------------------------------
+           CONTROLE DE EVENTOS
+        -------------------------------------------------- */
+
+        this.eventosRegistrados = false;
 
     }
 
@@ -50,26 +96,89 @@ export default class CanvasEngine {
 
     async iniciar() {
 
+        if (this.initialized) {
+
+            return;
+
+        }
+
         this.canvas =
-            document.getElementById(this.canvasId);
+            document.getElementById(
+                this.canvasId
+            );
 
         if (!this.canvas) {
 
             throw new Error(
-                "Canvas não encontrado."
+                `Canvas "${this.canvasId}" não encontrado.`
             );
 
         }
 
         this.ctx =
-            this.canvas.getContext("2d");
+            this.canvas.getContext(
+                "2d",
+                {
+                    alpha: false
+                }
+            );
 
-        this.canvas.width = this.width;
+        if (!this.ctx) {
 
-        this.canvas.height = this.height;
+            throw new Error(
+                "Não foi possível criar o contexto do Canvas."
+            );
+
+        }
+
+        /* --------------------------------------------------
+           TAMANHO REAL
+        -------------------------------------------------- */
+
+        this.canvas.width =
+            this.width;
+
+        this.canvas.height =
+            this.height;
+
+        /* --------------------------------------------------
+           CAMADA
+        -------------------------------------------------- */
+
+        this.criarCamada();
+
+        /* --------------------------------------------------
+           IMAGENS
+        -------------------------------------------------- */
+
+        await this.carregarImagens();
+
+        /* --------------------------------------------------
+           DESENHO
+        -------------------------------------------------- */
+
+        this.desenharInicial();
+
+        /* --------------------------------------------------
+           EVENTOS
+        -------------------------------------------------- */
+
+        this.registrarEventos();
+
+        this.initialized = true;
+
+    }
+
+    /* ======================================================
+       CRIAR CAMADA
+    ====================================================== */
+
+    criarCamada() {
 
         this.overlayCanvas =
-            document.createElement("canvas");
+            document.createElement(
+                "canvas"
+            );
 
         this.overlayCanvas.width =
             this.width;
@@ -78,155 +187,333 @@ export default class CanvasEngine {
             this.height;
 
         this.overlayCtx =
-            this.overlayCanvas.getContext("2d");
-
-        await this.carregarCamada();
-
-        this.desenharCamada();
-
-        this.registrarEventos();
-
-        this.loop();
-
-        this.initialized = true;
+            this.overlayCanvas.getContext(
+                "2d"
+            );
 
     }
 
     /* ======================================================
-       CAMADA PRATEADA
+       CARREGAR IMAGENS
     ====================================================== */
 
-    async carregarCamada() {
+    async carregarImagens() {
+
+        this.prizeImage =
+            new Image();
+
+        this.coverImage =
+            new Image();
+
+        this.prizeImage.src =
+            obterImagemResultado();
 
         this.coverImage.src =
-            CONFIG.raspadinha.camada;
+            CONFIG?.raspadinha?.camada ||
+            "img/camada-raspadinha.png";
 
-        await new Promise((resolve, reject) => {
+        await Promise.all([
 
-            this.coverImage.onload = resolve;
+            this.carregarImagem(
+                this.prizeImage
+            ),
 
-            this.coverImage.onerror = reject;
+            this.carregarImagem(
+                this.coverImage
+            )
 
-        });
+        ]);
 
     }
 
-    desenharCamada() {
+    /* ======================================================
+       CARREGAR UMA IMAGEM
+    ====================================================== */
+
+    carregarImagem(
+        imagem
+    ) {
+
+        return new Promise(
+            (resolve, reject) => {
+
+                if (
+                    imagem.complete &&
+                    imagem.naturalWidth > 0
+                ) {
+
+                    resolve();
+
+                    return;
+
+                }
+
+                imagem.onload =
+                    () => resolve();
+
+                imagem.onerror =
+                    () => reject(
+                        new Error(
+                            `Não foi possível carregar a imagem: ${imagem.src}`
+                        )
+                    );
+
+            }
+        );
+
+    }
+
+    /* ======================================================
+       DESENHO INICIAL
+    ====================================================== */
+
+    desenharInicial() {
+
+        if (
+            !this.ctx ||
+            !this.overlayCtx
+        ) {
+
+            return;
+
+        }
+
+        /* --------------------------------------------------
+           LIMPAR
+        -------------------------------------------------- */
+
+        this.ctx.clearRect(
+
+            0,
+            0,
+            this.width,
+            this.height
+
+        );
 
         this.overlayCtx.clearRect(
 
             0,
-
             0,
-
             this.width,
-
             this.height
 
         );
 
-        this.overlayCtx.drawImage(
+        /* --------------------------------------------------
+           PRÊMIO
+        -------------------------------------------------- */
 
-            this.coverImage,
-
-            0,
-
-            0,
-
-            this.width,
-
-            this.height
-
-        );
-
-        this.ctx.clearRect(
-
-            0,
-
-            0,
-
-            this.width,
-
-            this.height
-
-        );
-
-        this.ctx.drawImage(
-
-            this.overlayCanvas,
-
-            0,
-
-            0
-
-        );
-
-
-       /* ======================================================
-       LOOP DE RENDERIZAÇÃO
-    ====================================================== */
-
-    loop() {
-
-        this.renderizar();
-
-        this.animationFrame = requestAnimationFrame(
-
-            () => this.loop()
-
-        );
-
-    }
-
-    renderizar() {
-
-        this.ctx.clearRect(
-
-            0,
-
-            0,
-
-            this.width,
-
-            this.height
-
-        );
-
-        if (this.prizeImage.complete) {
+        if (
+            this.prizeImage &&
+            this.prizeImage.naturalWidth
+        ) {
 
             this.ctx.drawImage(
 
                 this.prizeImage,
 
                 0,
-
                 0,
 
                 this.width,
-
                 this.height
 
             );
 
         }
 
-        this.ctx.drawImage(
+        /* --------------------------------------------------
+           COBERTURA
+        -------------------------------------------------- */
 
-            this.overlayCanvas,
+        if (
+            this.coverImage &&
+            this.coverImage.naturalWidth
+        ) {
+
+            this.overlayCtx.drawImage(
+
+                this.coverImage,
+
+                0,
+                0,
+
+                this.width,
+                this.height
+
+            );
+
+        } else {
+
+            /*
+             * Fallback caso a imagem da camada
+             * ainda não esteja disponível.
+             */
+
+            this.criarCoberturaFallback();
+
+        }
+
+        this.percent = 0;
+
+        this.isFinished = false;
+
+        this.renderizar();
+
+    }
+
+    /* ======================================================
+       COBERTURA FALLBACK
+    ====================================================== */
+
+    criarCoberturaFallback() {
+
+        const ctx =
+            this.overlayCtx;
+
+        const gradiente =
+            ctx.createLinearGradient(
+
+                0,
+                0,
+                this.width,
+                this.height
+
+            );
+
+        gradiente.addColorStop(
+            0,
+            "#d8d8d8"
+        );
+
+        gradiente.addColorStop(
+            0.5,
+            "#a9a9a9"
+        );
+
+        gradiente.addColorStop(
+            1,
+            "#d8d8d8"
+        );
+
+        ctx.fillStyle =
+            gradiente;
+
+        ctx.fillRect(
 
             0,
+            0,
+            this.width,
+            this.height
 
-            0
+        );
+
+        ctx.fillStyle =
+            "#555";
+
+        ctx.font =
+            "bold 26px Arial";
+
+        ctx.textAlign =
+            "center";
+
+        ctx.textBaseline =
+            "middle";
+
+        ctx.fillText(
+
+            "RASPE AQUI",
+
+            this.width / 2,
+            this.height / 2
 
         );
 
     }
 
     /* ======================================================
-       EVENTOS
+       RENDERIZAR
+    ====================================================== */
+
+    renderizar() {
+
+        if (
+            !this.ctx ||
+            !this.canvas
+        ) {
+
+            return;
+
+        }
+
+        this.ctx.clearRect(
+
+            0,
+            0,
+            this.width,
+            this.height
+
+        );
+
+        /* --------------------------------------------------
+           PRÊMIO
+        -------------------------------------------------- */
+
+        if (
+            this.prizeImage &&
+            this.prizeImage.naturalWidth
+        ) {
+
+            this.ctx.drawImage(
+
+                this.prizeImage,
+
+                0,
+                0,
+
+                this.width,
+                this.height
+
+            );
+
+        }
+
+        /* --------------------------------------------------
+           COBERTURA
+        -------------------------------------------------- */
+
+        if (
+            this.overlayCanvas
+        ) {
+
+            this.ctx.drawImage(
+
+                this.overlayCanvas,
+
+                0,
+                0
+
+            );
+
+        }
+
+    }
+
+    /* ======================================================
+       REGISTRAR EVENTOS
     ====================================================== */
 
     registrarEventos() {
+
+        if (
+            this.eventosRegistrados ||
+            !this.canvas
+        ) {
+
+            return;
+
+        }
 
         this.canvas.addEventListener(
 
@@ -258,7 +545,9 @@ export default class CanvasEngine {
 
             this.iniciarTouch.bind(this),
 
-            { passive:false }
+            {
+                passive: false
+            }
 
         );
 
@@ -268,7 +557,9 @@ export default class CanvasEngine {
 
             this.moverTouch.bind(this),
 
-            { passive:false }
+            {
+                passive: false
+            }
 
         );
 
@@ -280,81 +571,181 @@ export default class CanvasEngine {
 
         );
 
-    }
-
-    iniciarMouse(e){
-
-        if(this.isFinished) return;
-
-        this.isDrawing=true;
-
-        this.rasparEvento(e);
-
-    }
-
-    moverMouse(e){
-
-        if(!this.isDrawing) return;
-
-        this.rasparEvento(e);
-
-    }
-
-    iniciarTouch(e){
-
-        if(this.isFinished) return;
-
-        e.preventDefault();
-
-        this.isDrawing=true;
-
-        this.rasparEvento(e.touches[0]);
-
-    }
-
-    moverTouch(e){
-
-        if(!this.isDrawing) return;
-
-        e.preventDefault();
-
-        this.rasparEvento(e.touches[0]);
-
-    }
-
-    finalizar(){
-
-        this.isDrawing=false;
+        this.eventosRegistrados =
+            true;
 
     }
 
     /* ======================================================
-       COORDENADAS
+       MOUSE — INICIAR
     ====================================================== */
 
-    obterPosicao(evento){
+    iniciarMouse(evento) {
 
-        const rect=this.canvas.getBoundingClientRect();
+        if (
+            this.isFinished
+        ) {
 
-        return{
+            return;
 
-            x:evento.clientX-rect.left,
+        }
 
-            y:evento.clientY-rect.top
+        this.isDrawing =
+            true;
+
+        this.rasparEvento(
+            evento
+        );
+
+    }
+
+    /* ======================================================
+       MOUSE — MOVER
+    ====================================================== */
+
+    moverMouse(evento) {
+
+        if (
+            !this.isDrawing ||
+            this.isFinished
+        ) {
+
+            return;
+
+        }
+
+        this.rasparEvento(
+            evento
+        );
+
+    }
+
+    /* ======================================================
+       TOUCH — INICIAR
+    ====================================================== */
+
+    iniciarTouch(evento) {
+
+        if (
+            this.isFinished
+        ) {
+
+            return;
+
+        }
+
+        evento.preventDefault();
+
+        this.isDrawing =
+            true;
+
+        if (
+            evento.touches.length
+        ) {
+
+            this.rasparEvento(
+                evento.touches[0]
+            );
+
+        }
+
+    }
+
+    /* ======================================================
+       TOUCH — MOVER
+    ====================================================== */
+
+    moverTouch(evento) {
+
+        if (
+            !this.isDrawing ||
+            this.isFinished
+        ) {
+
+            return;
+
+        }
+
+        evento.preventDefault();
+
+        if (
+            evento.touches.length
+        ) {
+
+            this.rasparEvento(
+                evento.touches[0]
+            );
+
+        }
+
+    }
+
+    /* ======================================================
+       FINALIZAR
+    ====================================================== */
+
+    finalizar() {
+
+        this.isDrawing =
+            false;
+
+    }
+
+    /* ======================================================
+       OBTER POSIÇÃO
+    ====================================================== */
+
+    obterPosicao(evento) {
+
+        const rect =
+            this.canvas
+                .getBoundingClientRect();
+
+        /*
+         * Corrige a diferença entre o
+         * tamanho visual e o tamanho real
+         * do Canvas.
+         */
+
+        const escalaX =
+            this.width /
+            rect.width;
+
+        const escalaY =
+            this.height /
+            rect.height;
+
+        return {
+
+            x:
+                (evento.clientX -
+                rect.left) *
+                escalaX,
+
+            y:
+                (evento.clientY -
+                rect.top) *
+                escalaY
 
         };
 
     }
 
-    rasparEvento(evento){
+    /* ======================================================
+       PROCESSAR EVENTO
+    ====================================================== */
 
-        const pos=this.obterPosicao(evento);
+    rasparEvento(evento) {
+
+        const posicao =
+            this.obterPosicao(
+                evento
+            );
 
         this.raspar(
 
-            pos.x,
-
-            pos.y
+            posicao.x,
+            posicao.y
 
         );
 
@@ -364,27 +755,36 @@ export default class CanvasEngine {
        RASPAR
     ====================================================== */
 
-    raspar(x,y){
+    raspar(
+        x,
+        y
+    ) {
 
-        if(this.isFinished) return;
+        if (
+            this.isFinished ||
+            !this.overlayCtx
+        ) {
+
+            return;
+
+        }
 
         this.overlayCtx.save();
 
-        this.overlayCtx.globalCompositeOperation="destination-out";
+        this.overlayCtx.globalCompositeOperation =
+            "destination-out";
 
         this.overlayCtx.beginPath();
 
         this.overlayCtx.arc(
 
             x,
-
             y,
 
             this.brushRadius,
 
             0,
-
-            Math.PI*2
+            Math.PI * 2
 
         );
 
@@ -394,33 +794,54 @@ export default class CanvasEngine {
 
         this.calcularPorcentagem();
 
+        this.renderizar();
+
     }
 
     /* ======================================================
-       PORCENTAGEM
+       CALCULAR PORCENTAGEM
     ====================================================== */
 
-    calcularPorcentagem(){
+    calcularPorcentagem() {
 
-        const dados=this.overlayCtx.getImageData(
+        if (
+            !this.overlayCtx
+        ) {
 
-            0,
+            return 0;
 
-            0,
+        }
 
-            this.width,
+        const dados =
+            this.overlayCtx.getImageData(
 
-            this.height
+                0,
+                0,
 
-        );
+                this.width,
+                this.height
 
-        const pixels=dados.data;
+            );
 
-        let transparentes=0;
+        const pixels =
+            dados.data;
 
-        for(let i=3;i<pixels.length;i+=4){
+        let transparentes =
+            0;
 
-            if(pixels[i]===0){
+        /*
+         * Analisa apenas o canal alpha.
+         */
+
+        for (
+            let i = 3;
+            i < pixels.length;
+            i += 4
+        ) {
+
+            if (
+                pixels[i] === 0
+            ) {
 
                 transparentes++;
 
@@ -428,80 +849,105 @@ export default class CanvasEngine {
 
         }
 
-        this.percent=Math.round(
+        this.percent =
+            Math.round(
 
-            (transparentes/(this.width*this.height))*100
+                (
+                    transparentes /
+                    (
+                        this.width *
+                        this.height
+                    )
+                ) * 100
 
-        );
+            );
 
-        const limite=
-
-            CONFIG.raspadinha.porcentagemRevelacao||70;
-
-        if(
-
-            this.percent>=limite &&
-
-            !this.isFinished
-
-        ){
+        if (
+            this.percent >=
+            this.limiteRevelacao
+        ) {
 
             this.revelarPremio();
 
         }
 
+        return this.percent;
+
     }
 
-       /* ======================================================
+    /* ======================================================
        REVELAR PRÊMIO
     ====================================================== */
 
-    async revelarPremio() {
+    revelarPremio() {
 
-        if (this.isFinished) return;
+        if (
+            this.isFinished
+        ) {
 
-        this.isFinished = true;
+            return;
 
-        try {
+        }
 
-            // Realiza o sorteio somente agora
-            await realizarSorteio();
+        this.isFinished =
+            true;
 
-            // Carrega a imagem do resultado
-            this.prizeImage.src = obterImagemResultado();
+        this.isDrawing =
+            false;
 
-            await new Promise((resolve, reject) => {
+        /*
+         * Remove toda a camada.
+         */
 
-                this.prizeImage.onload = resolve;
-                this.prizeImage.onerror = reject;
+        if (
+            this.overlayCtx
+        ) {
 
-            });
+            this.overlayCtx.clearRect(
 
-        } catch (erro) {
+                0,
+                0,
 
-            console.error(
-                "Erro ao revelar prêmio:",
-                erro
+                this.width,
+                this.height
+
             );
 
         }
 
-        // Remove totalmente a camada prateada
-        this.overlayCtx.clearRect(
-            0,
-            0,
-            this.width,
-            this.height
-        );
+        this.percent = 100;
 
         this.renderizar();
 
-        // Callback opcional
+        /*
+         * Evento opcional configurado
+         * pelo aplicativo.
+         */
+
         if (
-            typeof CONFIG.raspadinha.aoRevelar === "function"
+            typeof CONFIG
+                ?.raspadinha
+                ?.aoRevelar ===
+                "function"
         ) {
 
-            CONFIG.raspadinha.aoRevelar();
+            try {
+
+                CONFIG
+                    .raspadinha
+                    .aoRevelar();
+
+            } catch (erro) {
+
+                console.error(
+
+                    "Erro no evento ao revelar:",
+
+                    erro
+
+                );
+
+            }
 
         }
 
@@ -513,15 +959,26 @@ export default class CanvasEngine {
 
     async reiniciar() {
 
-        this.isDrawing = false;
+        if (
+            !this.canvas
+        ) {
 
-        this.isFinished = false;
+            return;
 
-        this.percent = 0;
+        }
 
-        this.prizeImage = new Image();
+        this.isDrawing =
+            false;
 
-        this.desenharCamada();
+        this.isFinished =
+            false;
+
+        this.percent =
+            0;
+
+        await this.carregarImagens();
+
+        this.desenharInicial();
 
     }
 
@@ -531,15 +988,50 @@ export default class CanvasEngine {
 
     destruir() {
 
-        cancelAnimationFrame(this.animationFrame);
+        this.isDrawing =
+            false;
 
-        this.canvas = null;
-        this.ctx = null;
+        this.isFinished =
+            true;
 
-        this.overlayCanvas = null;
-        this.overlayCtx = null;
+        if (
+            this.animationFrame
+        ) {
 
-        this.initialized = false;
+            cancelAnimationFrame(
+
+                this.animationFrame
+
+            );
+
+            this.animationFrame =
+                null;
+
+        }
+
+        this.canvas =
+            null;
+
+        this.ctx =
+            null;
+
+        this.overlayCanvas =
+            null;
+
+        this.overlayCtx =
+            null;
+
+        this.prizeImage =
+            null;
+
+        this.coverImage =
+            null;
+
+        this.initialized =
+            false;
+
+        this.eventosRegistrados =
+            false;
 
     }
 
@@ -562,6 +1054,12 @@ export default class CanvasEngine {
     get raspando() {
 
         return this.isDrawing;
+
+    }
+
+    get inicializado() {
+
+        return this.initialized;
 
     }
 
