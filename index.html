@@ -12,7 +12,7 @@
 
     <meta
         name="theme-color"
-        content="#075e54"
+        content="#7b1fa2"
     >
 
     <meta
@@ -21,14 +21,15 @@
     >
 
     <title>
-        Raspadinha da Amizade
+        Raspadinha da Amizade | GilFest
     </title>
 
-    <style>
 
-        /* ==================================================
-           RESET
-        ================================================== */
+    <!-- ==================================================
+         ESTILOS
+    ================================================== -->
+
+    <style>
 
         * {
             box-sizing: border-box;
@@ -36,9 +37,6 @@
             padding: 0;
         }
 
-        html {
-            scroll-behavior: smooth;
-        }
 
         body {
 
@@ -52,88 +50,115 @@
             background:
                 linear-gradient(
                     135deg,
-                    #f4fff9 0%,
-                    #ffffff 45%,
-                    #e9fff4 100%
+                    #4a148c,
+                    #7b1fa2,
+                    #ab47bc
                 );
 
-            color: #18342d;
+            color: #ffffff;
 
-            overflow-x: hidden;
+            display: flex;
+
+            justify-content: center;
+
+            align-items: center;
+
+            padding: 20px;
+
         }
 
-        button,
-        input {
-            font: inherit;
-        }
-
-        /* ==================================================
-           CONTAINER
-        ================================================== */
 
         .container {
 
-            width: min(
-                100% - 30px,
-                1050px
-            );
+            width: 100%;
 
-            margin: 0 auto;
+            max-width: 480px;
+
+            background:
+                rgba(255, 255, 255, 0.97);
+
+            color: #333333;
+
+            border-radius: 25px;
+
+            overflow: hidden;
+
+            box-shadow:
+                0 20px 60px
+                rgba(0, 0, 0, 0.35);
+
         }
 
+
         /* ==================================================
-           TOPO
+           CABEÇALHO
         ================================================== */
 
-        header {
+        .header {
 
-            position: relative;
+            text-align: center;
+
+            padding: 28px 20px 24px;
 
             background:
                 linear-gradient(
                     135deg,
-                    #075e54,
-                    #0a806d
+                    #6a1b9a,
+                    #8e24aa
                 );
 
-            color: white;
+            color: #ffffff;
 
-            padding:
-                22px
-                0
-                28px;
-
-            box-shadow:
-                0 8px 25px
-                rgba(0, 80, 65, 0.20);
         }
 
-        .topo {
 
-            display: flex;
+        .logo {
 
-            align-items: center;
+            font-size: 14px;
 
-            justify-content: space-between;
+            font-weight: bold;
 
-            gap: 20px;
+            letter-spacing: 2px;
+
+            opacity: 0.9;
+
+            margin-bottom: 10px;
+
         }
 
-        .marca {
 
-            display: flex;
+        .header h1 {
 
-            align-items: center;
+            font-size: 30px;
 
-            gap: 13px;
+            line-height: 1.15;
+
+            margin-bottom: 8px;
+
         }
 
-        .logo-circulo {
 
-            width: 54px;
-            height: 54px;
+        .header p {
 
-            border-radius: 50%;
+            font-size: 15px;
+
+            opacity: 0.95;
+
+        }
+
+
+        /* ==================================================
+           CONTEÚDO
+        ================================================== */
+
+        .content {
+
+            padding: 24px 20px 28px;
+
+        }
+
+
+        .status {
 
             display: flex;
 
@@ -141,589 +166,286 @@
 
             justify-content: center;
 
-            background:
-                rgba(
-                    255,
-                    255,
-                    255,
-                    0.15
-                );
+            gap: 8px;
 
-            border:
-                1px solid
-                rgba(
-                    255,
-                    255,
-                    255,
-                    0.30
-                );
+            padding: 10px 14px;
 
-            font-size: 28px;
+            border-radius: 50px;
+
+            background: #f3e5f5;
+
+            color: #6a1b9a;
+
+            font-size: 13px;
+
+            font-weight: bold;
+
+            margin-bottom: 20px;
+
         }
 
-        .marca h1 {
 
-            font-size: 21px;
+        .status-dot {
 
-            line-height: 1.1;
+            width: 9px;
 
-            font-weight: 800;
+            height: 9px;
+
+            border-radius: 50%;
+
+            background: #ff9800;
+
         }
 
-        .marca span {
 
-            display: block;
+        .status.online .status-dot {
 
-            margin-top: 4px;
+            background: #2e7d32;
 
-            font-size: 12px;
-
-            opacity: 0.85;
         }
 
-        .selo {
 
-            padding:
-                8px
-                12px;
+        .status.error {
 
-            border-radius: 30px;
+            background: #ffebee;
 
-            background:
-                rgba(
-                    255,
-                    255,
-                    255,
-                    0.13
-                );
+            color: #c62828;
 
-            border:
-                1px solid
-                rgba(
-                    255,
-                    255,
-                    255,
-                    0.20
-                );
-
-            font-size: 12px;
-
-            white-space: nowrap;
         }
+
+
+        .status.error .status-dot {
+
+            background: #c62828;
+
+        }
+
 
         /* ==================================================
-           HERO
+           CARDS
         ================================================== */
 
-        .hero {
-
-            padding:
-                42px
-                0
-                25px;
-
-            text-align: center;
-        }
-
-        .hero h2 {
-
-            font-size:
-                clamp(
-                    29px,
-                    6vw,
-                    48px
-                );
-
-            line-height: 1.05;
-
-            color: #075e54;
-
-            margin-bottom: 12px;
-        }
-
-        .hero p {
-
-            max-width: 620px;
-
-            margin: 0 auto;
-
-            color: #55716a;
-
-            font-size: 16px;
-
-            line-height: 1.6;
-        }
-
-        /* ==================================================
-           CARTÃO PRINCIPAL
-        ================================================== */
-
-        .card {
-
-            background: white;
-
-            border-radius: 25px;
-
-            box-shadow:
-                0 15px 45px
-                rgba(
-                    14,
-                    75,
-                    61,
-                    0.12
-                );
-
-            border:
-                1px solid
-                rgba(
-                    7,
-                    94,
-                    84,
-                    0.08
-                );
-
-            overflow: hidden;
-        }
-
-        /* ==================================================
-           PRÊMIO
-        ================================================== */
-
-        .premio-destaque {
-
-            padding: 30px;
-
-            text-align: center;
-
-            background:
-                linear-gradient(
-                    145deg,
-                    #f0fff8,
-                    #ffffff
-                );
-        }
-
-        .etiqueta {
-
-            display: inline-block;
-
-            padding:
-                7px
-                15px;
-
-            border-radius: 30px;
-
-            background: #d9f8eb;
-
-            color: #075e54;
-
-            font-size: 12px;
-
-            font-weight: 800;
-
-            text-transform: uppercase;
-
-            letter-spacing: .5px;
-
-            margin-bottom: 12px;
-        }
-
-        .premio-destaque h3 {
-
-            font-size:
-                clamp(
-                    24px,
-                    5vw,
-                    34px
-                );
-
-            color: #18342d;
-
-            margin-bottom: 8px;
-        }
-
-        .premio-destaque p {
-
-            color: #668079;
-
-            font-size: 14px;
-        }
-
-        /* ==================================================
-           INFORMAÇÕES
-        ================================================== */
-
-        .informacoes {
+        .info-grid {
 
             display: grid;
 
             grid-template-columns:
-                repeat(
-                    3,
-                    1fr
-                );
+                repeat(2, 1fr);
 
-            border-top:
-                1px solid
-                #e6f1ed;
+            gap: 12px;
 
-            border-bottom:
-                1px solid
-                #e6f1ed;
+            margin-bottom: 22px;
+
         }
 
-        .info {
 
-            padding: 20px 15px;
+        .info-card {
+
+            background: #fafafa;
+
+            border: 1px solid #eeeeee;
+
+            border-radius: 16px;
+
+            padding: 16px 12px;
 
             text-align: center;
 
-            border-right:
-                1px solid
-                #e6f1ed;
         }
 
-        .info:last-child {
-            border-right: none;
-        }
 
-        .info .icone {
+        .info-card .icon {
 
-            font-size: 23px;
+            font-size: 25px;
 
             margin-bottom: 7px;
+
         }
 
-        .info .titulo {
+
+        .info-card .label {
 
             display: block;
+
+            color: #777777;
 
             font-size: 11px;
 
             text-transform: uppercase;
 
-            color: #789088;
-
-            font-weight: 700;
+            letter-spacing: 0.5px;
 
             margin-bottom: 5px;
+
         }
 
-        .info .valor {
+
+        .info-card .value {
 
             display: block;
 
-            color: #075e54;
+            color: #4a148c;
 
             font-size: 15px;
 
-            font-weight: 800;
+            font-weight: bold;
+
         }
+
 
         /* ==================================================
-           ÁREA DE PARTICIPAÇÃO
+           DESTAQUE
         ================================================== */
 
-        .participacao {
-
-            padding: 32px;
-
-            text-align: center;
-        }
-
-        .participacao h3 {
-
-            font-size: 23px;
-
-            margin-bottom: 8px;
-
-            color: #18342d;
-        }
-
-        .participacao .subtitulo {
-
-            color: #6d827b;
-
-            font-size: 14px;
-
-            margin-bottom: 23px;
-        }
-
-        .campo-numero {
-
-            max-width: 430px;
-
-            margin:
-                0 auto
-                16px;
-        }
-
-        .campo-numero label {
-
-            display: block;
-
-            text-align: left;
-
-            margin-bottom: 7px;
-
-            font-size: 13px;
-
-            font-weight: 700;
-
-            color: #45635a;
-        }
-
-        .campo-numero input {
-
-            width: 100%;
-
-            height: 55px;
-
-            padding:
-                0
-                17px;
-
-            border:
-                2px solid
-                #d9e9e3;
-
-            border-radius: 14px;
-
-            outline: none;
+        .highlight {
 
             text-align: center;
 
-            font-size: 20px;
+            padding: 20px;
 
-            font-weight: 800;
-
-            color: #075e54;
-
-            transition:
-                border .2s,
-                box-shadow .2s;
-        }
-
-        .campo-numero input:focus {
-
-            border-color: #0a806d;
-
-            box-shadow:
-                0 0 0 4px
-                rgba(
-                    10,
-                    128,
-                    109,
-                    0.10
-                );
-        }
-
-        /* ==================================================
-           BOTÃO
-        ================================================== */
-
-        .btn-principal {
-
-            width: 100%;
-
-            max-width: 430px;
-
-            height: 58px;
-
-            border: none;
-
-            border-radius: 15px;
-
-            cursor: pointer;
-
-            color: white;
-
-            font-size: 16px;
-
-            font-weight: 900;
-
-            letter-spacing: .2px;
+            border-radius: 18px;
 
             background:
                 linear-gradient(
                     135deg,
-                    #075e54,
-                    #0a806d
+                    #fff8e1,
+                    #fff3cd
                 );
 
-            box-shadow:
-                0 9px 20px
-                rgba(
-                    7,
-                    94,
-                    84,
-                    0.22
-                );
+            border: 1px solid #ffe082;
 
-            transition:
-                transform .2s,
-                box-shadow .2s,
-                opacity .2s;
+            margin-bottom: 22px;
+
         }
 
-        .btn-principal:hover {
+
+        .highlight .emoji {
+
+            font-size: 40px;
+
+            margin-bottom: 8px;
+
+        }
+
+
+        .highlight h2 {
+
+            color: #5d4037;
+
+            font-size: 20px;
+
+            margin-bottom: 6px;
+
+        }
+
+
+        .highlight p {
+
+            color: #795548;
+
+            font-size: 14px;
+
+        }
+
+
+        /* ==================================================
+           BOTÃO PRINCIPAL
+        ================================================== */
+
+        #btnParticipar {
+
+            width: 100%;
+
+            border: none;
+
+            border-radius: 16px;
+
+            padding: 18px 20px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #7b1fa2,
+                    #ab47bc
+                );
+
+            color: #ffffff;
+
+            font-size: 17px;
+
+            font-weight: bold;
+
+            cursor: pointer;
+
+            box-shadow:
+                0 8px 20px
+                rgba(123, 31, 162, 0.3);
+
+            transition:
+                transform 0.2s,
+                box-shadow 0.2s,
+                opacity 0.2s;
+
+        }
+
+
+        #btnParticipar:hover {
 
             transform:
                 translateY(-2px);
 
             box-shadow:
-                0 13px 25px
-                rgba(
-                    7,
-                    94,
-                    84,
-                    0.28
-                );
+                0 12px 26px
+                rgba(123, 31, 162, 0.4);
+
         }
 
-        .btn-principal:active {
+
+        #btnParticipar:active {
 
             transform:
                 translateY(0);
+
         }
 
-        .btn-principal:disabled {
 
-            opacity: .55;
+        #btnParticipar:disabled {
+
+            opacity: 0.55;
 
             cursor: not-allowed;
 
             transform: none;
+
         }
 
-        /* ==================================================
-           STATUS
-        ================================================== */
-
-        .status-box {
-
-            max-width: 430px;
-
-            margin:
-                17px auto
-                0;
-
-            padding:
-                11px
-                15px;
-
-            border-radius: 10px;
-
-            background: #f3faf7;
-
-            color: #55716a;
-
-            font-size: 12px;
-
-            min-height: 38px;
-
-            display: flex;
-
-            align-items: center;
-
-            justify-content: center;
-
-            text-align: center;
-        }
-
-        /* ==================================================
-           INSTRUÇÕES
-        ================================================== */
-
-        .instrucoes {
-
-            margin-top: 25px;
-
-            padding: 22px;
-
-            background:
-                #f8fcfa;
-
-            border-radius: 16px;
-
-            text-align: left;
-        }
-
-        .instrucoes h4 {
-
-            color: #075e54;
-
-            margin-bottom: 12px;
-
-            font-size: 15px;
-        }
-
-        .passo {
-
-            display: flex;
-
-            align-items: flex-start;
-
-            gap: 10px;
-
-            margin-bottom: 10px;
-
-            color: #637a72;
-
-            font-size: 13px;
-
-            line-height: 1.45;
-        }
-
-        .passo:last-child {
-            margin-bottom: 0;
-        }
-
-        .numero-passo {
-
-            flex: 0 0 25px;
-
-            width: 25px;
-            height: 25px;
-
-            border-radius: 50%;
-
-            background: #d9f8eb;
-
-            color: #075e54;
-
-            display: flex;
-
-            align-items: center;
-
-            justify-content: center;
-
-            font-size: 11px;
-
-            font-weight: 900;
-        }
 
         /* ==================================================
            RODAPÉ
         ================================================== */
 
-        footer {
+        .footer {
 
             text-align: center;
 
-            padding:
-                30px
-                15px;
+            padding: 18px;
 
-            color: #789088;
+            border-top:
+                1px solid #eeeeee;
+
+            color: #999999;
 
             font-size: 12px;
+
         }
 
-        footer strong {
 
-            color: #075e54;
+        .footer strong {
+
+            color: #7b1fa2;
+
         }
+
 
         /* ==================================================
            MODAL
@@ -737,6 +459,9 @@
 
             z-index: 9999;
 
+            background:
+                rgba(0, 0, 0, 0.78);
+
             display: none;
 
             align-items: center;
@@ -745,79 +470,50 @@
 
             padding: 15px;
 
-            background:
-                rgba(
-                    0,
-                    35,
-                    29,
-                    0.78
-                );
+            overflow-y: auto;
 
-            backdrop-filter:
-                blur(7px);
         }
+
 
         #modalRaspadinha.hidden {
+
             display: none !important;
+
         }
 
-        .modal-conteudo {
 
-            position: relative;
+        .modal-box {
 
-            width: min(
-                100%,
-                480px
-            );
+            width: 100%;
+
+            max-width: 470px;
 
             max-height: 95vh;
 
             overflow-y: auto;
 
-            background: white;
+            background: #ffffff;
 
-            border-radius: 25px;
+            color: #333333;
 
-            padding: 22px;
+            border-radius: 24px;
 
             box-shadow:
                 0 25px 70px
-                rgba(
-                    0,
-                    0,
-                    0,
-                    0.30
-                );
+                rgba(0, 0, 0, 0.45);
 
-            animation:
-                aparecer .25s ease;
-        }
+            padding: 20px;
 
-        @keyframes aparecer {
-
-            from {
-
-                opacity: 0;
-
-                transform:
-                    translateY(20px)
-                    scale(.96);
-
-            }
-
-            to {
-
-                opacity: 1;
-
-                transform:
-                    translateY(0)
-                    scale(1);
-
-            }
+            position: relative;
 
         }
 
-        .btn-fechar {
+
+        /* ==================================================
+           BOTÃO FECHAR
+        ================================================== */
+
+        #btnFecharRaspadinha {
 
             position: absolute;
 
@@ -825,58 +521,122 @@
 
             right: 12px;
 
-            z-index: 20;
-
             width: 38px;
+
             height: 38px;
 
             border: none;
 
             border-radius: 50%;
 
-            background:
-                #edf5f2;
+            background: #eeeeee;
 
-            color: #34564c;
-
-            cursor: pointer;
+            color: #555555;
 
             font-size: 21px;
 
-            line-height: 1;
+            cursor: pointer;
+
+            z-index: 5;
+
         }
 
-        .modal-titulo {
+
+        #btnFecharRaspadinha:hover {
+
+            background: #dddddd;
+
+        }
+
+
+        /* ==================================================
+           CABEÇALHO DO MODAL
+        ================================================== */
+
+        .modal-title {
 
             text-align: center;
 
-            padding:
-                5px
-                35px
-                18px;
+            padding: 8px 40px 18px;
+
         }
 
-        .modal-titulo h3 {
 
-            color: #075e54;
+        .modal-title h2 {
 
-            font-size: 23px;
+            color: #6a1b9a;
+
+            font-size: 24px;
 
             margin-bottom: 5px;
+
         }
 
-        .modal-titulo p {
 
-            color: #789088;
+        .modal-title p {
+
+            color: #777777;
 
             font-size: 13px;
+
         }
 
+
         /* ==================================================
-           CANVAS
+           NÚMERO
         ================================================== */
 
-        .canvas-area {
+        .numero-box {
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #f3e5f5,
+                    #ede7f6
+                );
+
+            border-radius: 14px;
+
+            text-align: center;
+
+            padding: 12px;
+
+            margin-bottom: 15px;
+
+        }
+
+
+        .numero-box span {
+
+            display: block;
+
+            color: #777777;
+
+            font-size: 11px;
+
+            text-transform: uppercase;
+
+            margin-bottom: 4px;
+
+        }
+
+
+        #numeroRifa {
+
+            color: #6a1b9a;
+
+            font-size: 22px;
+
+            font-weight: bold;
+
+        }
+
+
+        /* ==================================================
+           ÁREA DA RASPADINHA
+        ================================================== */
+
+        .scratch-area {
 
             width: 100%;
 
@@ -884,194 +644,290 @@
 
             justify-content: center;
 
-            align-items: center;
+            margin: 10px 0 18px;
 
-            padding: 5px;
         }
 
-        #canvasRaspadinha {
 
-            display: block;
+        .canvas-wrapper {
 
             width: min(
                 380px,
                 100%
             );
 
-            height: auto;
+            aspect-ratio: 1 / 1;
 
-            max-width: 380px;
+            border-radius: 18px;
 
-            border-radius: 16px;
+            overflow: hidden;
+
+            background: #eeeeee;
 
             box-shadow:
                 0 8px 25px
-                rgba(
-                    0,
-                    0,
-                    0,
-                    0.12
-                );
+                rgba(0, 0, 0, 0.15);
 
-            touch-action: none;
+        }
+
+
+        #canvasRaspadinha {
+
+            display: block;
+
+            width: 100%;
+
+            height: 100%;
 
             cursor: crosshair;
 
-            outline: none;
+            touch-action: none;
+
         }
+
 
         /* ==================================================
            RESULTADO
         ================================================== */
 
-        .resultado-area {
+        .resultado-box {
 
-            margin-top: 18px;
+            text-align: center;
 
-            padding: 18px;
+            padding: 16px;
 
             border-radius: 16px;
 
-            background: #f5fbf8;
+            background: #fafafa;
 
-            text-align: center;
+            border: 1px solid #eeeeee;
+
+            margin-bottom: 15px;
+
         }
 
-        .resultado-area img {
 
-            width: 100%;
+        .resultado-box img {
+
+            display: none;
 
             max-width: 150px;
 
-            max-height: 110px;
+            max-height: 100px;
 
             object-fit: contain;
 
-            margin-bottom: 10px;
+            margin: 0 auto 10px;
+
         }
 
-        .resultado-area .rotulo {
 
-            display: block;
+        .resultado-label {
 
-            color: #789088;
+            color: #888888;
 
             font-size: 11px;
 
             text-transform: uppercase;
 
-            margin-bottom: 4px;
+            margin-bottom: 5px;
+
         }
+
 
         #textoPremio {
 
-            display: block;
-
-            color: #075e54;
+            color: #6a1b9a;
 
             font-size: 20px;
 
-            font-weight: 900;
+            font-weight: bold;
+
         }
 
-        .numero-modal {
 
-            margin-top: 8px;
+        /* ==================================================
+           FORMULÁRIO DO GANHADOR
+        ================================================== */
 
-            color: #789088;
+        .form-ganhador {
+
+            display: none;
+
+            margin-top: 15px;
+
+            padding: 18px;
+
+            border-radius: 17px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #f3e5f5,
+                    #ffffff
+                );
+
+            border: 1px solid #e1bee7;
+
+        }
+
+
+        .form-ganhador h3 {
+
+            color: #6a1b9a;
+
+            text-align: center;
+
+            margin-bottom: 14px;
+
+        }
+
+
+        .form-group {
+
+            margin-bottom: 12px;
+
+        }
+
+
+        .form-group label {
+
+            display: block;
 
             font-size: 12px;
+
+            color: #555555;
+
+            font-weight: bold;
+
+            margin-bottom: 5px;
+
         }
+
+
+        .form-group input {
+
+            width: 100%;
+
+            padding: 12px;
+
+            border: 1px solid #dddddd;
+
+            border-radius: 10px;
+
+            outline: none;
+
+            font-size: 14px;
+
+        }
+
+
+        .form-group input:focus {
+
+            border-color: #9c27b0;
+
+            box-shadow:
+                0 0 0 3px
+                rgba(156, 39, 176, 0.1);
+
+        }
+
+
+        #btnSalvarDados {
+
+            width: 100%;
+
+            border: none;
+
+            border-radius: 11px;
+
+            padding: 13px;
+
+            background: #6a1b9a;
+
+            color: #ffffff;
+
+            font-weight: bold;
+
+            cursor: pointer;
+
+        }
+
+
+        /* ==================================================
+           MENSAGEM
+        ================================================== */
+
+        #mensagem {
+
+            text-align: center;
+
+            font-size: 13px;
+
+            margin-top: 12px;
+
+            min-height: 18px;
+
+            color: #777777;
+
+        }
+
 
         /* ==================================================
            RESPONSIVO
         ================================================== */
 
-        @media (max-width: 650px) {
+        @media (max-width: 420px) {
+
+            body {
+
+                padding: 10px;
+
+            }
+
 
             .container {
-                width:
-                    min(
-                        100% - 20px,
-                        1050px
-                    );
-            }
 
-            header {
-                padding:
-                    17px
-                    0
-                    22px;
-            }
-
-            .selo {
-                display: none;
-            }
-
-            .hero {
-                padding:
-                    30px
-                    0
-                    20px;
-            }
-
-            .premio-destaque,
-            .participacao {
-                padding: 24px 18px;
-            }
-
-            .informacoes {
-                grid-template-columns:
-                    1fr;
-            }
-
-            .info {
-
-                border-right: none;
-
-                border-bottom:
-                    1px solid
-                    #e6f1ed;
+                border-radius: 20px;
 
             }
 
-            .info:last-child {
-                border-bottom: none;
+
+            .header h1 {
+
+                font-size: 26px;
+
             }
 
-            .modal-conteudo {
+
+            .content {
 
                 padding:
-                    16px;
+                    20px 15px 24px;
 
-                border-radius:
-                    20px;
             }
 
-            .modal-titulo {
-                padding-bottom: 12px;
+
+            .info-grid {
+
+                gap: 8px;
+
             }
 
-        }
 
-        @media (max-width: 400px) {
+            .info-card {
 
-            .marca h1 {
-                font-size: 18px;
+                padding: 13px 8px;
+
             }
 
-            .logo-circulo {
-                width: 47px;
-                height: 47px;
-                font-size: 23px;
-            }
 
-            .hero h2 {
-                font-size: 28px;
-            }
+            .modal-box {
 
-            .participacao h3 {
-                font-size: 20px;
+                padding: 15px;
+
+                border-radius: 20px;
+
             }
 
         }
@@ -1080,144 +936,149 @@
 
 </head>
 
+
 <body>
 
-    <!-- ==================================================
-         CABEÇALHO
-    =================================================== -->
-
-    <header>
-
-        <div class="container topo">
-
-            <div class="marca">
-
-                <div class="logo-circulo">
-                    🍀
-                </div>
-
-                <div>
-
-                    <h1>
-                        Raspadinha da Amizade
-                    </h1>
-
-                    <span>
-                        Uma experiência GilFest
-                    </span>
-
-                </div>
-
-            </div>
-
-            <div class="selo">
-                ✨ Boa sorte!
-            </div>
-
-        </div>
-
-    </header>
-
 
     <!-- ==================================================
-         CONTEÚDO
-    =================================================== -->
+         APP PRINCIPAL
+    ================================================== -->
 
     <main class="container">
 
-        <section class="hero">
 
-            <h2>
-                Raspe e descubra! 🎉
-            </h2>
+        <!-- CABEÇALHO -->
+
+        <header class="header">
+
+            <div class="logo">
+
+                🍀 GILFEST
+
+            </div>
+
+
+            <h1>
+
+                🍀 Raspadinha da Amizade
+
+            </h1>
+
 
             <p>
-                Sua sorte pode mudar hoje.
-                Informe seu número, participe
-                e raspe a área para descobrir
-                seu resultado.
+
+                Raspe e descubra se você ganhou!
+
             </p>
 
-        </section>
+        </header>
 
 
-        <!-- ==================================================
-             CARTÃO PRINCIPAL
-        =================================================== -->
+        <!-- CONTEÚDO -->
 
-        <section class="card">
+        <section class="content">
 
 
-            <!-- PRÊMIO -->
+            <!-- STATUS -->
 
-            <div class="premio-destaque">
+            <div
+                id="statusSistema"
+                class="status"
+            >
 
-                <span class="etiqueta">
-                    🎁 Prêmio Principal
+                <span
+                    class="status-dot"
+                ></span>
+
+                <span
+                    id="textoStatus"
+                >
+                    Carregando sistema...
                 </span>
-
-                <h3>
-                    Ferro Elétrico
-                </h3>
-
-                <p>
-                    Concorra também ao
-                    Liquidificador.
-                </p>
 
             </div>
 
 
             <!-- INFORMAÇÕES -->
 
-            <div class="informacoes">
+            <div class="info-grid">
 
-                <div class="info">
 
-                    <div class="icone">
+                <div class="info-card">
+
+                    <div class="icon">
                         🎁
                     </div>
 
-                    <span class="titulo">
-                        Prêmio
+                    <span class="label">
+                        Prêmio Principal
                     </span>
 
-                    <span class="valor">
+                    <span
+                        class="value"
+                        id="premioPrincipal"
+                    >
                         Ferro Elétrico
                     </span>
 
                 </div>
 
 
-                <div class="info">
+                <div class="info-card">
 
-                    <div class="icone">
+                    <div class="icon">
+                        🥤
+                    </div>
+
+                    <span class="label">
+                        Prêmio Secundário
+                    </span>
+
+                    <span
+                        class="value"
+                        id="premioSecundario"
+                    >
+                        Liquidificador
+                    </span>
+
+                </div>
+
+
+                <div class="info-card">
+
+                    <div class="icon">
                         📅
                     </div>
 
-                    <span class="titulo">
-                        Campanha
+                    <span class="label">
+                        Sorteio
                     </span>
 
-                    <span class="valor">
-                        Campanha01
+                    <span
+                        class="value"
+                        id="dataSorteio"
+                    >
+                        2026
                     </span>
 
                 </div>
 
 
-                <div class="info">
+                <div class="info-card">
 
-                    <div class="icone">
+                    <div class="icon">
                         🏆
                     </div>
 
-                    <span class="titulo">
+                    <span class="label">
                         Resultado
                     </span>
 
-                    <span class="valor">
-                        Raspadinha
+                    <span
+                        class="value"
+                        id="resultadoSorteio"
+                    >
+                        Loteria Federal
                     </span>
 
                 </div>
@@ -1225,246 +1086,588 @@
             </div>
 
 
-            <!-- PARTICIPAÇÃO -->
+            <!-- DESTAQUE -->
 
-            <div class="participacao">
+            <div class="highlight">
 
-                <h3>
-                    🍀 Sua vez de tentar!
-                </h3>
+                <div class="emoji">
+                    ✨
+                </div>
 
-                <p class="subtitulo">
-                    Digite o número da sua rifa
-                    para começar.
+                <h2>
+                    Sua sorte pode mudar hoje!
+                </h2>
+
+                <p>
+                    Tenha seu número em mãos
+                    e participe da raspadinha.
                 </p>
-
-
-                <div class="campo-numero">
-
-                    <label
-                        for="numeroRifa"
-                    >
-                        Número da Rifa
-                    </label>
-
-                    <input
-                        type="text"
-                        id="numeroRifa"
-                        name="numeroRifa"
-                        inputmode="numeric"
-                        autocomplete="off"
-                        maxlength="4"
-                        placeholder="Digite seu número"
-                    >
-
-                </div>
-
-
-                <button
-                    type="button"
-                    id="btnParticipar"
-                    class="btn-principal"
-                >
-
-                    🎲 QUERO RASPAR AGORA
-
-                </button>
-
-
-                <div
-                    id="statusSistema"
-                    class="status-box"
-                    aria-live="polite"
-                >
-
-                    Carregando sistema...
-
-                </div>
-
-
-                <!-- INSTRUÇÕES -->
-
-                <div class="instrucoes">
-
-                    <h4>
-                        Como participar?
-                    </h4>
-
-
-                    <div class="passo">
-
-                        <span class="numero-passo">
-                            1
-                        </span>
-
-                        <span>
-                            Digite o número da sua
-                            rifa no campo acima.
-                        </span>
-
-                    </div>
-
-
-                    <div class="passo">
-
-                        <span class="numero-passo">
-                            2
-                        </span>
-
-                        <span>
-                            Clique em
-                            <strong>
-                                QUERO RASPAR AGORA
-                            </strong>.
-                        </span>
-
-                    </div>
-
-
-                    <div class="passo">
-
-                        <span class="numero-passo">
-                            3
-                        </span>
-
-                        <span>
-                            Raspe a área cinza
-                            até revelar seu resultado.
-                        </span>
-
-                    </div>
-
-                </div>
 
             </div>
 
+
+            <!-- BOTÃO -->
+
+            <button
+                id="btnParticipar"
+                type="button"
+            >
+
+                🎲 QUERO RASPAR AGORA
+
+            </button>
+
+
         </section>
+
+
+        <!-- RODAPÉ -->
+
+        <footer class="footer">
+
+            © 2026
+            <strong>GilFest</strong>
+
+            <br>
+
+            Raspadinha da Amizade
+
+        </footer>
 
     </main>
 
 
-    <!-- ==================================================
-         RODAPÉ
-    =================================================== -->
-
-    <footer>
-
-        © 2026
-        <strong>GilFest</strong>
-        · Raspadinha da Amizade
-
-    </footer>
-
 
     <!-- ==================================================
          MODAL DA RASPADINHA
-    =================================================== -->
+    ================================================== -->
 
     <div
         id="modalRaspadinha"
         class="hidden"
         role="dialog"
         aria-modal="true"
-        aria-labelledby="tituloModalRaspadinha"
+        aria-labelledby="tituloModal"
     >
 
-        <div class="modal-conteudo">
 
+        <div class="modal-box">
+
+
+            <!-- FECHAR -->
 
             <button
-                type="button"
                 id="btnFecharRaspadinha"
-                class="btn-fechar"
-                aria-label="Fechar raspadinha"
+                type="button"
+                aria-label="Fechar"
             >
+
                 ×
+
             </button>
 
 
-            <div class="modal-titulo">
+            <!-- TÍTULO -->
 
-                <h3 id="tituloModalRaspadinha">
+            <div class="modal-title">
+
+                <h2 id="tituloModal">
 
                     🍀 Raspadinha da Amizade
 
-                </h3>
+                </h2>
 
                 <p>
 
-                    Raspe a área para descobrir
-                    seu resultado!
+                    Raspe toda a área para
+                    descobrir seu resultado.
 
                 </p>
 
             </div>
 
 
-            <!-- CANVAS -->
+            <!-- NÚMERO -->
 
-            <div class="canvas-area">
+            <div class="numero-box">
 
-                <canvas
-                    id="canvasRaspadinha"
-                    width="380"
-                    height="380"
-                    tabindex="0"
-                ></canvas>
+                <span>
+                    Número da Rifa
+                </span>
+
+                <strong id="numeroRifa">
+                    Não informado
+                </strong>
 
             </div>
 
 
-            <!-- RESULTADO -->
+            <!-- CANVAS -->
 
-            <div class="resultado-area">
+            <div class="scratch-area">
 
-                <img
-                    id="imagemPremio"
-                    src="img/perdeu.png"
-                    alt="Resultado da raspadinha"
-                >
+                <div class="canvas-wrapper">
 
-                <span class="rotulo">
-                    Seu resultado
-                </span>
-
-                <strong id="textoPremio">
-                    Raspe para descobrir
-                </strong>
-
-                <div class="numero-modal">
-
-                    Número da Rifa:
-                    <strong id="numeroRifaModal">
-                        <span id="numeroRifaModalValor">
-                            --
-                        </span>
-                    </strong>
+                    <canvas
+                        id="canvasRaspadinha"
+                        width="380"
+                        height="380"
+                        tabindex="0"
+                    ></canvas>
 
                 </div>
 
             </div>
 
 
-            <!-- ELEMENTO UTILIZADO PELO CONTROLLER -->
+            <!-- RESULTADO -->
 
-            <span
-                id="numeroRifa"
-                style="display:none;"
-            ></span>
+            <div class="resultado-box">
+
+                <div class="resultado-label">
+
+                    Resultado
+
+                </div>
+
+
+                <img
+                    id="imagemPremio"
+                    src=""
+                    alt=""
+                >
+
+
+                <div id="textoPremio">
+
+                    Sua raspadinha aparecerá aqui.
+
+                </div>
+
+            </div>
+
+
+            <!-- FORMULÁRIO -->
+
+            <div
+                id="formGanhador"
+                class="form-ganhador"
+            >
+
+                <h3>
+
+                    🎉 Parabéns!
+
+                </h3>
+
+
+                <div class="form-group">
+
+                    <label
+                        for="nomeCompleto"
+                    >
+                        Nome completo
+                    </label>
+
+                    <input
+                        id="nomeCompleto"
+                        type="text"
+                        autocomplete="name"
+                        placeholder="Digite seu nome"
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label
+                        for="whatsapp"
+                    >
+                        WhatsApp
+                    </label>
+
+                    <input
+                        id="whatsapp"
+                        type="tel"
+                        autocomplete="tel"
+                        placeholder="(00) 00000-0000"
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label
+                        for="cidade"
+                    >
+                        Cidade
+                    </label>
+
+                    <input
+                        id="cidade"
+                        type="text"
+                        autocomplete="address-level2"
+                        placeholder="Digite sua cidade"
+                    >
+
+                </div>
+
+
+                <button
+                    id="btnSalvarDados"
+                    type="button"
+                >
+
+                    Salvar Dados
+
+                </button>
+
+            </div>
+
+
+            <!-- MENSAGEM -->
+
+            <div
+                id="mensagem"
+                aria-live="polite"
+            ></div>
+
 
         </div>
 
     </div>
 
 
-    <!-- ==================================================
-         JAVASCRIPT PRINCIPAL
-    =================================================== -->
 
-    <script
-        type="module"
-        src="./app.js"
-    ></script>
+    <!-- ==================================================
+         JAVASCRIPT
+    ================================================== -->
+
+    <script type="module">
+
+        import CONFIG
+            from "./config.js";
+
+        import {
+            iniciarRaspadinha,
+            abrirRaspadinha
+        } from "./raspadinha/raspadinha.js";
+
+
+        /* ==================================================
+           ELEMENTOS
+        ================================================== */
+
+        const btnParticipar =
+            document.getElementById(
+                "btnParticipar"
+            );
+
+        const statusSistema =
+            document.getElementById(
+                "statusSistema"
+            );
+
+        const textoStatus =
+            document.getElementById(
+                "textoStatus"
+            );
+
+
+        const premioPrincipal =
+            document.getElementById(
+                "premioPrincipal"
+            );
+
+        const premioSecundario =
+            document.getElementById(
+                "premioSecundario"
+            );
+
+
+        /* ==================================================
+           STATUS
+        ================================================== */
+
+        function escreverStatus(
+            mensagem,
+            tipo = "normal"
+        ) {
+
+            if (!statusSistema) {
+                return;
+            }
+
+
+            if (textoStatus) {
+
+                textoStatus.textContent =
+                    mensagem;
+
+            }
+
+
+            statusSistema.classList
+                .remove(
+                    "online",
+                    "error"
+                );
+
+
+            if (tipo === "online") {
+
+                statusSistema.classList
+                    .add("online");
+
+            }
+
+
+            if (tipo === "error") {
+
+                statusSistema.classList
+                    .add("error");
+
+            }
+
+        }
+
+
+        /* ==================================================
+           TESTAR FIREBASE
+        ================================================== */
+
+        async function testarFirebase() {
+
+            try {
+
+                const modulo =
+                    await import(
+                        "./firebase/firebase.js"
+                    );
+
+
+                const db =
+                    modulo.getDB();
+
+
+                if (!db) {
+
+                    throw new Error(
+                        "Banco de dados não disponível."
+                    );
+
+                }
+
+
+                return true;
+
+            } catch (erro) {
+
+                console.error(
+                    "Erro Firebase:",
+                    erro
+                );
+
+
+                return false;
+
+            }
+
+        }
+
+
+        /* ==================================================
+           INICIAR SISTEMA
+        ================================================== */
+
+        async function iniciarSistema() {
+
+            try {
+
+                escreverStatus(
+                    "Conectando ao sistema..."
+                );
+
+
+                /* ------------------------------------------
+                   CONFIGURAÇÃO VISUAL
+                ------------------------------------------ */
+
+                if (
+                    CONFIG?.campanha
+                ) {
+
+                    if (
+                        premioPrincipal &&
+                        CONFIG.campanha
+                            .premioPrincipal
+                    ) {
+
+                        premioPrincipal.textContent =
+                            CONFIG.campanha
+                                .premioPrincipal;
+
+                    }
+
+
+                    if (
+                        premioSecundario &&
+                        CONFIG.campanha
+                            .premioSecundario
+                    ) {
+
+                        premioSecundario.textContent =
+                            CONFIG.campanha
+                                .premioSecundario;
+
+                    }
+
+                }
+
+
+                /* ------------------------------------------
+                   FIREBASE
+                ------------------------------------------ */
+
+                const conectado =
+                    await testarFirebase();
+
+
+                if (!conectado) {
+
+                    escreverStatus(
+                        "Sistema indisponível.",
+                        "error"
+                    );
+
+                    if (btnParticipar) {
+
+                        btnParticipar.disabled =
+                            true;
+
+                    }
+
+                    return;
+
+                }
+
+
+                /* ------------------------------------------
+                   RASPADINHA
+                ------------------------------------------ */
+
+                await iniciarRaspadinha();
+
+
+                /* ------------------------------------------
+                   EVENTO DO BOTÃO
+                ------------------------------------------ */
+
+                if (btnParticipar) {
+
+                    btnParticipar
+                        .addEventListener(
+                            "click",
+                            async () => {
+
+                                try {
+
+                                    btnParticipar.disabled =
+                                        true;
+
+
+                                    escreverStatus(
+                                        "Abrindo raspadinha..."
+                                    );
+
+
+                                    await abrirRaspadinha();
+
+
+                                    escreverStatus(
+                                        "Raspadinha pronta.",
+                                        "online"
+                                    );
+
+
+                                } catch (erro) {
+
+                                    console.error(
+                                        erro
+                                    );
+
+
+                                    escreverStatus(
+                                        erro?.message ||
+                                        "Não foi possível abrir.",
+                                        "error"
+                                    );
+
+
+                                } finally {
+
+                                    btnParticipar.disabled =
+                                        false;
+
+                                }
+
+                            }
+                        );
+
+                }
+
+
+                escreverStatus(
+                    "Sistema pronto.",
+                    "online"
+                );
+
+
+            } catch (erro) {
+
+                console.error(
+                    "Erro ao iniciar:",
+                    erro
+                );
+
+
+                escreverStatus(
+                    "Erro ao iniciar o sistema.",
+                    "error"
+                );
+
+            }
+
+        }
+
+
+        /* ==================================================
+           DOM READY
+        ================================================== */
+
+        if (
+            document.readyState ===
+            "loading"
+        ) {
+
+            document.addEventListener(
+                "DOMContentLoaded",
+                iniciarSistema,
+                {
+                    once: true
+                }
+            );
+
+        } else {
+
+            iniciarSistema();
+
+        }
+
+    </script>
+
 
 </body>
 
