@@ -1,9 +1,21 @@
 /* ==========================================================
-   SORTEIO ENGINE 5.0
+   RASPADINHA SOLIDÁRIA 6.0
+   MOTOR DE SORTEIO
 ========================================================== */
 
 import { CONFIG } from "../config.js";
-import { definirResultado } from "./resultado.js";
+
+import {
+    validarParticipacao,
+    registrarResultado,
+    registrarVencedor,
+    registrarEstatistica,
+    buscarPremios
+} from "../firebase/firebase-raspadinha.js";
+
+import {
+    definirResultado
+} from "./resultado.js";
 
 /* ==========================================================
    ESTADO
@@ -13,7 +25,9 @@ let resultadoAtual = "perdeu";
 
 let participanteAtual = null;
 
-let modoTeste = CONFIG?.modoTeste ?? false;
+let numeroAtual = null;
+
+let executando = false;
 
 /* ==========================================================
    INICIAR
@@ -25,15 +39,91 @@ export function iniciarSorteio() {
 
     participanteAtual = null;
 
+    numeroAtual = null;
+
+    executando = false;
+
+}
+
+/* ==========================================================
+   DEFINIR NÚMERO
+========================================================== */
+
+export function definirNumero(numero) {
+
+    if (
+        numero === null ||
+        numero === undefined
+    ) {
+
+        numeroAtual = null;
+
+        return null;
+
+    }
+
+    const valor =
+        String(numero)
+            .replace(/\D/g, "");
+
+    if (!valor) {
+
+        numeroAtual = null;
+
+        return null;
+
+    }
+
+    numeroAtual =
+        valor.padStart(4, "0");
+
+    return numeroAtual;
+
+}
+
+/* ==========================================================
+   OBTER NÚMERO
+========================================================== */
+
+export function obterNumero() {
+
+    return numeroAtual;
+
 }
 
 /* ==========================================================
    DEFINIR PARTICIPANTE
 ========================================================== */
 
-export function definirParticipante(participante) {
+export function definirParticipante(
+    participante
+) {
 
-    participanteAtual = participante;
+    participanteAtual =
+        participante || null;
+
+    if (
+        participante &&
+        participante.numero
+    ) {
+
+        definirNumero(
+            participante.numero
+        );
+
+    }
+
+    return participanteAtual;
+
+}
+
+/* ==========================================================
+   OBTER PARTICIPANTE
+========================================================== */
+
+export function obterParticipanteAtual() {
+
+    return participanteAtual;
 
 }
 
@@ -41,22 +131,151 @@ export function definirParticipante(participante) {
    REALIZAR SORTEIO
 ========================================================== */
 
-export async function realizarSorteio() {
+export async function realizarSorteio(
+    numero = null
+) {
+
+    if (executando) {
+
+        throw new Error(
+            "Um sorteio já está em andamento."
+        );
+
+    }
+
+    executando = true;
 
     try {
 
-        if (modoTeste) {
+        /* --------------------------------------------------
+           DEFINIR NÚMERO
+        -------------------------------------------------- */
 
-            resultadoAtual = realizarSorteioTeste();
+        if (numero !== null) {
 
-        } else {
-
-            resultadoAtual =
-                await realizarSorteioFirebase();
+            definirNumero(numero);
 
         }
 
-        definirResultado(resultadoAtual);
+        if (!numeroAtual) {
+
+            throw new Error(
+                "Número da rifa não informado."
+            );
+
+        }
+
+        /* --------------------------------------------------
+           MODO TESTE
+        -------------------------------------------------- */
+
+        if (CONFIG.modoTeste === true) {
+
+            resultadoAtual =
+                realizarSorteioTeste();
+
+            definirResultado(
+                resultadoAtual
+            );
+
+            return resultadoAtual;
+
+        }
+
+        /* --------------------------------------------------
+           VALIDAR PARTICIPAÇÃO
+        -------------------------------------------------- */
+
+        const validacao =
+            await validarParticipacao(
+                numeroAtual
+            );
+
+        if (
+            !validacao.permitido
+        ) {
+
+            console.warn(
+
+                "Participação bloqueada:",
+
+                validacao.motivo
+
+            );
+
+            participanteAtual =
+                validacao.participante;
+
+            throw new Error(
+                validacao.motivo
+            );
+
+        }
+
+        /* --------------------------------------------------
+           GUARDAR PARTICIPANTE
+        -------------------------------------------------- */
+
+        participanteAtual =
+            validacao.participante;
+
+        /* --------------------------------------------------
+           REALIZAR SORTEIO
+        -------------------------------------------------- */
+
+        resultadoAtual =
+            await sortearPremio();
+
+        /* --------------------------------------------------
+           DEFINIR RESULTADO
+        -------------------------------------------------- */
+
+        definirResultado(
+            resultadoAtual
+        );
+
+        /* --------------------------------------------------
+           REGISTRAR PARTICIPANTE
+        -------------------------------------------------- */
+
+        await registrarResultado(
+
+            numeroAtual,
+
+            resultadoAtual
+
+        );
+
+        /* --------------------------------------------------
+           REGISTRAR VENCEDOR
+        -------------------------------------------------- */
+
+        if (
+            resultadoAtual !==
+            "perdeu"
+        ) {
+
+            await registrarVencedor(
+
+                numeroAtual,
+
+                resultadoAtual,
+
+                participanteAtual
+
+            );
+
+        }
+
+        /* --------------------------------------------------
+           ESTATÍSTICAS
+        -------------------------------------------------- */
+
+        await registrarEstatistica(
+
+            resultadoAtual
+
+        );
 
         return resultadoAtual;
 
@@ -70,13 +289,157 @@ export async function realizarSorteio() {
 
         );
 
-        resultadoAtual = "perdeu";
+        /*
+         * IMPORTANTE:
+         * Se houve erro de validação/Firebase,
+         * não vamos transformar silenciosamente
+         * o erro em uma derrota.
+         */
 
-        definirResultado("perdeu");
+        resultadoAtual =
+            "perdeu";
 
-        return "perdeu";
+        definirResultado(
+            "perdeu"
+        );
+
+        throw erro;
+
+    } finally {
+
+        executando = false;
 
     }
+
+}
+
+/* ==========================================================
+   SORTEIO DO PRÊMIO
+========================================================== */
+
+async function sortearPremio() {
+
+    const premios =
+        await buscarPremios();
+
+    /*
+     * Se o Firebase tiver estoque configurado,
+     * verificamos a disponibilidade.
+     */
+
+    const ferro =
+        obterEstoquePremio(
+            premios,
+            "ferro"
+        );
+
+    const liquidificador =
+        obterEstoquePremio(
+            premios,
+            "liquidificador"
+        );
+
+    const chanceFerro =
+        Number(
+            CONFIG.probabilidades?.ferro ||
+            0.001
+        );
+
+    const chanceLiquidificador =
+        Number(
+            CONFIG.probabilidades?.liquidificador ||
+            0.002
+        );
+
+    const sorteio =
+        Math.random();
+
+    /*
+     * Ferro
+     */
+
+    if (
+        ferro > 0 &&
+        sorteio < chanceFerro
+    ) {
+
+        return "ferro";
+
+    }
+
+    /*
+     * Liquidificador
+     */
+
+    if (
+        liquidificador > 0 &&
+        sorteio <
+            (
+                chanceFerro +
+                chanceLiquidificador
+            )
+    ) {
+
+        return "liquidificador";
+
+    }
+
+    return "perdeu";
+
+}
+
+/* ==========================================================
+   ESTOQUE DO PRÊMIO
+========================================================== */
+
+function obterEstoquePremio(
+    premios,
+    id
+) {
+
+    if (!premios) {
+
+        /*
+         * Caso a estrutura de prêmios
+         * ainda não tenha estoque,
+         * consideramos disponível.
+         */
+
+        return 1;
+
+    }
+
+    const premio =
+        premios[id];
+
+    if (!premio) {
+
+        return 1;
+
+    }
+
+    /*
+     * Aceita diferentes formatos:
+     *
+     * quantidade
+     * estoque
+     * disponivel
+     */
+
+    const estoque =
+        premio.quantidade ??
+        premio.estoque ??
+        premio.disponivel;
+
+    if (
+        estoque === undefined
+    ) {
+
+        return 1;
+
+    }
+
+    return Number(estoque) || 0;
 
 }
 
@@ -84,34 +447,42 @@ export async function realizarSorteio() {
    SORTEIO DE TESTE
 ========================================================== */
 
-function realizarSorteioTeste() {
-
-    const premios = CONFIG.premios.filter(
-
-        premio => premio.id !== "perdeu"
-
-    );
-
-    const numero = Math.random();
+export function realizarSorteioTeste() {
 
     const chanceFerro =
-        CONFIG?.raspadinha?.chanceFerro ?? 0.001;
+        Number(
+            CONFIG.probabilidades?.ferro ||
+            0.001
+        );
 
     const chanceLiquidificador =
-        CONFIG?.raspadinha?.chanceLiquidificador ?? 0.002;
+        Number(
+            CONFIG.probabilidades
+                ?.liquidificador ||
+            0.002
+        );
 
-    if (numero <= chanceFerro && premios.length > 0) {
+    const numero =
+        Math.random();
 
-        return premios.find(p => p.id === "ferro")?.id
-            || "ferro";
+    if (
+        numero <
+        chanceFerro
+    ) {
+
+        return "ferro";
 
     }
 
-    if (numero <= chanceLiquidificador && premios.length > 1) {
+    if (
+        numero <
+        (
+            chanceFerro +
+            chanceLiquidificador
+        )
+    ) {
 
-        return premios.find(
-            p => p.id === "liquidificador"
-        )?.id || "liquidificador";
+        return "liquidificador";
 
     }
 
@@ -120,32 +491,30 @@ function realizarSorteioTeste() {
 }
 
 /* ==========================================================
-   FIREBASE
+   MODO TESTE
 ========================================================== */
 
-async function realizarSorteioFirebase() {
+export function alterarModoTeste(
+    valor
+) {
 
-    /*
-        Esta função será implementada na próxima etapa,
-        utilizando firebase-raspadinha.js.
-
-        Fluxo previsto:
-
-        1 - Validar participante
-        2 - Verificar pagamento
-        3 - Verificar se já raspou
-        4 - Verificar disponibilidade dos prêmios
-        5 - Registrar vencedor
-        6 - Atualizar estoque de prêmios
-        7 - Retornar resultado
-    */
-
-    return "perdeu";
+    CONFIG.modoTeste =
+        Boolean(valor);
 
 }
 
 /* ==========================================================
-   GETTERS
+   VERIFICAR EXECUÇÃO
+========================================================== */
+
+export function sorteioEmAndamento() {
+
+    return executando;
+
+}
+
+/* ==========================================================
+   RESULTADO
 ========================================================== */
 
 export function obterResultadoAtual() {
@@ -154,20 +523,26 @@ export function obterResultadoAtual() {
 
 }
 
-export function obterParticipanteAtual() {
+/* ==========================================================
+   LIMPAR
+========================================================== */
 
-    return participanteAtual;
+export function limparSorteio() {
+
+    resultadoAtual =
+        "perdeu";
+
+    participanteAtual =
+        null;
+
+    numeroAtual =
+        null;
+
+    executando =
+        false;
 
 }
 
-export function alterarModoTeste(valor) {
-
-    modoTeste = Boolean(valor);
-
-}
-
-export function estaEmModoTeste() {
-
-    return modoTeste;
-
-}
+/* ==========================================================
+   FIM DO SORTEIO
+========================================================== */
