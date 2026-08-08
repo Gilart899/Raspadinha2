@@ -1,556 +1,1427 @@
 /* ==========================================================
-   RASPADINHA SOLIDÁRIA 6.0
-   CONTROLADOR PRINCIPAL DA RASPADINHA
-========================================================== */
+   RASPADINHA DA AMIZADE 6.0
+   FIREBASE RASPADINHA
+   Ponte entre aplicação e Realtime Database
+   ========================================================== */
 
-import CanvasEngine from "./canvas.js";
-
-import {
-    realizarSorteio,
-    iniciarSorteio,
-    definirNumero,
-    obterNumero
-} from "./sorteio.js";
+import { getDB } from "./firebase.js";
 
 import {
-    obterResultado,
-    obterImagemResultado,
-    obterNomePremio,
-    limparResultado,
-    ganhouPremio
-} from "./resultado.js";
+    ref,
+    get,
+    set,
+    update,
+    runTransaction,
+    serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.13.2/firebase-database.js";
+
 
 /* ==========================================================
-   ELEMENTOS
-========================================================== */
+   BANCO
+   ========================================================== */
 
-let modal = null;
-let btnFechar = null;
-let imagemPremio = null;
-let textoPremio = null;
-let numeroRifa = null;
+const db = getDB();
+
 
 /* ==========================================================
-   MOTOR
-========================================================== */
+   CAMINHOS PRINCIPAIS
+   ========================================================== */
 
-let canvasEngine = null;
+const CAMINHOS = {
+
+    config: "config",
+
+    campanha: "campanha",
+
+    estatisticas: "estatisticas",
+
+    participantes: "participantes",
+
+    premios: "premios",
+
+    sistema: "sistema",
+
+    teste: "teste",
+
+    vencedores: "vencedores"
+
+};
+
 
 /* ==========================================================
-   ESTADO
-========================================================== */
+   NORMALIZAR NÚMERO
+   ========================================================== */
 
-let inicializado = false;
-let aberta = false;
-let abrindo = false;
-let eventosRegistrados = false;
+function normalizarNumero(numero) {
 
-/* ==========================================================
-   INICIAR
-========================================================== */
+    if (
+        numero === null ||
+        numero === undefined ||
+        numero === ""
+    ) {
 
-export async function iniciarRaspadinha() {
+        return null;
 
-    if (inicializado) {
-        return true;
     }
 
-    /* ------------------------------------------------------
-       LOCALIZAR ELEMENTOS
-    ------------------------------------------------------ */
 
-    modal = document.getElementById(
-        "modalRaspadinha"
-    );
+    const valor = String(numero)
+        .trim()
+        .replace(/\D/g, "");
 
-    btnFechar = document.getElementById(
-        "btnFecharRaspadinha"
-    );
 
-    imagemPremio = document.getElementById(
-        "imagemPremio"
-    );
+    if (!valor) {
 
-    textoPremio = document.getElementById(
-        "textoPremio"
-    );
+        return null;
 
-    numeroRifa = document.getElementById(
-        "numeroRifa"
-    );
+    }
 
-    /* ------------------------------------------------------
-       VALIDAR MODAL
-    ------------------------------------------------------ */
 
-    if (!modal) {
+    const numeroInteiro =
+        parseInt(valor, 10);
+
+
+    if (
+        !Number.isInteger(numeroInteiro)
+    ) {
+
+        return null;
+
+    }
+
+
+    if (
+        numeroInteiro < 1 ||
+        numeroInteiro > 1000
+    ) {
+
+        return null;
+
+    }
+
+
+    /*
+     * O projeto trabalha com números
+     * de 4 dígitos no Firebase.
+     *
+     * Exemplo:
+     *
+     * 1    -> 0001
+     * 25   -> 0025
+     * 100  -> 0100
+     * 1000 -> 1000
+     */
+
+    return String(numeroInteiro)
+        .padStart(4, "0");
+
+}
+
+
+/* ==========================================================
+   REFERÊNCIA DO PARTICIPANTE
+   ========================================================== */
+
+function referenciaParticipante(numero) {
+
+    const numeroNormalizado =
+        normalizarNumero(numero);
+
+
+    if (!numeroNormalizado) {
 
         throw new Error(
-            'Elemento "#modalRaspadinha" não encontrado.'
+            "Número da rifa inválido."
         );
 
     }
 
-    /* ------------------------------------------------------
-       CRIAR CANVAS ENGINE
-    ------------------------------------------------------ */
 
-    canvasEngine = new CanvasEngine(
-        "canvasRaspadinha"
+    return ref(
+        db,
+        `${CAMINHOS.participantes}/${numeroNormalizado}`
     );
 
-    await canvasEngine.iniciar();
-
-    /* ------------------------------------------------------
-       ESTADO INICIAL
-    ------------------------------------------------------ */
-
-    limparResultado();
-    iniciarSorteio();
-
-    atualizarInterface();
-
-    /* ------------------------------------------------------
-       EVENTOS
-    ------------------------------------------------------ */
-
-    registrarEventos();
-
-    inicializado = true;
-
-    return true;
 }
 
-/* ==========================================================
-   REGISTRAR EVENTOS
-========================================================== */
-
-function registrarEventos() {
-
-    if (eventosRegistrados) {
-        return;
-    }
-
-    /* ------------------------------------------------------
-       BOTÃO FECHAR
-    ------------------------------------------------------ */
-
-    if (btnFechar) {
-
-        btnFechar.addEventListener(
-            "click",
-            fecharRaspadinha
-        );
-
-    }
-
-    /* ------------------------------------------------------
-       CLIQUE FORA DO MODAL
-    ------------------------------------------------------ */
-
-    if (modal) {
-
-        modal.addEventListener(
-            "click",
-            evento => {
-
-                if (
-                    evento.target === modal
-                ) {
-
-                    fecharRaspadinha();
-
-                }
-
-            }
-        );
-
-    }
-
-    eventosRegistrados = true;
-}
 
 /* ==========================================================
-   ABRIR RASPADINHA
-========================================================== */
+   BUSCAR PARTICIPANTE
+   ========================================================== */
 
-export async function abrirRaspadinha(
-    numero = null
-) {
+export async function buscarParticipante(numero) {
 
-    if (abrindo) {
-        return false;
+    const numeroNormalizado =
+        normalizarNumero(numero);
+
+
+    if (!numeroNormalizado) {
+
+        return null;
+
     }
 
-    abrindo = true;
 
     try {
 
-        /* --------------------------------------------------
-           GARANTIR INICIALIZAÇÃO
-        -------------------------------------------------- */
-
-        if (!inicializado) {
-
-            await iniciarRaspadinha();
-
-        }
-
-        /* --------------------------------------------------
-           DEFINIR NÚMERO
-        -------------------------------------------------- */
-
-        if (
-            numero !== null &&
-            numero !== undefined &&
-            numero !== ""
-        ) {
-
-            definirNumero(numero);
-
-        }
-
-        const numeroAtual =
-            obterNumero();
-
-        /* --------------------------------------------------
-           VALIDAR NÚMERO
-        -------------------------------------------------- */
-
-        if (!numeroAtual) {
-
-            throw new Error(
-                "Número da rifa não informado."
+        const participanteRef =
+            referenciaParticipante(
+                numeroNormalizado
             );
 
-        }
 
-        /* --------------------------------------------------
-           LIMPAR RESULTADO ANTERIOR
-        -------------------------------------------------- */
-
-        limparResultado();
-
-        iniciarSorteio();
-
-        /* --------------------------------------------------
-           REALIZAR SORTEIO OFICIAL
-        -------------------------------------------------- */
-
-        const resultado =
-            await realizarSorteio(
-                numeroAtual
+        const snapshot =
+            await get(
+                participanteRef
             );
 
-        console.log(
-            "Resultado da raspadinha:",
-            resultado
-        );
 
-        /* --------------------------------------------------
-           ATUALIZAR INTERFACE
-        -------------------------------------------------- */
+        if (!snapshot.exists()) {
 
-        atualizarInterface();
-
-        /* --------------------------------------------------
-           REINICIAR CANVAS
-        -------------------------------------------------- */
-
-        if (canvasEngine) {
-
-            await canvasEngine.reiniciar();
+            return null;
 
         }
 
-        /* --------------------------------------------------
-           MOSTRAR MODAL
-        -------------------------------------------------- */
 
-        mostrarModal();
+        return {
 
-        return resultado;
+            numero:
+                numeroNormalizado,
+
+            ...snapshot.val()
+
+        };
 
     } catch (erro) {
 
         console.error(
-            "Erro ao abrir raspadinha:",
+            "Erro ao buscar participante:",
             erro
         );
 
-        /*
-         * O erro é mostrado ao usuário.
-         * Não transformamos erro de Firebase
-         * em uma derrota falsa.
-         */
+        throw erro;
 
-        alert(
-            erro?.message ||
-            "Não foi possível abrir a raspadinha."
+    }
+
+}
+
+
+/* ==========================================================
+   VALIDAR PARTICIPANTE
+   ========================================================== */
+
+export async function validarParticipante(numero) {
+
+    const participante =
+        await buscarParticipante(
+            numero
         );
 
-        return false;
 
-    } finally {
+    if (!participante) {
 
-        abrindo = false;
+        throw new Error(
+            "Número da rifa não encontrado."
+        );
 
     }
+
+
+    if (
+        !pagamentoConfirmado(
+            participante
+        )
+    ) {
+
+        throw new Error(
+            "O pagamento deste número ainda não foi confirmado."
+        );
+
+    }
+
+
+    if (
+        jaRaspou(
+            participante
+        )
+    ) {
+
+        throw new Error(
+            "Este número já foi utilizado."
+        );
+
+    }
+
+
+    return participante;
+
 }
 
-/* ==========================================================
-   ATUALIZAR IMAGEM
-========================================================== */
-
-function atualizarImagemPremio() {
-
-    if (!imagemPremio) {
-        return;
-    }
-
-    const imagem =
-        obterImagemResultado();
-
-    if (!imagem) {
-        return;
-    }
-
-    imagemPremio.src = imagem;
-
-    imagemPremio.alt =
-        obterNomePremio();
-}
 
 /* ==========================================================
-   ATUALIZAR INTERFACE
-========================================================== */
+   VERIFICAR PARTICIPANTE
+   ========================================================== */
 
-function atualizarInterface() {
+export async function verificarParticipante(numero) {
 
-    const resultado =
-        obterResultado();
+    try {
 
-    const premio =
-        obterNomePremio();
+        const participante =
+            await buscarParticipante(
+                numero
+            );
 
-    /* ------------------------------------------------------
-       NÚMERO
-    ------------------------------------------------------ */
 
-    if (numeroRifa) {
+        if (!participante) {
 
-        numeroRifa.textContent =
-            obterNumero() ||
-            "Não informado";
+            return {
 
-    }
+                valido: false,
 
-    /* ------------------------------------------------------
-       PRÊMIO
-    ------------------------------------------------------ */
+                motivo:
+                    "Número não encontrado.",
 
-    if (textoPremio) {
+                participante: null
 
-        textoPremio.textContent =
-            premio;
+            };
 
-    }
-
-    /* ------------------------------------------------------
-       IMAGEM
-    ------------------------------------------------------ */
-
-    atualizarImagemPremio();
-
-    /* ------------------------------------------------------
-       LOG
-    ------------------------------------------------------ */
-
-    console.log(
-        "Status da raspadinha:",
-        {
-            numero: obterNumero(),
-            resultado,
-            premio,
-            ganhou: ganhouPremio()
         }
-    );
-}
 
-/* ==========================================================
-   FECHAR RASPADINHA
-========================================================== */
 
-export function fecharRaspadinha() {
+        return {
 
-    if (!modal) {
-        return;
+            valido: true,
+
+            motivo:
+                "Participante encontrado.",
+
+            participante
+
+        };
+
+    } catch (erro) {
+
+        return {
+
+            valido: false,
+
+            motivo:
+                erro.message ||
+                "Erro ao consultar participante.",
+
+            participante: null
+
+        };
+
     }
 
-    modal.classList.add(
-        "hidden"
-    );
-
-    modal.style.display =
-        "none";
-
-    aberta = false;
-
-    console.log(
-        "Raspadinha fechada."
-    );
 }
 
-/* ==========================================================
-   MOSTRAR MODAL
-========================================================== */
-
-export function mostrarModal() {
-
-    if (!modal) {
-        return;
-    }
-
-    modal.classList.remove(
-        "hidden"
-    );
-
-    modal.style.display =
-        "flex";
-
-    aberta = true;
-}
 
 /* ==========================================================
-   OCULTAR MODAL
-========================================================== */
+   VERIFICAR PAGAMENTO
+   ========================================================== */
 
-export function ocultarModal() {
+export function pagamentoConfirmado(
+    participante
+) {
 
-    fecharRaspadinha();
+    if (!participante) {
 
-}
-
-/* ==========================================================
-   REINICIAR RASPADINHA
-========================================================== */
-
-export async function reiniciarRaspadinha() {
-
-    if (!canvasEngine) {
         return false;
+
     }
 
-    limparResultado();
 
-    iniciarSorteio();
+    /*
+     * Aceita diferentes formatos que podem
+     * existir no banco.
+     */
 
-    atualizarInterface();
+    if (
+        participante.comprado === true
+    ) {
 
-    await canvasEngine.reiniciar();
+        return true;
 
-    return true;
+    }
+
+
+    if (
+        participante.pagamentoConfirmado === true
+    ) {
+
+        return true;
+
+    }
+
+
+    const status =
+        participante.statusPagamento ??
+        participante.pagamento ??
+        participante.status ??
+        "";
+
+
+    const valor =
+        String(status)
+            .trim()
+            .toLowerCase();
+
+
+    return (
+
+        valor === "pago" ||
+
+        valor === "confirmado" ||
+
+        valor === "pagamento confirmado" ||
+
+        valor === "aprovado" ||
+
+        valor === "true"
+
+    );
+
 }
 
+
 /* ==========================================================
-   OBTER MOTOR
-========================================================== */
+   VERIFICAR SE JÁ RASPOU
+   ========================================================== */
 
-export function obterCanvasEngine() {
+export function jaRaspou(
+    participante
+) {
 
-    return canvasEngine;
+    if (!participante) {
+
+        return false;
+
+    }
+
+
+    /*
+     * Estrutura antiga.
+     */
+
+    if (
+        participante.jaRaspou === true
+    ) {
+
+        return true;
+
+    }
+
+
+    /*
+     * Estrutura alternativa.
+     */
+
+    if (
+        participante.raspou === true
+    ) {
+
+        return true;
+
+    }
+
+
+    /*
+     * Estrutura utilizada pelo projeto.
+     */
+
+    if (
+        participante.statusRaspadinha ===
+        "raspado"
+    ) {
+
+        return true;
+
+    }
+
+
+    /*
+     * Estrutura aninhada.
+     */
+
+    if (
+        participante.raspadinha &&
+        participante.raspadinha.realizada === true
+    ) {
+
+        return true;
+
+    }
+
+
+    if (
+        participante.dataRaspagem
+    ) {
+
+        return true;
+
+    }
+
+
+    return false;
 
 }
 
-/* ==========================================================
-   VERIFICAR SE ESTÁ ABERTA
-========================================================== */
-
-export function raspadinhaAberta() {
-
-    return aberta;
-
-}
 
 /* ==========================================================
-   VERIFICAR INICIALIZAÇÃO
-========================================================== */
+   VALIDAR PARTICIPAÇÃO
+   ========================================================== */
 
-export function raspadinhaInicializada() {
+export async function validarParticipacao(
+    numero
+) {
 
-    return inicializado;
+    const participante =
+        await buscarParticipante(
+            numero
+        );
 
-}
 
-/* ==========================================================
-   OBTER STATUS
-========================================================== */
+    if (!participante) {
 
-export function obterStatusRaspadinha() {
+        return {
+
+            permitido: false,
+
+            motivo:
+                "Número da rifa não encontrado.",
+
+            participante: null
+
+        };
+
+    }
+
+
+    if (
+        !pagamentoConfirmado(
+            participante
+        )
+    ) {
+
+        return {
+
+            permitido: false,
+
+            motivo:
+                "O pagamento ainda não foi confirmado.",
+
+            participante
+
+        };
+
+    }
+
+
+    if (
+        jaRaspou(
+            participante
+        )
+    ) {
+
+        return {
+
+            permitido: false,
+
+            motivo:
+                "Este número já foi utilizado.",
+
+            participante
+
+        };
+
+    }
+
 
     return {
 
-        inicializado,
+        permitido: true,
 
-        aberta,
+        motivo:
+            "Participação liberada.",
 
-        abrindo,
-
-        numero:
-            obterNumero(),
-
-        resultado:
-            obterResultado(),
-
-        premio:
-            obterNomePremio(),
-
-        ganhou:
-            ganhouPremio(),
-
-        porcentagem:
-            canvasEngine
-                ? canvasEngine.porcentagem
-                : 0,
-
-        finalizado:
-            canvasEngine
-                ? canvasEngine.finalizado
-                : false
+        participante
 
     };
+
 }
 
+
 /* ==========================================================
-   DESTRUIR
-========================================================== */
+   BUSCAR PRÊMIOS
+   ========================================================== */
 
-export function destruirRaspadinha() {
+export async function buscarPremios() {
 
-    if (canvasEngine) {
+    const premiosRef =
+        ref(
+            db,
+            CAMINHOS.premios
+        );
 
-        canvasEngine.destruir();
 
-        canvasEngine = null;
+    const snapshot =
+        await get(
+            premiosRef
+        );
+
+
+    if (!snapshot.exists()) {
+
+        return {};
 
     }
 
-    modal = null;
-    btnFechar = null;
-    imagemPremio = null;
-    textoPremio = null;
-    numeroRifa = null;
 
-    inicializado = false;
-    aberta = false;
-    abrindo = false;
-    eventosRegistrados = false;
-
-    limparResultado();
-    iniciarSorteio();
+    return snapshot.val();
 
 }
 
+
 /* ==========================================================
-   FIM DO CONTROLADOR
-========================================================== */
+   BUSCAR CAMPANHA
+   ========================================================== */
+
+export async function buscarCampanha() {
+
+    const campanhaRef =
+        ref(
+            db,
+            CAMINHOS.campanha
+        );
+
+
+    const snapshot =
+        await get(
+            campanhaRef
+        );
+
+
+    if (!snapshot.exists()) {
+
+        return {};
+
+    }
+
+
+    return snapshot.val();
+
+}
+
+
+/* ==========================================================
+   REGISTRAR RESULTADO
+   ========================================================== */
+
+export async function registrarResultado(
+    numero,
+    resultado
+) {
+
+    const numeroNormalizado =
+        normalizarNumero(numero);
+
+
+    if (!numeroNormalizado) {
+
+        throw new Error(
+            "Número da rifa inválido."
+        );
+
+    }
+
+
+    const participanteRef =
+        referenciaParticipante(
+            numeroNormalizado
+        );
+
+
+    const dados = {
+
+        numeroRifa:
+            numeroNormalizado,
+
+        jaRaspou: true,
+
+        raspou: true,
+
+        statusRaspadinha:
+            "raspado",
+
+        resultado:
+            resultado,
+
+        premioRecebido:
+            resultado === "perdeu"
+                ? null
+                : resultado,
+
+        dataRaspagem:
+            serverTimestamp()
+
+    };
+
+
+    await update(
+        participanteRef,
+        dados
+    );
+
+
+    return dados;
+
+}
+
+
+/* ==========================================================
+   REGISTRAR VENCEDOR
+   ========================================================== */
+
+export async function registrarVencedor(
+    numero,
+    resultado,
+    participante = null
+) {
+
+    const numeroNormalizado =
+        normalizarNumero(numero);
+
+
+    if (!numeroNormalizado) {
+
+        throw new Error(
+            "Número da rifa inválido."
+        );
+
+    }
+
+
+    if (
+        resultado === "perdeu"
+    ) {
+
+        return false;
+
+    }
+
+
+    const vencedorRef =
+        ref(
+            db,
+            `${CAMINHOS.vencedores}/${numeroNormalizado}`
+        );
+
+
+    const dados = {
+
+        numeroRifa:
+            numeroNormalizado,
+
+        premio:
+            resultado,
+
+        nome:
+            participante?.nome ||
+            participante?.nomeCompleto ||
+            "",
+
+        whatsapp:
+            participante?.whatsapp ||
+            participante?.telefone ||
+            "",
+
+        cidade:
+            participante?.cidade ||
+            "",
+
+        data:
+            serverTimestamp(),
+
+        status:
+            "pendente"
+
+    };
+
+
+    await set(
+        vencedorRef,
+        dados
+    );
+
+
+    return true;
+
+}
+
+
+/* ==========================================================
+   ATUALIZAR ESTATÍSTICAS
+   ========================================================== */
+
+export async function registrarEstatistica(
+    resultado
+) {
+
+    const estatisticasRef =
+        ref(
+            db,
+            CAMINHOS.estatisticas
+        );
+
+
+    const snapshot =
+        await get(
+            estatisticasRef
+        );
+
+
+    const atuais =
+        snapshot.exists()
+            ? snapshot.val()
+            : {};
+
+
+    const atualizadas = {
+
+        totalRaspadas:
+            Number(
+                atuais.totalRaspadas || 0
+            ) + 1,
+
+        totalPerdedores:
+            Number(
+                atuais.totalPerdedores || 0
+            ) +
+            (
+                resultado === "perdeu"
+                    ? 1
+                    : 0
+            ),
+
+        totalFerro:
+            Number(
+                atuais.totalFerro || 0
+            ) +
+            (
+                resultado === "ferro"
+                    ? 1
+                    : 0
+            ),
+
+        totalLiquidificador:
+            Number(
+                atuais.totalLiquidificador || 0
+            ) +
+            (
+                resultado === "liquidificador"
+                    ? 1
+                    : 0
+            ),
+
+        ultimaRaspagem:
+            serverTimestamp()
+
+    };
+
+
+    await set(
+        estatisticasRef,
+        atualizadas
+    );
+
+
+    return atualizadas;
+
+}
+
+
+/* ==========================================================
+   REGISTRAR SISTEMA ONLINE
+   ========================================================== */
+
+export async function registrarSistemaOnline() {
+
+    const sistemaRef =
+        ref(
+            db,
+            CAMINHOS.sistema
+        );
+
+
+    await update(
+        sistemaRef,
+        {
+
+            status:
+                "online",
+
+            ultimaAtualizacao:
+                serverTimestamp()
+
+        }
+    );
+
+
+    return true;
+
+}
+
+
+/* ==========================================================
+   TESTAR BANCO
+   ========================================================== */
+
+export async function testarBanco() {
+
+    try {
+
+        const sistemaRef =
+            ref(
+                db,
+                CAMINHOS.sistema
+            );
+
+
+        const snapshot =
+            await get(
+                sistemaRef
+            );
+
+
+        return {
+
+            conectado: true,
+
+            existe:
+                snapshot.exists(),
+
+            dados:
+                snapshot.exists()
+                    ? snapshot.val()
+                    : null
+
+        };
+
+    } catch (erro) {
+
+        console.error(
+            "Erro ao testar Firebase:",
+            erro
+        );
+
+
+        return {
+
+            conectado: false,
+
+            existe: false,
+
+            dados: null,
+
+            erro:
+                erro.message
+
+        };
+
+    }
+
+}
+
+
+/* ==========================================================
+   REVELAR RASPADINHA
+   ==========================================================
+
+   IMPORTANTE:
+
+   Esta função é chamada pelo sorteio.js.
+
+   O resultado oficial vem da estrutura
+   de prêmios cadastrada no Firebase.
+
+   O participante é marcado como utilizado
+   antes de finalizar o processo.
+   ========================================================== */
+
+export async function revelarRaspadinha(
+    numero
+) {
+
+    const numeroNormalizado =
+        normalizarNumero(numero);
+
+
+    if (!numeroNormalizado) {
+
+        throw new Error(
+            "Número da rifa inválido."
+        );
+
+    }
+
+
+    /*
+     * ------------------------------------------------------
+     * 1. BUSCAR PARTICIPANTE
+     * ------------------------------------------------------
+     */
+
+    const participante =
+        await validarParticipante(
+            numeroNormalizado
+        );
+
+
+    /*
+     * ------------------------------------------------------
+     * 2. REFERÊNCIA DO PARTICIPANTE
+     * ------------------------------------------------------
+     */
+
+    const participanteRef =
+        referenciaParticipante(
+            numeroNormalizado
+        );
+
+
+    /*
+     * ------------------------------------------------------
+     * 3. RESERVAR O USO DO NÚMERO
+     * ------------------------------------------------------
+     *
+     * A transação evita que duas tentativas simultâneas
+     * utilizem o mesmo número.
+     */
+
+    const reserva =
+        await runTransaction(
+            participanteRef,
+            atual => {
+
+                if (!atual) {
+
+                    return;
+
+                }
+
+
+                if (
+                    !pagamentoConfirmado(
+                        atual
+                    )
+                ) {
+
+                    return;
+
+                }
+
+
+                if (
+                    jaRaspou(
+                        atual
+                    )
+                ) {
+
+                    return;
+
+                }
+
+
+                return {
+
+                    ...atual,
+
+                    jaRaspou: true,
+
+                    raspou: true,
+
+                    statusRaspadinha:
+                        "processando"
+
+                };
+
+            }
+        );
+
+
+    if (
+        !reserva.committed
+    ) {
+
+        throw new Error(
+            "Este número não pôde ser reservado. Ele pode já estar em uso."
+        );
+
+    }
+
+
+    /*
+     * ------------------------------------------------------
+     * 4. BUSCAR PRÊMIOS
+     * ------------------------------------------------------
+     */
+
+    const premios =
+        await buscarPremios();
+
+
+    /*
+     * ------------------------------------------------------
+     * 5. LOCALIZAR PRÊMIO VINCULADO AO NÚMERO
+     * ------------------------------------------------------
+     *
+     * O Firebase pode ter uma estrutura como:
+     *
+     * premios:
+     *   ferro001:
+     *     nome: "ferro"
+     *     numeroPremiado: "0025"
+     *     disponivel: true
+     *
+     * ou:
+     *
+     *   premio1:
+     *     numeroRifa: "0025"
+     *     premio: "ferro"
+     *     disponivel: true
+     */
+
+    let premioEncontrado = null;
+
+    let chavePremio = null;
+
+
+    for (
+        const chave in premios
+    ) {
+
+        const premio =
+            premios[chave];
+
+
+        if (!premio) {
+
+            continue;
+
+        }
+
+
+        const numeroPremiado =
+            normalizarNumero(
+                premio.numeroPremiado ??
+                premio.numeroRifa ??
+                premio.numero
+            );
+
+
+        const disponivel =
+            premio.disponivel === true;
+
+
+        if (
+            numeroPremiado ===
+                numeroNormalizado &&
+            disponivel
+        ) {
+
+            premioEncontrado =
+                premio;
+
+            chavePremio =
+                chave;
+
+            break;
+
+        }
+
+    }
+
+
+    /*
+     * ------------------------------------------------------
+     * 6. DEFINIR RESULTADO
+     * ------------------------------------------------------
+     */
+
+    let resultado =
+        "perdeu";
+
+
+    if (
+        premioEncontrado
+    ) {
+
+        const nomePremio =
+            premioEncontrado.id ??
+            premioEncontrado.premio ??
+            premioEncontrado.nome;
+
+
+        const nomeNormalizado =
+            String(
+                nomePremio || ""
+            )
+                .trim()
+                .toLowerCase();
+
+
+        if (
+            nomeNormalizado.includes(
+                "liquidificador"
+            )
+        ) {
+
+            resultado =
+                "liquidificador";
+
+        } else if (
+            nomeNormalizado.includes(
+                "ferro"
+            )
+        ) {
+
+            resultado =
+                "ferro";
+
+        } else {
+
+            /*
+             * Se o prêmio existir no Firebase,
+             * mas não estiver entre os prêmios
+             * conhecidos pelo sistema, não liberamos
+             * um prêmio desconhecido.
+             */
+
+            resultado =
+                "perdeu";
+
+        }
+
+    }
+
+
+    /*
+     * ------------------------------------------------------
+     * 7. BLOQUEAR PRÊMIO
+     * ------------------------------------------------------
+     */
+
+    if (
+        premioEncontrado &&
+        chavePremio &&
+        (
+            resultado === "ferro" ||
+            resultado === "liquidificador"
+        )
+    ) {
+
+        await update(
+
+            ref(
+                db,
+                `${CAMINHOS.premios}/${chavePremio}`
+            ),
+
+            {
+
+                disponivel:
+                    false,
+
+                reservadoPor:
+                    numeroNormalizado,
+
+                dataReserva:
+                    serverTimestamp()
+
+            }
+
+        );
+
+    }
+
+
+    /*
+     * ------------------------------------------------------
+     * 8. REGISTRAR RESULTADO NO PARTICIPANTE
+     * ------------------------------------------------------
+     */
+
+    await update(
+
+        participanteRef,
+
+        {
+
+            numeroRifa:
+                numeroNormalizado,
+
+            jaRaspou:
+                true,
+
+            raspou:
+                true,
+
+            statusRaspadinha:
+                "raspado",
+
+            resultado:
+                resultado,
+
+            premioRecebido:
+                resultado === "perdeu"
+                    ? null
+                    : resultado,
+
+            dataRaspagem:
+                serverTimestamp()
+
+        }
+
+    );
+
+
+    /*
+     * ------------------------------------------------------
+     * 9. REGISTRAR VENCEDOR
+     * ------------------------------------------------------
+     */
+
+    if (
+        resultado !== "perdeu"
+    ) {
+
+        await registrarVencedor(
+
+            numeroNormalizado,
+
+            resultado,
+
+            participante
+
+        );
+
+    }
+
+
+    /*
+     * ------------------------------------------------------
+     * 10. ATUALIZAR ESTATÍSTICAS
+     * ------------------------------------------------------
+     */
+
+    await registrarEstatistica(
+        resultado
+    );
+
+
+    /*
+     * ------------------------------------------------------
+     * 11. RETORNO PARA sorteio.js
+     * ------------------------------------------------------
+     */
+
+    return {
+
+        numero:
+            numeroNormalizado,
+
+        premio:
+            resultado,
+
+        ganhou:
+            resultado !== "perdeu",
+
+        participante:
+
+            participante,
+
+        processado:
+            true
+
+    };
+
+}
+
+
+/* ==========================================================
+   LIBERAR RASPADINHA
+   ========================================================== */
+
+export async function liberar(numero) {
+
+    const numeroNormalizado =
+        normalizarNumero(numero);
+
+
+    if (!numeroNormalizado) {
+
+        throw new Error(
+            "Número da rifa inválido."
+        );
+
+    }
+
+
+    const participante =
+        await validarParticipante(
+            numeroNormalizado
+        );
+
+
+    if (!participante) {
+
+        throw new Error(
+            "Participante inválido."
+        );
+
+    }
+
+
+    const participanteRef =
+        referenciaParticipante(
+            numeroNormalizado
+        );
+
+
+    await update(
+
+        participanteRef,
+
+        {
+
+            "raspadinha/liberada":
+                true
+
+        }
+
+    );
+
+
+    return true;
+
+}
+
+
+/* ==========================================================
+   OBTER CAMINHOS FIREBASE
+   ========================================================== */
+
+export function obterCaminhosFirebase() {
+
+    return {
+        ...CAMINHOS
+    };
+
+}
+
+
+/* ==========================================================
+   FIM
+   ========================================================== */
