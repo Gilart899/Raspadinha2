@@ -1,527 +1,228 @@
 /* ==========================================================
    RASPADINHA DA AMIZADE 6.0
-   APP PRINCIPAL
-   GilFest / GilArt
+   GILFEST
+   APP.JS
+   ==========================================================
+   ATENÇÃO:
+   Este arquivo mantém a lógica da aplicação.
+   Não altera Firebase, configuração de prêmios ou regras.
    ========================================================== */
 
-import { CONFIG } from "./config.js";
+document.addEventListener("DOMContentLoaded", () => {
 
-import {
-    iniciarRaspadinha,
-    abrirRaspadinha,
-    fecharRaspadinha,
-    obterStatusRaspadinha
-} from "./raspadinha/raspadinha.js";
+    /* ======================================================
+       ELEMENTOS DA INTERFACE
+       ====================================================== */
 
-import {
-    testarBanco,
-    registrarSistemaOnline
-} from "./firebase/firebase-raspadinha.js";
+    const btnRaspar = document.querySelector(".btn-raspar");
+    const modal = document.querySelector(".modal-raspadinha");
+    const btnFechar = document.querySelector(".btn-fechar");
+    const btnContinuar = document.querySelector(".btn-continuar");
 
-/* ==========================================================
-   ESTADO DO SISTEMA
-   ========================================================== */
+    const mensagemSistema =
+        document.querySelector(".mensagem-sistema");
 
-let sistemaInicializado = false;
-let firebaseConectado = false;
+    /* ======================================================
+       ABRIR MODAL
+       ====================================================== */
 
-/* ==========================================================
-   ELEMENTOS DA INTERFACE
-   ========================================================== */
+    function abrirModal() {
 
-let btnParticipar = null;
-let statusSistema = null;
-let numeroEntrada = null;
+        if (!modal) return;
 
-/* ==========================================================
-   INICIALIZAÇÃO
-   ========================================================== */
+        modal.classList.remove("hidden");
 
-document.addEventListener(
-    "DOMContentLoaded",
-    iniciarSistema
-);
+        document.body.style.overflow = "hidden";
 
-/* ==========================================================
-   INICIAR SISTEMA
-   ========================================================== */
-
-async function iniciarSistema() {
-
-    if (sistemaInicializado) {
-        return;
+        modal.scrollTop = 0;
     }
 
-    localizarElementos();
+    /* ======================================================
+       FECHAR MODAL
+       ====================================================== */
 
-    escreverStatus(
-        "Inicializando sistema..."
-    );
+    function fecharModal() {
 
-    console.log(
-        "=========================================="
-    );
+        if (!modal) return;
 
-    console.log(
-        CONFIG?.sistema?.nome ||
-        "Raspadinha da Amizade"
-    );
+        modal.classList.add("hidden");
 
-    console.log(
-        "Versão:",
-        CONFIG?.sistema?.versao ||
-        "6.0"
-    );
+        document.body.style.overflow = "";
+    }
 
-    console.log(
-        "=========================================="
-    );
+    /* ======================================================
+       BOTÃO RASPAR
+       ====================================================== */
 
-    try {
+    if (btnRaspar) {
 
-        /* ==================================================
-           TESTAR FIREBASE
-        ================================================== */
+        btnRaspar.addEventListener("click", () => {
 
-        escreverStatus(
-            "Conectando ao Firebase..."
-        );
+            abrirModal();
 
-        const banco =
-            await testarBanco();
-
-        if (
-            !banco ||
-            banco.conectado !== true
-        ) {
-
-            firebaseConectado = false;
-
-            escreverStatus(
-                "Não foi possível conectar ao sistema."
+            mostrarMensagem(
+                "🍀 Sua raspadinha está pronta!"
             );
 
-            console.error(
-                "Firebase indisponível:",
-                banco?.erro
-            );
-
-            return;
-        }
-
-        firebaseConectado = true;
-
-        console.log(
-            "Firebase conectado."
-        );
-
-        /* ==================================================
-           REGISTRAR SISTEMA ONLINE
-        ================================================== */
-
-        try {
-
-            await registrarSistemaOnline();
-
-            console.log(
-                "Sistema registrado como online."
-            );
-
-        } catch (erro) {
-
-            console.warn(
-                "Não foi possível registrar status online:",
-                erro
-            );
-
-        }
-
-        /* ==================================================
-           INICIAR RASPADINHA
-        ================================================== */
-
-        escreverStatus(
-            "Preparando raspadinha..."
-        );
-
-        await iniciarRaspadinha();
-
-        /* ==================================================
-           EVENTOS
-        ================================================== */
-
-        registrarEventos();
-
-        /* ==================================================
-           FINALIZAÇÃO
-        ================================================== */
-
-        sistemaInicializado = true;
-
-        escreverStatus(
-            "Sistema pronto."
-        );
-
-        console.log(
-            "Raspadinha inicializada com sucesso."
-        );
-
-    } catch (erro) {
-
-        console.error(
-            "Erro ao iniciar sistema:",
-            erro
-        );
-
-        sistemaInicializado = false;
-
-        escreverStatus(
-            "Erro ao inicializar o sistema."
-        );
+        });
 
     }
 
-}
+    /* ======================================================
+       BOTÃO FECHAR
+       ====================================================== */
 
-/* ==========================================================
-   LOCALIZAR ELEMENTOS
-   ========================================================== */
+    if (btnFechar) {
 
-function localizarElementos() {
-
-    btnParticipar =
-        document.getElementById(
-            "btnParticipar"
-        );
-
-    statusSistema =
-        document.getElementById(
-            "statusSistema"
-        );
-
-    /*
-     * O campo do número pode ter qualquer
-     * um destes IDs.
-     */
-
-    numeroEntrada =
-        document.getElementById(
-            "numeroRifa"
-        ) ||
-        document.getElementById(
-            "numero"
-        ) ||
-        document.getElementById(
-            "numeroParticipante"
-        );
-
-}
-
-/* ==========================================================
-   REGISTRAR EVENTOS
-   ========================================================== */
-
-function registrarEventos() {
-
-    if (btnParticipar) {
-
-        btnParticipar.addEventListener(
+        btnFechar.addEventListener(
             "click",
-            evento => {
+            fecharModal
+        );
 
-                evento.preventDefault();
+    }
 
-                participar();
+    /* ======================================================
+       BOTÃO CONTINUAR
+       ====================================================== */
+
+    if (btnContinuar) {
+
+        btnContinuar.addEventListener(
+            "click",
+            fecharModal
+        );
+
+    }
+
+    /* ======================================================
+       FECHAR CLICANDO FORA DO MODAL
+       ====================================================== */
+
+    if (modal) {
+
+        modal.addEventListener("click", (event) => {
+
+            if (event.target === modal) {
+
+                fecharModal();
 
             }
-        );
+
+        });
 
     }
 
-    /*
-     * Permitir Enter no campo do número.
-     */
+    /* ======================================================
+       TECLA ESC
+       ====================================================== */
 
-    if (numeroEntrada) {
+    document.addEventListener("keydown", (event) => {
 
-        numeroEntrada.addEventListener(
-            "keydown",
-            evento => {
+        if (event.key === "Escape") {
 
-                if (
-                    evento.key === "Enter"
-                ) {
+            if (
+                modal &&
+                !modal.classList.contains("hidden")
+            ) {
 
-                    evento.preventDefault();
-
-                    participar();
-
-                }
+                fecharModal();
 
             }
-        );
-
-    }
-
-}
-
-/* ==========================================================
-   PARTICIPAR
-   ========================================================== */
-
-async function participar() {
-
-    if (!sistemaInicializado) {
-
-        escreverStatus(
-            "O sistema ainda está inicializando."
-        );
-
-        return;
-
-    }
-
-    if (!firebaseConectado) {
-
-        escreverStatus(
-            "Sistema indisponível no momento."
-        );
-
-        return;
-
-    }
-
-    /* ==================================================
-       OBTER NÚMERO
-    ================================================== */
-
-    let numero = null;
-
-    if (numeroEntrada) {
-
-        numero =
-            numeroEntrada.value;
-
-    }
-
-    /*
-     * Caso o botão tenha um número
-     * armazenado em data-numero.
-     */
-
-    if (
-        !numero &&
-        btnParticipar
-    ) {
-
-        numero =
-            btnParticipar.dataset.numero ||
-            null;
-
-    }
-
-    /*
-     * Caso ainda não exista número,
-     * abrimos a raspadinha sem número somente
-     * se o próprio projeto permitir.
-     */
-
-    if (!numero) {
-
-        escreverStatus(
-            "Informe o número da rifa."
-        );
-
-        if (numeroEntrada) {
-
-            numeroEntrada.focus();
 
         }
 
-        return;
+    });
 
-    }
+    /* ======================================================
+       MENSAGEM DO SISTEMA
+       ====================================================== */
 
-    /* ==================================================
-       NORMALIZAR NÚMERO
-    ================================================== */
+    function mostrarMensagem(texto) {
 
-    numero =
-        String(numero)
-            .replace(/\D/g, "");
+        if (!mensagemSistema) return;
 
-    if (!numero) {
+        mensagemSistema.textContent = texto;
 
-        escreverStatus(
-            "Digite um número válido."
+        mensagemSistema.classList.add("visivel");
+
+        clearTimeout(
+            mensagemSistema._timer
         );
 
-        return;
+        mensagemSistema._timer =
+            setTimeout(() => {
+
+                mensagemSistema.classList.remove(
+                    "visivel"
+                );
+
+            }, 3000);
 
     }
 
-    console.log(
-        "Abrindo raspadinha para:",
-        numero
+    /* ======================================================
+       ANIMAÇÃO SUAVE AO ENTRAR NA PÁGINA
+       ====================================================== */
+
+    document.body.classList.add("pagina-carregada");
+
+    /* ======================================================
+       ANIMAÇÃO DOS ELEMENTOS
+       ====================================================== */
+
+    const elementosAnimados = document.querySelectorAll(
+        ".premio-card, .beneficio-card"
     );
 
-    /* ==================================================
-       BLOQUEAR BOTÃO
-    ================================================== */
+    elementosAnimados.forEach((elemento, index) => {
 
-    if (btnParticipar) {
+        elemento.style.animationDelay =
+            `${index * 0.12}s`;
 
-        btnParticipar.disabled = true;
+    });
 
-    }
+    /* ======================================================
+       EFEITO DE MOVIMENTO DO FUNDO
+       ====================================================== */
 
-    escreverStatus(
-        "Verificando sua participação..."
-    );
+    let ultimoMovimento = 0;
 
-    try {
+    window.addEventListener(
+        "mousemove",
+        (event) => {
 
-        /* ==================================================
-           ABRIR RASPADINHA
-        ================================================== */
+            const agora =
+                Date.now();
 
-        const resultado =
-            await abrirRaspadinha(
-                numero
-            );
+            if (
+                agora - ultimoMovimento < 30
+            ) return;
 
-        /*
-         * O controlador retorna false
-         * quando ocorre algum erro.
-         */
+            ultimoMovimento = agora;
 
-        if (resultado === false) {
+            const x =
+                (event.clientX /
+                    window.innerWidth -
+                    0.5) * 2;
 
-            escreverStatus(
-                "Não foi possível abrir a raspadinha."
-            );
+            const y =
+                (event.clientY /
+                    window.innerHeight -
+                    0.5) * 2;
 
-            return;
+            document.documentElement.style
+                .setProperty(
+                    "--mouse-x",
+                    `${x * 8}px`
+                );
+
+            document.documentElement.style
+                .setProperty(
+                    "--mouse-y",
+                    `${y * 8}px`
+                );
 
         }
-
-        escreverStatus(
-            "Raspadinha liberada! Raspe para descobrir."
-        );
-
-        console.log(
-            "Raspadinha aberta:",
-            resultado
-        );
-
-    } catch (erro) {
-
-        console.error(
-            "Erro ao participar:",
-            erro
-        );
-
-        escreverStatus(
-            erro?.message ||
-            "Não foi possível iniciar sua raspadinha."
-        );
-
-    } finally {
-
-        if (btnParticipar) {
-
-            btnParticipar.disabled = false;
-
-        }
-
-    }
-
-}
-
-/* ==========================================================
-   STATUS
-   ========================================================== */
-
-function escreverStatus(
-    mensagem
-) {
-
-    console.log(
-        "[STATUS]",
-        mensagem
     );
 
-    if (!statusSistema) {
-
-        return;
-
-    }
-
-    statusSistema.textContent =
-        mensagem;
-
-}
-
-/* ==========================================================
-   STATUS PÚBLICO
-   ========================================================== */
-
-export function obterStatusSistema() {
-
-    return {
-
-        inicializado:
-            sistemaInicializado,
-
-        firebase:
-            firebaseConectado,
-
-        raspadinha:
-            obterStatusRaspadinha()
-
-    };
-
-}
-
-/* ==========================================================
-   REINICIAR SISTEMA
-   ========================================================== */
-
-export async function reiniciarSistema() {
-
-    sistemaInicializado =
-        false;
-
-    firebaseConectado =
-        false;
-
-    escreverStatus(
-        "Reiniciando sistema..."
-    );
-
-    await iniciarSistema();
-
-}
-
-/* ==========================================================
-   EXPOR CONTROLE OPCIONAL
-   ========================================================== */
-
-window.RaspadinhaApp = {
-
-    iniciar:
-        iniciarSistema,
-
-    participar,
-
-    fechar:
-        fecharRaspadinha,
-
-    status:
-        obterStatusSistema
-
-};
-
-/* ==========================================================
-   FIM DO APP
-   ========================================================== */
+});
