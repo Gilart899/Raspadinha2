@@ -1,14 +1,26 @@
 /* ==========================================================
    RASPADINHA DA AMIZADE 6.0
    MOTOR DE SORTEIO
-   Firebase = autoridade do resultado
+
+   Base compatível com:
+
+   config.js
+   firebase.js
+   firebase-raspadinha.js
+   resultado.js
+   raspadinha.js
+
+   O Firebase fornece os dados oficiais da campanha.
 ========================================================== */
 
 import { CONFIG } from "../config.js";
 
 import {
-    validarParticipante,
-    revelarRaspadinha
+    validarParticipacao,
+    buscarPremios,
+    registrarResultado,
+    registrarVencedor,
+    registrarEstatistica
 } from "../firebase/firebase-raspadinha.js";
 
 import {
@@ -43,6 +55,8 @@ export function iniciarSorteio() {
 
     executando = false;
 
+    definirResultado("perdeu");
+
 }
 
 
@@ -65,9 +79,8 @@ export function definirNumero(numero) {
     }
 
 
-    const valor =
-        String(numero)
-            .replace(/\D/g, "");
+    const valor = String(numero)
+        .replace(/\D/g, "");
 
 
     if (!valor) {
@@ -79,15 +92,45 @@ export function definirNumero(numero) {
     }
 
 
+    const numeroConvertido =
+        Number(valor);
+
+
+    if (
+        !Number.isInteger(
+            numeroConvertido
+        )
+    ) {
+
+        numeroAtual = null;
+
+        return null;
+
+    }
+
+
+    if (
+        numeroConvertido < 1 ||
+        numeroConvertido > 1000
+    ) {
+
+        numeroAtual = null;
+
+        return null;
+
+    }
+
+
     /*
-     * Mantemos o número sem zeros à esquerda
-     * para coincidir com as chaves do Firebase.
+     * Mantemos o número como número lógico
+     * sem zeros à esquerda.
+     *
+     * O firebase-raspadinha.js é responsável
+     * por normalizar para 0001...1000.
      */
 
     numeroAtual =
-        String(
-            Number(valor)
-        );
+        String(numeroConvertido);
 
 
     return numeroAtual;
@@ -192,7 +235,9 @@ export async function realizarSorteio(
            MODO DE TESTE
         ================================================== */
 
-        if (CONFIG.modoTeste === true) {
+        if (
+            CONFIG.modoTeste === true
+        ) {
 
             resultadoAtual =
                 realizarSorteioTeste();
@@ -209,66 +254,108 @@ export async function realizarSorteio(
 
 
         /* ==================================================
-           VALIDAR PARTICIPANTE
+           VALIDAR PARTICIPAÇÃO
+        ================================================== */
+
+        const validacao =
+            await validarParticipacao(
+                numeroAtual
+            );
+
+
+        if (
+            !validacao ||
+            validacao.permitido !== true
+        ) {
+
+            const motivo =
+                validacao?.motivo ||
+                "Participação não autorizada.";
+
+
+            throw new Error(
+                motivo
+            );
+
+        }
+
+
+        /* ==================================================
+           GUARDAR PARTICIPANTE
         ================================================== */
 
         participanteAtual =
-            await validarParticipante(
-                numeroAtual
-            );
-
-
-        if (!participanteAtual) {
-
-            throw new Error(
-                "Participante não encontrado."
-            );
-
-        }
+            validacao.participante ||
+            null;
 
 
         /* ==================================================
-           RESULTADO OFICIAL
-           
-           O Firebase decide.
+           BUSCAR PRÊMIOS
         ================================================== */
 
-        const resultado =
-            await revelarRaspadinha(
-                numeroAtual
-            );
-
-
-        if (!resultado) {
-
-            throw new Error(
-                "Firebase não retornou resultado."
-            );
-
-        }
+        const premios =
+            await buscarPremios();
 
 
         /* ==================================================
-           NORMALIZAR RESULTADO
+           DETERMINAR RESULTADO
+           
+           O resultado oficial da campanha é obtido
+           através da configuração existente no Firebase.
+
+           O sistema procura um prêmio cujo númeroPremiado
+           corresponda ao número da rifa.
+        ================================================== */
+
+        resultadoAtual =
+            determinarResultado(
+                numeroAtual,
+                premios
+            );
+
+
+        /* ==================================================
+           REGISTRAR RESULTADO
+        ================================================== */
+
+        await registrarResultado(
+            numeroAtual,
+            resultadoAtual
+        );
+
+
+        /* ==================================================
+           REGISTRAR VENCEDOR
         ================================================== */
 
         if (
-            resultado.ganhou === true
+            resultadoAtual !== "perdeu"
         ) {
 
-            resultadoAtual =
-                resultado.premio;
+            await registrarVencedor(
 
-        } else {
+                numeroAtual,
 
-            resultadoAtual =
-                "perdeu";
+                resultadoAtual,
+
+                participanteAtual
+
+            );
 
         }
 
 
         /* ==================================================
-           DEFINIR RESULTADO
+           ATUALIZAR ESTATÍSTICAS
+        ================================================== */
+
+        await registrarEstatistica(
+            resultadoAtual
+        );
+
+
+        /* ==================================================
+           ATUALIZAR RESULTADO CENTRAL
         ================================================== */
 
         definirResultado(
@@ -277,8 +364,25 @@ export async function realizarSorteio(
 
 
         console.log(
-            "Resultado oficial:",
+            "================================"
+        );
+
+        console.log(
+            "SORTEIO FINALIZADO"
+        );
+
+        console.log(
+            "Número:",
+            numeroAtual
+        );
+
+        console.log(
+            "Resultado:",
             resultadoAtual
+        );
+
+        console.log(
+            "================================"
         );
 
 
@@ -293,8 +397,7 @@ export async function realizarSorteio(
 
 
         /*
-         * NÃO transformar erro de Firebase
-         * silenciosamente em prêmio ou resultado.
+         * Não esconder o erro real.
          */
 
         resultadoAtual =
@@ -313,6 +416,216 @@ export async function realizarSorteio(
         executando = false;
 
     }
+
+}
+
+
+/* ==========================================================
+   DETERMINAR RESULTADO
+========================================================== */
+
+function determinarResultado(
+    numero,
+    premios
+) {
+
+    if (
+        !premios ||
+        typeof premios !== "object"
+    ) {
+
+        return "perdeu";
+
+    }
+
+
+    const numeroTexto =
+        String(numero);
+
+
+    const numeroSemZeros =
+        String(
+            Number(numero)
+        );
+
+
+    for (
+        const chave
+        in premios
+    ) {
+
+        const premio =
+            premios[chave];
+
+
+        if (
+            !premio ||
+            typeof premio !== "object"
+        ) {
+
+            continue;
+
+        }
+
+
+        /*
+         * O prêmio precisa estar disponível.
+         */
+
+        if (
+            premio.disponivel === false
+        ) {
+
+            continue;
+
+        }
+
+
+        /*
+         * Aceitamos os formatos:
+         *
+         * 0001
+         * 1
+         * "0001"
+         * "1"
+         */
+
+        const numeroPremiado =
+            premio.numeroPremiado;
+
+
+        if (
+            numeroPremiado ===
+            undefined ||
+            numeroPremiado === null
+        ) {
+
+            continue;
+
+        }
+
+
+        const premioTexto =
+            String(
+                numeroPremiado
+            );
+
+
+        const premioSemZeros =
+            String(
+                Number(
+                    numeroPremiado
+                )
+            );
+
+
+        if (
+            premioTexto === numeroTexto ||
+            premioSemZeros === numeroSemZeros
+        ) {
+
+            return normalizarPremio(
+                premio,
+                chave
+            );
+
+        }
+
+    }
+
+
+    return "perdeu";
+
+}
+
+
+/* ==========================================================
+   NORMALIZAR PRÊMIO
+========================================================== */
+
+function normalizarPremio(
+    premio,
+    chave
+) {
+
+    /*
+     * Primeiro tenta usar o ID.
+     */
+
+    const id =
+        String(
+            premio.id ||
+            chave ||
+            ""
+        )
+        .trim()
+        .toLowerCase();
+
+
+    if (
+        id === "ferro"
+    ) {
+
+        return "ferro";
+
+    }
+
+
+    if (
+        id === "liquidificador"
+    ) {
+
+        return "liquidificador";
+
+    }
+
+
+    /*
+     * Depois tenta pelo nome.
+     */
+
+    const nome =
+        String(
+            premio.nome ||
+            premio.premio ||
+            ""
+        )
+        .trim()
+        .toLowerCase();
+
+
+    if (
+        nome === "ferro" ||
+        nome === "ferro elétrico" ||
+        nome === "ferro eletrico"
+    ) {
+
+        return "ferro";
+
+    }
+
+
+    if (
+        nome === "liquidificador"
+    ) {
+
+        return "liquidificador";
+
+    }
+
+
+    /*
+     * Se o prêmio não pertence aos prêmios
+     * conhecidos da campanha, não libera.
+     */
+
+    console.warn(
+        "Prêmio desconhecido no Firebase:",
+        premio
+    );
+
+
+    return "perdeu";
 
 }
 
@@ -369,12 +682,19 @@ export function realizarSorteioTeste() {
 
 
 /* ==========================================================
-   MODO TESTE
+   ALTERAR MODO TESTE
 ========================================================== */
 
 export function alterarModoTeste(
     valor
 ) {
+
+    /*
+     * CONFIG é uma constante exportada.
+     *
+     * Para não tentar substituir o objeto inteiro,
+     * alteramos somente a propriedade.
+     */
 
     CONFIG.modoTeste =
         Boolean(valor);
@@ -394,7 +714,7 @@ export function sorteioEmAndamento() {
 
 
 /* ==========================================================
-   RESULTADO
+   OBTER RESULTADO
 ========================================================== */
 
 export function obterResultadoAtual() {
@@ -431,5 +751,5 @@ export function limparSorteio() {
 
 
 /* ==========================================================
-   FIM DO MOTOR
+   FIM DO MOTOR DE SORTEIO 6.0
 ========================================================== */
