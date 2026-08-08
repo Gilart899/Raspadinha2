@@ -1,5 +1,5 @@
 /* ==========================================================
-   RASPADINHA SOLIDÁRIA 6.0
+   RASPADINHA DA AMIZADE 6.0
    CANVAS ENGINE
    Motor visual da raspadinha
 ========================================================== */
@@ -9,6 +9,7 @@ import { CONFIG } from "../config.js";
 import {
     obterImagemResultado
 } from "./resultado.js";
+
 
 /* ==========================================================
    CLASSE PRINCIPAL
@@ -23,16 +24,14 @@ export default class CanvasEngine {
         this.canvasId = canvasId;
 
         this.canvas = null;
-
         this.ctx = null;
 
         this.overlayCanvas = null;
-
         this.overlayCtx = null;
 
-        /* --------------------------------------------------
+        /* ==================================================
            DIMENSÕES
-        -------------------------------------------------- */
+        ================================================== */
 
         this.width =
             Number(
@@ -44,33 +43,34 @@ export default class CanvasEngine {
                 CONFIG?.raspadinha?.altura
             ) || 380;
 
-        /* --------------------------------------------------
-           RASPAGEM
-        -------------------------------------------------- */
+
+        /* ==================================================
+           CONFIGURAÇÃO DA RASPAGEM
+        ================================================== */
 
         this.brushRadius =
             Number(
-                CONFIG?.raspadinha
-                    ?.raioRaspagem
-            ) || 25;
+                CONFIG?.raspadinha?.raioRaspagem
+            ) || 28;
 
         this.limiteRevelacao =
             Number(
-                CONFIG?.raspadinha
-                    ?.porcentagemRevelacao
+                CONFIG?.raspadinha?.porcentagemRevelacao
             ) || 70;
 
-        /* --------------------------------------------------
+
+        /* ==================================================
            IMAGENS
-        -------------------------------------------------- */
+        ================================================== */
 
         this.prizeImage = null;
 
         this.coverImage = null;
 
-        /* --------------------------------------------------
+
+        /* ==================================================
            ESTADO
-        -------------------------------------------------- */
+        ================================================== */
 
         this.initialized = false;
 
@@ -80,15 +80,17 @@ export default class CanvasEngine {
 
         this.percent = 0;
 
-        this.animationFrame = null;
 
-        /* --------------------------------------------------
+        /* ==================================================
            CONTROLE DE EVENTOS
-        -------------------------------------------------- */
+        ================================================== */
 
         this.eventosRegistrados = false;
 
+        this.eventos = [];
+
     }
+
 
     /* ======================================================
        INICIAR
@@ -102,10 +104,12 @@ export default class CanvasEngine {
 
         }
 
+
         this.canvas =
             document.getElementById(
                 this.canvasId
             );
+
 
         if (!this.canvas) {
 
@@ -115,6 +119,7 @@ export default class CanvasEngine {
 
         }
 
+
         this.ctx =
             this.canvas.getContext(
                 "2d",
@@ -122,6 +127,7 @@ export default class CanvasEngine {
                     alpha: false
                 }
             );
+
 
         if (!this.ctx) {
 
@@ -131,9 +137,10 @@ export default class CanvasEngine {
 
         }
 
-        /* --------------------------------------------------
-           TAMANHO REAL
-        -------------------------------------------------- */
+
+        /* ==================================================
+           TAMANHO REAL DO CANVAS
+        ================================================== */
 
         this.canvas.width =
             this.width;
@@ -141,33 +148,39 @@ export default class CanvasEngine {
         this.canvas.height =
             this.height;
 
-        /* --------------------------------------------------
-           CAMADA
-        -------------------------------------------------- */
+
+        /* ==================================================
+           CRIAR CAMADA
+        ================================================== */
 
         this.criarCamada();
 
-        /* --------------------------------------------------
-           IMAGENS
-        -------------------------------------------------- */
+
+        /* ==================================================
+           CARREGAR IMAGENS
+        ================================================== */
 
         await this.carregarImagens();
 
-        /* --------------------------------------------------
-           DESENHO
-        -------------------------------------------------- */
+
+        /* ==================================================
+           DESENHO INICIAL
+        ================================================== */
 
         this.desenharInicial();
 
-        /* --------------------------------------------------
+
+        /* ==================================================
            EVENTOS
-        -------------------------------------------------- */
+        ================================================== */
 
         this.registrarEventos();
+
 
         this.initialized = true;
 
     }
+
 
     /* ======================================================
        CRIAR CAMADA
@@ -180,18 +193,30 @@ export default class CanvasEngine {
                 "canvas"
             );
 
+
         this.overlayCanvas.width =
             this.width;
 
         this.overlayCanvas.height =
             this.height;
 
+
         this.overlayCtx =
             this.overlayCanvas.getContext(
                 "2d"
             );
 
+
+        if (!this.overlayCtx) {
+
+            throw new Error(
+                "Não foi possível criar a camada da raspadinha."
+            );
+
+        }
+
     }
+
 
     /* ======================================================
        CARREGAR IMAGENS
@@ -202,15 +227,26 @@ export default class CanvasEngine {
         this.prizeImage =
             new Image();
 
+
         this.coverImage =
             new Image();
+
 
         this.prizeImage.src =
             obterImagemResultado();
 
+
+        /*
+         * Compatibilidade com o config.js 6.0:
+         *
+         * imagemCobertura
+         */
+
         this.coverImage.src =
+            CONFIG?.raspadinha?.imagemCobertura ||
             CONFIG?.raspadinha?.camada ||
             "img/camada-raspadinha.png";
+
 
         await Promise.all([
 
@@ -225,6 +261,7 @@ export default class CanvasEngine {
         ]);
 
     }
+
 
     /* ======================================================
        CARREGAR UMA IMAGEM
@@ -248,20 +285,25 @@ export default class CanvasEngine {
 
                 }
 
+
                 imagem.onload =
                     () => resolve();
 
+
                 imagem.onerror =
                     () => reject(
+
                         new Error(
                             `Não foi possível carregar a imagem: ${imagem.src}`
                         )
+
                     );
 
             }
         );
 
     }
+
 
     /* ======================================================
        DESENHO INICIAL
@@ -278,35 +320,34 @@ export default class CanvasEngine {
 
         }
 
-        /* --------------------------------------------------
-           LIMPAR
-        -------------------------------------------------- */
+
+        /* ==================================================
+           LIMPAR CANVAS
+        ================================================== */
 
         this.ctx.clearRect(
-
             0,
             0,
             this.width,
             this.height
-
         );
+
 
         this.overlayCtx.clearRect(
-
             0,
             0,
             this.width,
             this.height
-
         );
 
-        /* --------------------------------------------------
-           PRÊMIO
-        -------------------------------------------------- */
+
+        /* ==================================================
+           DESENHAR PRÊMIO
+        ================================================== */
 
         if (
             this.prizeImage &&
-            this.prizeImage.naturalWidth
+            this.prizeImage.naturalWidth > 0
         ) {
 
             this.ctx.drawImage(
@@ -323,13 +364,14 @@ export default class CanvasEngine {
 
         }
 
-        /* --------------------------------------------------
-           COBERTURA
-        -------------------------------------------------- */
+
+        /* ==================================================
+           DESENHAR COBERTURA
+        ================================================== */
 
         if (
             this.coverImage &&
-            this.coverImage.naturalWidth
+            this.coverImage.naturalWidth > 0
         ) {
 
             this.overlayCtx.drawImage(
@@ -346,22 +388,22 @@ export default class CanvasEngine {
 
         } else {
 
-            /*
-             * Fallback caso a imagem da camada
-             * ainda não esteja disponível.
-             */
-
             this.criarCoberturaFallback();
 
         }
+
 
         this.percent = 0;
 
         this.isFinished = false;
 
+        this.isDrawing = false;
+
+
         this.renderizar();
 
     }
+
 
     /* ======================================================
        COBERTURA FALLBACK
@@ -372,54 +414,70 @@ export default class CanvasEngine {
         const ctx =
             this.overlayCtx;
 
+
+        if (!ctx) return;
+
+
         const gradiente =
             ctx.createLinearGradient(
 
                 0,
                 0,
+
                 this.width,
                 this.height
 
             );
 
+
         gradiente.addColorStop(
             0,
             "#d8d8d8"
         );
+
 
         gradiente.addColorStop(
             0.5,
             "#a9a9a9"
         );
 
+
         gradiente.addColorStop(
             1,
             "#d8d8d8"
         );
 
+
         ctx.fillStyle =
             gradiente;
+
 
         ctx.fillRect(
 
             0,
             0,
+
             this.width,
             this.height
 
         );
 
+
         ctx.fillStyle =
             "#555";
+
 
         ctx.font =
             "bold 26px Arial";
 
+
         ctx.textAlign =
             "center";
 
+
         ctx.textBaseline =
             "middle";
+
 
         ctx.fillText(
 
@@ -431,6 +489,7 @@ export default class CanvasEngine {
         );
 
     }
+
 
     /* ======================================================
        RENDERIZAR
@@ -447,22 +506,25 @@ export default class CanvasEngine {
 
         }
 
+
         this.ctx.clearRect(
 
             0,
             0,
+
             this.width,
             this.height
 
         );
 
-        /* --------------------------------------------------
+
+        /* ==================================================
            PRÊMIO
-        -------------------------------------------------- */
+        ================================================== */
 
         if (
             this.prizeImage &&
-            this.prizeImage.naturalWidth
+            this.prizeImage.naturalWidth > 0
         ) {
 
             this.ctx.drawImage(
@@ -479,9 +541,10 @@ export default class CanvasEngine {
 
         }
 
-        /* --------------------------------------------------
+
+        /* ==================================================
            COBERTURA
-        -------------------------------------------------- */
+        ================================================== */
 
         if (
             this.overlayCanvas
@@ -500,6 +563,7 @@ export default class CanvasEngine {
 
     }
 
+
     /* ======================================================
        REGISTRAR EVENTOS
     ====================================================== */
@@ -515,72 +579,127 @@ export default class CanvasEngine {
 
         }
 
-        this.canvas.addEventListener(
 
+        const iniciarMouse =
+            this.iniciarMouse.bind(this);
+
+
+        const moverMouse =
+            this.moverMouse.bind(this);
+
+
+        const finalizar =
+            this.finalizar.bind(this);
+
+
+        const iniciarTouch =
+            this.iniciarTouch.bind(this);
+
+
+        const moverTouch =
+            this.moverTouch.bind(this);
+
+
+        const finalizarTouch =
+            this.finalizar.bind(this);
+
+
+        this.canvas.addEventListener(
             "mousedown",
-
-            this.iniciarMouse.bind(this)
-
+            iniciarMouse
         );
 
-        this.canvas.addEventListener(
 
+        this.canvas.addEventListener(
             "mousemove",
-
-            this.moverMouse.bind(this)
-
+            moverMouse
         );
 
-        window.addEventListener(
 
+        window.addEventListener(
             "mouseup",
-
-            this.finalizar.bind(this)
-
+            finalizar
         );
 
-        this.canvas.addEventListener(
 
+        this.canvas.addEventListener(
             "touchstart",
-
-            this.iniciarTouch.bind(this),
-
+            iniciarTouch,
             {
                 passive: false
             }
-
         );
+
 
         this.canvas.addEventListener(
-
             "touchmove",
-
-            this.moverTouch.bind(this),
-
+            moverTouch,
             {
                 passive: false
             }
-
         );
+
 
         window.addEventListener(
-
             "touchend",
-
-            this.finalizar.bind(this)
-
+            finalizarTouch
         );
+
+
+        this.eventos = [
+
+            {
+                alvo: this.canvas,
+                tipo: "mousedown",
+                funcao: iniciarMouse
+            },
+
+            {
+                alvo: this.canvas,
+                tipo: "mousemove",
+                funcao: moverMouse
+            },
+
+            {
+                alvo: window,
+                tipo: "mouseup",
+                funcao: finalizar
+            },
+
+            {
+                alvo: this.canvas,
+                tipo: "touchstart",
+                funcao: iniciarTouch
+            },
+
+            {
+                alvo: this.canvas,
+                tipo: "touchmove",
+                funcao: moverTouch
+            },
+
+            {
+                alvo: window,
+                tipo: "touchend",
+                funcao: finalizarTouch
+            }
+
+        ];
+
 
         this.eventosRegistrados =
             true;
 
     }
 
+
     /* ======================================================
        MOUSE — INICIAR
     ====================================================== */
 
-    iniciarMouse(evento) {
+    iniciarMouse(
+        evento
+    ) {
 
         if (
             this.isFinished
@@ -590,20 +709,25 @@ export default class CanvasEngine {
 
         }
 
+
         this.isDrawing =
             true;
+
 
         this.rasparEvento(
             evento
         );
 
     }
+
 
     /* ======================================================
        MOUSE — MOVER
     ====================================================== */
 
-    moverMouse(evento) {
+    moverMouse(
+        evento
+    ) {
 
         if (
             !this.isDrawing ||
@@ -613,6 +737,7 @@ export default class CanvasEngine {
             return;
 
         }
+
 
         this.rasparEvento(
             evento
@@ -620,11 +745,14 @@ export default class CanvasEngine {
 
     }
 
+
     /* ======================================================
        TOUCH — INICIAR
     ====================================================== */
 
-    iniciarTouch(evento) {
+    iniciarTouch(
+        evento
+    ) {
 
         if (
             this.isFinished
@@ -634,28 +762,37 @@ export default class CanvasEngine {
 
         }
 
+
         evento.preventDefault();
+
 
         this.isDrawing =
             true;
 
+
         if (
-            evento.touches.length
+            evento.touches &&
+            evento.touches.length > 0
         ) {
 
             this.rasparEvento(
+
                 evento.touches[0]
+
             );
 
         }
 
     }
 
+
     /* ======================================================
        TOUCH — MOVER
     ====================================================== */
 
-    moverTouch(evento) {
+    moverTouch(
+        evento
+    ) {
 
         if (
             !this.isDrawing ||
@@ -666,19 +803,25 @@ export default class CanvasEngine {
 
         }
 
+
         evento.preventDefault();
 
+
         if (
-            evento.touches.length
+            evento.touches &&
+            evento.touches.length > 0
         ) {
 
             this.rasparEvento(
+
                 evento.touches[0]
+
             );
 
         }
 
     }
+
 
     /* ======================================================
        FINALIZAR
@@ -691,56 +834,92 @@ export default class CanvasEngine {
 
     }
 
+
     /* ======================================================
        OBTER POSIÇÃO
     ====================================================== */
 
-    obterPosicao(evento) {
+    obterPosicao(
+        evento
+    ) {
+
+        if (
+            !this.canvas
+        ) {
+
+            return {
+                x: 0,
+                y: 0
+            };
+
+        }
+
 
         const rect =
-            this.canvas
-                .getBoundingClientRect();
+            this.canvas.getBoundingClientRect();
 
-        /*
-         * Corrige a diferença entre o
-         * tamanho visual e o tamanho real
-         * do Canvas.
-         */
+
+        if (
+            !rect.width ||
+            !rect.height
+        ) {
+
+            return {
+                x: 0,
+                y: 0
+            };
+
+        }
+
 
         const escalaX =
             this.width /
             rect.width;
 
+
         const escalaY =
             this.height /
             rect.height;
 
+
         return {
 
             x:
-                (evento.clientX -
-                rect.left) *
+                (
+                    evento.clientX -
+                    rect.left
+                ) *
                 escalaX,
 
+
             y:
-                (evento.clientY -
-                rect.top) *
+                (
+                    evento.clientY -
+                    rect.top
+                ) *
                 escalaY
 
         };
 
     }
 
+
     /* ======================================================
        PROCESSAR EVENTO
     ====================================================== */
 
-    rasparEvento(evento) {
+    rasparEvento(
+        evento
+    ) {
+
+        if (!evento) return;
+
 
         const posicao =
             this.obterPosicao(
                 evento
             );
+
 
         this.raspar(
 
@@ -750,6 +929,7 @@ export default class CanvasEngine {
         );
 
     }
+
 
     /* ======================================================
        RASPAR
@@ -769,12 +949,16 @@ export default class CanvasEngine {
 
         }
 
+
         this.overlayCtx.save();
+
 
         this.overlayCtx.globalCompositeOperation =
             "destination-out";
 
+
         this.overlayCtx.beginPath();
+
 
         this.overlayCtx.arc(
 
@@ -788,15 +972,20 @@ export default class CanvasEngine {
 
         );
 
+
         this.overlayCtx.fill();
+
 
         this.overlayCtx.restore();
 
+
         this.calcularPorcentagem();
+
 
         this.renderizar();
 
     }
+
 
     /* ======================================================
        CALCULAR PORCENTAGEM
@@ -812,6 +1001,7 @@ export default class CanvasEngine {
 
         }
 
+
         const dados =
             this.overlayCtx.getImageData(
 
@@ -823,15 +1013,14 @@ export default class CanvasEngine {
 
             );
 
+
         const pixels =
             dados.data;
+
 
         let transparentes =
             0;
 
-        /*
-         * Analisa apenas o canal alpha.
-         */
 
         for (
             let i = 3;
@@ -849,6 +1038,7 @@ export default class CanvasEngine {
 
         }
 
+
         this.percent =
             Math.round(
 
@@ -862,6 +1052,7 @@ export default class CanvasEngine {
 
             );
 
+
         if (
             this.percent >=
             this.limiteRevelacao
@@ -871,9 +1062,11 @@ export default class CanvasEngine {
 
         }
 
+
         return this.percent;
 
     }
+
 
     /* ======================================================
        REVELAR PRÊMIO
@@ -889,15 +1082,18 @@ export default class CanvasEngine {
 
         }
 
+
         this.isFinished =
             true;
+
 
         this.isDrawing =
             false;
 
-        /*
-         * Remove toda a camada.
-         */
+
+        /* ==================================================
+           REMOVER COBERTURA
+        ================================================== */
 
         if (
             this.overlayCtx
@@ -915,20 +1111,23 @@ export default class CanvasEngine {
 
         }
 
-        this.percent = 100;
+
+        this.percent =
+            100;
+
 
         this.renderizar();
 
-        /*
-         * Evento opcional configurado
-         * pelo aplicativo.
-         */
+
+        /* ==================================================
+           EVENTO OPCIONAL
+        ================================================== */
 
         if (
             typeof CONFIG
                 ?.raspadinha
                 ?.aoRevelar ===
-                "function"
+            "function"
         ) {
 
             try {
@@ -941,8 +1140,7 @@ export default class CanvasEngine {
 
                 console.error(
 
-                    "Erro no evento ao revelar:",
-
+                    "Erro em CONFIG.raspadinha.aoRevelar:",
                     erro
 
                 );
@@ -952,6 +1150,7 @@ export default class CanvasEngine {
         }
 
     }
+
 
     /* ======================================================
        REINICIAR
@@ -967,20 +1166,26 @@ export default class CanvasEngine {
 
         }
 
+
         this.isDrawing =
             false;
+
 
         this.isFinished =
             false;
 
+
         this.percent =
             0;
 
+
         await this.carregarImagens();
+
 
         this.desenharInicial();
 
     }
+
 
     /* ======================================================
        DESTRUIR
@@ -991,49 +1196,87 @@ export default class CanvasEngine {
         this.isDrawing =
             false;
 
+
         this.isFinished =
             true;
 
+
+        /* ==================================================
+           REMOVER EVENTOS
+        ================================================== */
+
         if (
-            this.animationFrame
+            Array.isArray(
+                this.eventos
+            )
         ) {
 
-            cancelAnimationFrame(
+            for (
+                const evento
+                of this.eventos
+            ) {
 
-                this.animationFrame
+                try {
 
-            );
+                    evento.alvo.removeEventListener(
 
-            this.animationFrame =
-                null;
+                        evento.tipo,
+
+                        evento.funcao
+
+                    );
+
+                } catch (erro) {
+
+                    console.warn(
+                        "Não foi possível remover evento:",
+                        erro
+                    );
+
+                }
+
+            }
 
         }
 
-        this.canvas =
-            null;
 
-        this.ctx =
-            null;
+        this.eventos =
+            [];
 
-        this.overlayCanvas =
-            null;
-
-        this.overlayCtx =
-            null;
-
-        this.prizeImage =
-            null;
-
-        this.coverImage =
-            null;
-
-        this.initialized =
-            false;
 
         this.eventosRegistrados =
             false;
 
+
+        this.canvas =
+            null;
+
+
+        this.ctx =
+            null;
+
+
+        this.overlayCanvas =
+            null;
+
+
+        this.overlayCtx =
+            null;
+
+
+        this.prizeImage =
+            null;
+
+
+        this.coverImage =
+            null;
+
+
+        this.initialized =
+            false;
+
     }
+
 
     /* ======================================================
        GETTERS
@@ -1045,17 +1288,20 @@ export default class CanvasEngine {
 
     }
 
+
     get finalizado() {
 
         return this.isFinished;
 
     }
 
+
     get raspando() {
 
         return this.isDrawing;
 
     }
+
 
     get inicializado() {
 
@@ -1064,6 +1310,7 @@ export default class CanvasEngine {
     }
 
 }
+
 
 /* ==========================================================
    FIM DO CANVAS ENGINE 6.0
