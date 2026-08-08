@@ -1,209 +1,523 @@
- /* ==========================================================
-   FIREBASE ENGINE 5.0
-   Raspadinha Solidária
-   Parte 1 - Inicialização
+/* ==========================================================
+   RASPADINHA SOLIDÁRIA 6.0
+   FIREBASE RASPADINHA
+   Ponte entre aplicação e Realtime Database
 ========================================================== */
 
-import {
+import { getDB } from "./firebase.js";
 
+import {
     ref,
     get,
     set,
     update,
-    push,
-    runTransaction
-
+    serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-database.js";
 
-import { db } from "./firebase.js";
-
-import { CONFIG } from "../config.js";
-
 /* ==========================================================
-   REFERÊNCIAS
+   BANCO
 ========================================================== */
 
-const campanhaRef = ref(
-    db,
-    "campanha"
-);
-
-const participantesRef = ref(
-    db,
-    "participantes"
-);
-
-const premiosRef = ref(
-    db,
-    "premios"
-);
-
-const vencedoresRef = ref(
-    db,
-    "vencedores"
-);
-
-const estatisticasRef = ref(
-    db,
-    "estatisticas"
-);
+const db = getDB();
 
 /* ==========================================================
-   CAMPANHA
+   CAMINHOS PRINCIPAIS
 ========================================================== */
 
-export async function carregarCampanha() {
+const CAMINHOS = {
 
-    const snap = await get(
-        campanhaRef
-    );
+    config: "config",
 
-    if (!snap.exists()) {
+    campanha: "campanha",
 
-        throw new Error(
-            "Campanha não encontrada."
-        );
+    estatisticas: "estatisticas",
+
+    participantes: "participantes",
+
+    premios: "premios",
+
+    sistema: "sistema",
+
+    teste: "teste",
+
+    vencedores: "vencedores"
+
+};
+
+/* ==========================================================
+   NORMALIZAR NÚMERO
+========================================================== */
+
+function normalizarNumero(numero) {
+
+    if (
+        numero === null ||
+        numero === undefined
+    ) {
+
+        return null;
 
     }
 
-    return snap.val();
+    const valor =
+        String(numero)
+            .trim()
+            .replace(/\D/g, "");
+
+    if (!valor) {
+
+        return null;
+
+    }
+
+    const numeroNormalizado =
+        parseInt(valor, 10);
+
+    if (
+        !Number.isInteger(
+            numeroNormalizado
+        )
+    ) {
+
+        return null;
+
+    }
+
+    if (
+        numeroNormalizado < 1 ||
+        numeroNormalizado > 1000
+    ) {
+
+        return null;
+
+    }
+
+    return String(
+        numeroNormalizado
+    ).padStart(4, "0");
 
 }
 
 /* ==========================================================
-   PRÊMIOS
+   REFERÊNCIA DO PARTICIPANTE
 ========================================================== */
 
-export async function carregarPremios() {
+function referenciaParticipante(numero) {
 
-    const snap = await get(
-        premiosRef
-    );
+    const numeroNormalizado =
+        normalizarNumero(numero);
 
-    if (!snap.exists()) {
+    if (!numeroNormalizado) {
 
         throw new Error(
-            "Prêmios não encontrados."
+            "Número da rifa inválido."
         );
 
     }
 
-    return snap.val();
+    return ref(
+
+        db,
+
+        `${CAMINHOS.participantes}/${numeroNormalizado}`
+
+    );
 
 }
 
 /* ==========================================================
-   STATUS
+   BUSCAR PARTICIPANTE
 ========================================================== */
 
-export async function obterStatusSistema() {
+export async function buscarParticipante(numero) {
 
-    const campanha = await carregarCampanha();
+    const numeroNormalizado =
+        normalizarNumero(numero);
 
-    const premios = await carregarPremios();
+    if (!numeroNormalizado) {
+
+        return null;
+
+    }
+
+    try {
+
+        const participanteRef =
+            referenciaParticipante(
+                numeroNormalizado
+            );
+
+        const snapshot =
+            await get(
+                participanteRef
+            );
+
+        if (!snapshot.exists()) {
+
+            return null;
+
+        }
+
+        return {
+
+            numero:
+                numeroNormalizado,
+
+            ...snapshot.val()
+
+        };
+
+    } catch (erro) {
+
+        console.error(
+
+            "Erro ao buscar participante:",
+
+            erro
+
+        );
+
+        throw erro;
+
+    }
+
+}
+
+/* ==========================================================
+   VERIFICAR PARTICIPANTE
+========================================================== */
+
+export async function verificarParticipante(numero) {
+
+    const participante =
+        await buscarParticipante(
+            numero
+        );
+
+    if (!participante) {
+
+        return {
+
+            valido: false,
+
+            motivo:
+                "Participante não encontrado.",
+
+            participante: null
+
+        };
+
+    }
 
     return {
 
-        campanha,
+        valido: true,
 
-        premios,
+        motivo: "Participante encontrado.",
 
-        versao: CONFIG.sistema.versao,
-
-        nome: CONFIG.sistema.nome
+        participante
 
     };
 
 }
 
 /* ==========================================================
-   FIREBASE ENGINE 5.0
-   Parte 2 - Participantes
+   VERIFICAR PAGAMENTO
 ========================================================== */
 
-/* ==========================================================
-   OBTER PARTICIPANTE
-========================================================== */
+export function pagamentoConfirmado(
+    participante
+) {
 
-export async function obterParticipante(numero) {
+    if (!participante) {
 
-    const participanteRef = ref(
-        db,
-        `participantes/${numero}`
-    );
-
-    const snap = await get(participanteRef);
-
-    if (!snap.exists()) {
-
-        return null;
+        return false;
 
     }
 
-    return snap.val();
+    const status =
+        participante.statusPagamento ??
+        participante.pagamento ??
+        participante.status ??
+        "";
+
+    const valor =
+        String(status)
+            .trim()
+            .toLowerCase();
+
+    return (
+
+        valor === "pago" ||
+
+        valor === "pagamento confirmado" ||
+
+        valor === "confirmado" ||
+
+        valor === "aprovado" ||
+
+        valor === "true"
+
+    );
 
 }
 
 /* ==========================================================
-   REGISTRAR PARTICIPANTE
+   VERIFICAR SE JÁ RASPOU
 ========================================================== */
 
-export async function registrarParticipante(numero, dados) {
+export function jaRaspou(
+    participante
+) {
 
-    const participanteRef = ref(
-        db,
-        `participantes/${numero}`
+    if (!participante) {
+
+        return false;
+
+    }
+
+    return (
+
+        participante.jaRaspou === true ||
+
+        participante.raspou === true ||
+
+        participante.statusRaspadinha ===
+            "raspado" ||
+
+        Boolean(
+            participante.dataRaspagem
+        )
+
     );
 
-    await set(participanteRef, {
-
-        ...dados,
-
-        numero,
-
-        criadoEm
-        
-        /* ==========================================================
-   FIREBASE ENGINE 5.0
-   Parte 3 - Prêmios e Vencedores
-========================================================== */
+}
 
 /* ==========================================================
-   CONSUMIR PRÊMIO
+   VALIDAR PARTICIPAÇÃO
 ========================================================== */
 
-export async function consumirPremio(idPremio) {
+export async function validarParticipacao(
+    numero
+) {
 
-    const premioRef = ref(
-        db,
-        `premios/${idPremio}/quantidade`
-    );
+    const resultado =
+        await verificarParticipante(
+            numero
+        );
 
-    const resultado = await runTransaction(
+    if (!resultado.valido) {
 
-        premioRef,
+        return {
 
-        (quantidadeAtual) => {
+            permitido: false,
 
-            if (quantidadeAtual === null) {
+            motivo:
+                resultado.motivo,
 
-                return quantidadeAtual;
+            participante: null
 
-            }
+        };
 
-            if (quantidadeAtual <= 0) {
+    }
 
-                return;
+    const participante =
+        resultado.participante;
 
-            }
+    if (
+        !pagamentoConfirmado(
+            participante
+        )
+    ) {
 
-            return quantidadeAtual - 1;
+        return {
+
+            permitido: false,
+
+            motivo:
+                "O pagamento ainda não foi confirmado.",
+
+            participante
+
+        };
+
+    }
+
+    if (
+        jaRaspou(
+            participante
+        )
+    ) {
+
+        return {
+
+            permitido: false,
+
+            motivo:
+                "Este número já foi utilizado.",
+
+            participante
+
+        };
+
+    }
+
+    return {
+
+        permitido: true,
+
+        motivo:
+            "Participação liberada.",
+
+        participante
+
+    };
+
+}
+
+/* ==========================================================
+   BUSCAR PRÊMIOS
+========================================================== */
+
+export async function buscarPremios() {
+
+    try {
+
+        const premiosRef =
+            ref(
+                db,
+                CAMINHOS.premios
+            );
+
+        const snapshot =
+            await get(
+                premiosRef
+            );
+
+        if (!snapshot.exists()) {
+
+            return {};
 
         }
 
+        return snapshot.val();
+
+    } catch (erro) {
+
+        console.error(
+
+            "Erro ao buscar prêmios:",
+
+            erro
+
+        );
+
+        throw erro;
+
+    }
+
+}
+
+/* ==========================================================
+   BUSCAR CAMPANHA
+========================================================== */
+
+export async function buscarCampanha() {
+
+    try {
+
+        const campanhaRef =
+            ref(
+                db,
+                CAMINHOS.campanha
+            );
+
+        const snapshot =
+            await get(
+                campanhaRef
+            );
+
+        if (!snapshot.exists()) {
+
+            return {};
+
+        }
+
+        return snapshot.val();
+
+    } catch (erro) {
+
+        console.error(
+
+            "Erro ao buscar campanha:",
+
+            erro
+
+        );
+
+        throw erro;
+
+    }
+
+}
+
+/* ==========================================================
+   REGISTRAR RESULTADO NO PARTICIPANTE
+========================================================== */
+
+export async function registrarResultado(
+    numero,
+    resultado
+) {
+
+    const numeroNormalizado =
+        normalizarNumero(numero);
+
+    if (!numeroNormalizado) {
+
+        throw new Error(
+            "Número da rifa inválido."
+        );
+
+    }
+
+    const participanteRef =
+        referenciaParticipante(
+            numeroNormalizado
+        );
+
+    const dados = {
+
+        numeroRifa:
+            numeroNormalizado,
+
+        jaRaspou: true,
+
+        statusRaspadinha:
+            "raspado",
+
+        resultado:
+            resultado,
+
+        premioRecebido:
+            resultado === "perdeu"
+                ? null
+                : resultado,
+
+        dataRaspagem:
+            serverTimestamp()
+
+    };
+
+    await update(
+
+        participanteRef,
+
+        dados
+
     );
 
-    return resultado.committed;
+    return dados;
 
 }
 
@@ -211,248 +525,276 @@ export async function consumirPremio(idPremio) {
    REGISTRAR VENCEDOR
 ========================================================== */
 
-export async function registrarVencedor(dados) {
-
-    const novoRegistro = push(vencedoresRef);
-
-    await set(
-
-        novoRegistro,
-
-        {
-
-            ...dados,
-
-            dataRegistro: Date.now(),
-
-            campanha: CONFIG.firebase.campanha
-
-        }
-
-    );
-
-}
-
-/* ==========================================================
-   ESTATÍSTICAS
-========================================================== */
-
-export async function incrementarRaspagens() {
-
-    await runTransaction(
-
-        ref(db, "estatisticas/raspagens"),
-
-        (valorAtual) => (valorAtual || 0) + 1
-
-    );
-
-}
-
-export async function incrementarPremiosEntregues() {
-
-    await runTransaction(
-
-        ref(db, "estatisticas/premiosEntregues"),
-
-        (valorAtual) => (valorAtual || 0) + 1
-
-    );
-
-}
-
-/* ==========================================================
-   FINALIZAR RASPADINHA
-========================================================== */
-
-export async function finalizarRaspadinha(
-
+export async function registrarVencedor(
     numero,
-
-    premio,
-
-    dadosVencedor = {}
-
+    resultado,
+    participante = null
 ) {
 
-    await marcarComoRaspou(numero);
+    const numeroNormalizado =
+        normalizarNumero(numero);
 
-    if (premio !== "perdeu") {
+    if (!numeroNormalizado) {
 
-        const reservado = await consumirPremio(premio);
-
-        if (!reservado) {
-
-            throw new Error(
-
-                "Prêmio indisponível."
-
-            );
-
-        }
-
-        await registrarVencedor({
-
-            numero,
-
-            premio,
-
-            ...dadosVencedor
-
-        });
-
-        await incrementarPremiosEntregues();
+        throw new Error(
+            "Número da rifa inválido."
+        );
 
     }
 
-    await incrementarRaspagens();
-
-}
-
-/* ==========================================================
-   FIREBASE ENGINE 5.0
-   Parte 4 - Utilitários e Encerramento
-========================================================== */
-
-/* ==========================================================
-   STATUS GERAL
-========================================================== */
-
-export async function obterStatusFirebase() {
-
-    const campanha = await carregarCampanha();
-
-    const premios = await carregarPremios();
-
-    const estatisticas = await get(estatisticasRef);
-
-    return {
-
-        campanha,
-
-        premios,
-
-        estatisticas: estatisticas.exists()
-
-            ? estatisticas.val()
-
-            : {}
-
-    };
-
-}
-
-/* ==========================================================
-   REINICIAR ESTATÍSTICAS
-   (UTILIZAR APENAS NO PAINEL ADMIN)
-========================================================== */
-
-export async function resetarEstatisticas() {
-
-    await set(
-
-        estatisticasRef,
-
-        {
-
-            raspagens: 0,
-
-            premiosEntregues: 0
-
-        }
-
-    );
-
-}
-
-/* ==========================================================
-   TESTE DE CONEXÃO
-========================================================== */
-
-export async function testarFirebase() {
-
-    try {
-
-        await get(campanhaRef);
-
-        return true;
-
-    } catch (erro) {
-
-        console.error(
-
-            "Firebase indisponível:",
-
-            erro
-
-        );
+    if (
+        resultado === "perdeu"
+    ) {
 
         return false;
 
     }
 
+    const vencedorRef =
+        ref(
+
+            db,
+
+            `${CAMINHOS.vencedores}/${numeroNormalizado}`
+
+        );
+
+    const dados = {
+
+        numeroRifa:
+            numeroNormalizado,
+
+        premio:
+            resultado,
+
+        nome:
+            participante?.nome ||
+            participante?.nomeCompleto ||
+            "",
+
+        whatsapp:
+            participante?.whatsapp ||
+            participante?.telefone ||
+            "",
+
+        cidade:
+            participante?.cidade ||
+            "",
+
+        data:
+            serverTimestamp(),
+
+        status:
+            "pendente"
+
+    };
+
+    await set(
+
+        vencedorRef,
+
+        dados
+
+    );
+
+    return true;
+
 }
 
 /* ==========================================================
-   INFORMAÇÕES
+   ATUALIZAR ESTATÍSTICAS
 ========================================================== */
 
-export function obterVersaoEngine() {
+export async function registrarEstatistica(
+    resultado
+) {
+
+    const estatisticasRef =
+        ref(
+
+            db,
+
+            CAMINHOS.estatisticas
+
+        );
+
+    const snapshot =
+        await get(
+            estatisticasRef
+        );
+
+    const atuais =
+        snapshot.exists()
+            ? snapshot.val()
+            : {};
+
+    const atualizadas = {
+
+        totalRaspadas:
+            Number(
+                atuais.totalRaspadas || 0
+            ) + 1,
+
+        totalPerdedores:
+            Number(
+                atuais.totalPerdedores || 0
+            ) +
+            (
+                resultado === "perdeu"
+                    ? 1
+                    : 0
+            ),
+
+        totalFerro:
+            Number(
+                atuais.totalFerro || 0
+            ) +
+            (
+                resultado === "ferro"
+                    ? 1
+                    : 0
+            ),
+
+        totalLiquidificador:
+            Number(
+                atuais.totalLiquidificador || 0
+            ) +
+            (
+                resultado ===
+                "liquidificador"
+                    ? 1
+                    : 0
+            ),
+
+        ultimaRaspagem:
+            serverTimestamp()
+
+    };
+
+    await set(
+
+        estatisticasRef,
+
+        atualizadas
+
+    );
+
+    return atualizadas;
+
+}
+
+/* ==========================================================
+   REGISTRAR SISTEMA ONLINE
+========================================================== */
+
+export async function registrarSistemaOnline() {
+
+    const sistemaRef =
+        ref(
+
+            db,
+
+            CAMINHOS.sistema
+
+        );
+
+    await update(
+
+        sistemaRef,
+
+        {
+
+            status:
+                "online",
+
+            ultimaAtualizacao:
+                serverTimestamp()
+
+        }
+
+    );
+
+    return true;
+
+}
+
+/* ==========================================================
+   TESTAR BANCO
+========================================================== */
+
+export async function testarBanco() {
+
+    try {
+
+        const sistemaRef =
+            ref(
+
+                db,
+
+                CAMINHOS.sistema
+
+            );
+
+        const snapshot =
+            await get(
+                sistemaRef
+            );
+
+        return {
+
+            conectado: true,
+
+            existe:
+                snapshot.exists(),
+
+            dados:
+                snapshot.exists()
+                    ? snapshot.val()
+                    : null
+
+        };
+
+    } catch (erro) {
+
+        console.error(
+
+            "Erro no teste do banco:",
+
+            erro
+
+        );
+
+        return {
+
+            conectado: false,
+
+            existe: false,
+
+            dados: null,
+
+            erro:
+                erro.message
+
+        };
+
+    }
+
+}
+
+/* ==========================================================
+   UTILITÁRIO
+========================================================== */
+
+export function obterCaminhosFirebase() {
 
     return {
 
-        engine: "Firebase Engine",
-
-        versao: "5.0",
-
-        campanha: CONFIG.firebase.campanha
+        ...CAMINHOS
 
     };
 
 }
 
 /* ==========================================================
-   EXPORTAÇÕES
-========================================================== */
-
-export default {
-
-    carregarCampanha,
-
-    carregarPremios,
-
-    obterParticipante,
-
-    registrarParticipante,
-
-    participanteJaRaspou,
-
-    marcarComoRaspou,
-
-    pagamentoConfirmado,
-
-    liberarRaspadinha,
-
-    consumirPremio,
-
-    registrarVencedor,
-
-    incrementarRaspagens,
-
-    incrementarPremiosEntregues,
-
-    finalizarRaspadinha,
-
-    obterStatusFirebase,
-
-    resetarEstatisticas,
-
-    testarFirebase,
-
-    obterVersaoEngine
-
-};
-
-/* ==========================================================
-   FIM DO FIREBASE ENGINE 5.0
+   FIM DO FIREBASE RASPADINHA
 ========================================================== */
