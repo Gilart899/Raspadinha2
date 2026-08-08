@@ -1,7 +1,7 @@
 /* ==========================================================
    RASPADINHA DA AMIZADE 6.0
    APP PRINCIPAL
-   Controlador geral da aplicação
+   GilFest / GilArt
    ========================================================== */
 
 import { CONFIG } from "./config.js";
@@ -9,23 +9,21 @@ import { CONFIG } from "./config.js";
 import {
     iniciarRaspadinha,
     abrirRaspadinha,
-    raspadinhaInicializada
+    fecharRaspadinha,
+    obterStatusRaspadinha
 } from "./raspadinha/raspadinha.js";
 
 import {
     testarBanco,
-    registrarSistemaOnline,
-    buscarCampanha
+    registrarSistemaOnline
 } from "./firebase/firebase-raspadinha.js";
 
 /* ==========================================================
-   ESTADO GLOBAL
+   ESTADO DO SISTEMA
    ========================================================== */
 
 let sistemaInicializado = false;
 let firebaseConectado = false;
-let campanhaCarregada = false;
-let inicializando = false;
 
 /* ==========================================================
    ELEMENTOS DA INTERFACE
@@ -33,17 +31,10 @@ let inicializando = false;
 
 let btnParticipar = null;
 let statusSistema = null;
-
-let numeroRifaInput = null;
-let numeroRifaDisplay = null;
-
-let premioPrincipal = null;
-let premioSecundario = null;
-let dataSorteio = null;
-let resultadoSorteio = null;
+let numeroEntrada = null;
 
 /* ==========================================================
-   INICIALIZAÇÃO DOM
+   INICIALIZAÇÃO
    ========================================================== */
 
 document.addEventListener(
@@ -57,55 +48,43 @@ document.addEventListener(
 
 async function iniciarSistema() {
 
-    if (sistemaInicializado || inicializando) {
-
+    if (sistemaInicializado) {
         return;
-
     }
 
-    inicializando = true;
+    localizarElementos();
 
     escreverStatus(
         "Inicializando sistema..."
     );
 
     console.log(
-        "========================================"
+        "=========================================="
     );
 
     console.log(
-        "RASPADINHA DA AMIZADE"
+        CONFIG?.sistema?.nome ||
+        "Raspadinha da Amizade"
     );
 
     console.log(
         "Versão:",
-        CONFIG?.sistema?.versao || "6.0"
+        CONFIG?.sistema?.versao ||
+        "6.0"
     );
 
     console.log(
-        "========================================"
+        "=========================================="
     );
 
     try {
 
-        /* --------------------------------------------------
-           LOCALIZAR ELEMENTOS
-        -------------------------------------------------- */
-
-        localizarElementos();
-
-        /* --------------------------------------------------
-           VALIDAR CONFIGURAÇÃO
-        -------------------------------------------------- */
-
-        validarConfiguracao();
-
-        /* --------------------------------------------------
+        /* ==================================================
            TESTAR FIREBASE
-        -------------------------------------------------- */
+        ================================================== */
 
         escreverStatus(
-            "Conectando ao sistema..."
+            "Conectando ao Firebase..."
         );
 
         const banco =
@@ -116,10 +95,18 @@ async function iniciarSistema() {
             banco.conectado !== true
         ) {
 
-            throw new Error(
-                "Não foi possível conectar ao Firebase."
+            firebaseConectado = false;
+
+            escreverStatus(
+                "Não foi possível conectar ao sistema."
             );
 
+            console.error(
+                "Firebase indisponível:",
+                banco?.erro
+            );
+
+            return;
         }
 
         firebaseConectado = true;
@@ -128,38 +115,30 @@ async function iniciarSistema() {
             "Firebase conectado."
         );
 
-        /* --------------------------------------------------
+        /* ==================================================
            REGISTRAR SISTEMA ONLINE
-        -------------------------------------------------- */
+        ================================================== */
 
         try {
 
             await registrarSistemaOnline();
 
+            console.log(
+                "Sistema registrado como online."
+            );
+
         } catch (erro) {
 
-            /*
-             * O sistema já conseguiu ler o banco.
-             * Portanto, uma falha apenas ao registrar
-             * o status online não deve impedir a aplicação.
-             */
-
             console.warn(
-                "Não foi possível registrar sistema online:",
+                "Não foi possível registrar status online:",
                 erro
             );
 
         }
 
-        /* --------------------------------------------------
-           CARREGAR CAMPANHA
-        -------------------------------------------------- */
-
-        await carregarCampanha();
-
-        /* --------------------------------------------------
+        /* ==================================================
            INICIAR RASPADINHA
-        -------------------------------------------------- */
+        ================================================== */
 
         escreverStatus(
             "Preparando raspadinha..."
@@ -167,15 +146,15 @@ async function iniciarSistema() {
 
         await iniciarRaspadinha();
 
-        /* --------------------------------------------------
-           REGISTRAR EVENTOS
-        -------------------------------------------------- */
+        /* ==================================================
+           EVENTOS
+        ================================================== */
 
         registrarEventos();
 
-        /* --------------------------------------------------
-           ESTADO FINAL
-        -------------------------------------------------- */
+        /* ==================================================
+           FINALIZAÇÃO
+        ================================================== */
 
         sistemaInicializado = true;
 
@@ -184,8 +163,7 @@ async function iniciarSistema() {
         );
 
         console.log(
-            "Raspadinha inicializada:",
-            raspadinhaInicializada()
+            "Raspadinha inicializada com sucesso."
         );
 
     } catch (erro) {
@@ -198,13 +176,8 @@ async function iniciarSistema() {
         sistemaInicializado = false;
 
         escreverStatus(
-            erro?.message ||
-            "Sistema indisponível."
+            "Erro ao inicializar o sistema."
         );
-
-    } finally {
-
-        inicializando = false;
 
     }
 
@@ -226,281 +199,21 @@ function localizarElementos() {
             "statusSistema"
         );
 
-    numeroRifaInput =
-        document.getElementById(
-            "numeroRifaInput"
-        );
-
     /*
-     * Compatibilidade com outro nome de ID.
+     * O campo do número pode ter qualquer
+     * um destes IDs.
      */
 
-    if (!numeroRifaInput) {
-
-        numeroRifaInput =
-            document.getElementById(
-                "numeroRifa"
-            );
-
-    }
-
-    numeroRifaDisplay =
+    numeroEntrada =
         document.getElementById(
             "numeroRifa"
-        );
-
-    premioPrincipal =
+        ) ||
         document.getElementById(
-            "premioPrincipal"
-        );
-
-    premioSecundario =
+            "numero"
+        ) ||
         document.getElementById(
-            "premioSecundario"
+            "numeroParticipante"
         );
-
-    dataSorteio =
-        document.getElementById(
-            "dataSorteio"
-        );
-
-    resultadoSorteio =
-        document.getElementById(
-            "resultadoSorteio"
-        );
-
-}
-
-/* ==========================================================
-   VALIDAR CONFIGURAÇÃO
-   ========================================================== */
-
-function validarConfiguracao() {
-
-    if (!CONFIG) {
-
-        throw new Error(
-            "config.js não foi carregado."
-        );
-
-    }
-
-    if (!CONFIG.sistema) {
-
-        throw new Error(
-            "CONFIG.sistema não foi encontrado."
-        );
-
-    }
-
-    if (!CONFIG.raspadinha) {
-
-        throw new Error(
-            "CONFIG.raspadinha não foi encontrada."
-        );
-
-    }
-
-    if (!CONFIG.premios) {
-
-        throw new Error(
-            "CONFIG.premios não foi encontrada."
-        );
-
-    }
-
-    if (!CONFIG.firebase) {
-
-        throw new Error(
-            "CONFIG.firebase não foi encontrada."
-        );
-
-    }
-
-}
-
-/* ==========================================================
-   CARREGAR CAMPANHA
-   ========================================================== */
-
-async function carregarCampanha() {
-
-    try {
-
-        const campanha =
-            await buscarCampanha();
-
-        /*
-         * Caso o banco ainda não tenha os dados
-         * da campanha, usamos CONFIG como referência.
-         */
-
-        if (
-            campanha &&
-            Object.keys(campanha).length > 0
-        ) {
-
-            atualizarDadosCampanha(
-                campanha
-            );
-
-            campanhaCarregada = true;
-
-            console.log(
-                "Campanha carregada do Firebase:",
-                campanha
-            );
-
-            return campanha;
-
-        }
-
-        /*
-         * Fallback para configuração local.
-         */
-
-        if (CONFIG.campanha) {
-
-            atualizarDadosCampanha(
-                CONFIG.campanha
-            );
-
-            campanhaCarregada = true;
-
-            console.log(
-                "Campanha carregada do config.js."
-            );
-
-            return CONFIG.campanha;
-
-        }
-
-        campanhaCarregada = false;
-
-        console.warn(
-            "Nenhum dado de campanha encontrado."
-        );
-
-        return null;
-
-    } catch (erro) {
-
-        /*
-         * Não escondemos o erro.
-         * Porém, se CONFIG.campanha existir,
-         * conseguimos continuar com os dados locais.
-         */
-
-        console.warn(
-            "Erro ao carregar campanha:",
-            erro
-        );
-
-        if (CONFIG.campanha) {
-
-            atualizarDadosCampanha(
-                CONFIG.campanha
-            );
-
-            campanhaCarregada = true;
-
-            return CONFIG.campanha;
-
-        }
-
-        throw erro;
-
-    }
-
-}
-
-/* ==========================================================
-   ATUALIZAR DADOS DA CAMPANHA
-   ========================================================== */
-
-function atualizarDadosCampanha(
-    campanha
-) {
-
-    if (!campanha) {
-
-        return;
-
-    }
-
-    /* --------------------------------------------------
-       PRÊMIO PRINCIPAL
-    -------------------------------------------------- */
-
-    const principal =
-        campanha.premioPrincipal ??
-        campanha.premio ??
-        campanha.primeiroPremio;
-
-    if (
-        premioPrincipal &&
-        principal
-    ) {
-
-        premioPrincipal.textContent =
-            principal;
-
-    }
-
-    /* --------------------------------------------------
-       PRÊMIO SECUNDÁRIO
-    -------------------------------------------------- */
-
-    const secundario =
-        campanha.premioSecundario ??
-        campanha.segundoPremio;
-
-    if (
-        premioSecundario &&
-        secundario
-    ) {
-
-        premioSecundario.textContent =
-            secundario;
-
-    }
-
-    /* --------------------------------------------------
-       DATA
-    -------------------------------------------------- */
-
-    const data =
-        campanha.dataSorteio ??
-        campanha.data ??
-        campanha.dataResultado;
-
-    if (
-        dataSorteio &&
-        data
-    ) {
-
-        dataSorteio.textContent =
-            data;
-
-    }
-
-    /* --------------------------------------------------
-       RESULTADO
-    -------------------------------------------------- */
-
-    const resultado =
-        campanha.resultado ??
-        campanha.resultadoSorteio;
-
-    if (
-        resultadoSorteio &&
-        resultado
-    ) {
-
-        resultadoSorteio.textContent =
-            resultado;
-
-    }
 
 }
 
@@ -514,24 +227,24 @@ function registrarEventos() {
 
         btnParticipar.addEventListener(
             "click",
-            processarParticipacao
-        );
+            evento => {
 
-    } else {
+                evento.preventDefault();
 
-        console.warn(
-            "Botão #btnParticipar não encontrado."
+                participar();
+
+            }
         );
 
     }
 
     /*
-     * Permite pressionar Enter no campo do número.
+     * Permitir Enter no campo do número.
      */
 
-    if (numeroRifaInput) {
+    if (numeroEntrada) {
 
-        numeroRifaInput.addEventListener(
+        numeroEntrada.addEventListener(
             "keydown",
             evento => {
 
@@ -541,7 +254,7 @@ function registrarEventos() {
 
                     evento.preventDefault();
 
-                    processarParticipacao();
+                    participar();
 
                 }
 
@@ -553,18 +266,10 @@ function registrarEventos() {
 }
 
 /* ==========================================================
-   PROCESSAR PARTICIPAÇÃO
+   PARTICIPAR
    ========================================================== */
 
-async function processarParticipacao(
-    evento = null
-) {
-
-    if (evento) {
-
-        evento.preventDefault();
-
-    }
+async function participar() {
 
     if (!sistemaInicializado) {
 
@@ -579,29 +284,47 @@ async function processarParticipacao(
     if (!firebaseConectado) {
 
         escreverStatus(
-            "Sistema sem conexão com o Firebase."
+            "Sistema indisponível no momento."
         );
 
         return;
 
     }
 
-    if (!campanhaCarregada) {
-
-        escreverStatus(
-            "Campanha ainda não está disponível."
-        );
-
-        return;
-
-    }
-
-    /* --------------------------------------------------
+    /* ==================================================
        OBTER NÚMERO
-    -------------------------------------------------- */
+    ================================================== */
 
-    const numero =
-        obterNumeroDaInterface();
+    let numero = null;
+
+    if (numeroEntrada) {
+
+        numero =
+            numeroEntrada.value;
+
+    }
+
+    /*
+     * Caso o botão tenha um número
+     * armazenado em data-numero.
+     */
+
+    if (
+        !numero &&
+        btnParticipar
+    ) {
+
+        numero =
+            btnParticipar.dataset.numero ||
+            null;
+
+    }
+
+    /*
+     * Caso ainda não exista número,
+     * abrimos a raspadinha sem número somente
+     * se o próprio projeto permitir.
+     */
 
     if (!numero) {
 
@@ -609,39 +332,48 @@ async function processarParticipacao(
             "Informe o número da rifa."
         );
 
-        focarNumero();
+        if (numeroEntrada) {
+
+            numeroEntrada.focus();
+
+        }
 
         return;
 
     }
 
-    /* --------------------------------------------------
-       VALIDAR NÚMERO
-    -------------------------------------------------- */
+    /* ==================================================
+       NORMALIZAR NÚMERO
+    ================================================== */
 
-    const numeroNormalizado =
-        normalizarNumero(numero);
+    numero =
+        String(numero)
+            .replace(/\D/g, "");
 
-    if (!numeroNormalizado) {
+    if (!numero) {
 
         escreverStatus(
-            "Informe um número de rifa válido."
+            "Digite um número válido."
         );
-
-        focarNumero();
 
         return;
 
     }
 
-    /* --------------------------------------------------
-       DESABILITAR BOTÃO
-    -------------------------------------------------- */
-
-    alterarEstadoBotao(
-        true,
-        "Verificando..."
+    console.log(
+        "Abrindo raspadinha para:",
+        numero
     );
+
+    /* ==================================================
+       BLOQUEAR BOTÃO
+    ================================================== */
+
+    if (btnParticipar) {
+
+        btnParticipar.disabled = true;
+
+    }
 
     escreverStatus(
         "Verificando sua participação..."
@@ -649,35 +381,21 @@ async function processarParticipacao(
 
     try {
 
-        /*
-         * O número é enviado ao controlador.
-         *
-         * A partir daqui:
-         *
-         * app.js
-         *      ↓
-         * raspadinha.js
-         *      ↓
-         * sorteio.js
-         *      ↓
-         * firebase-raspadinha.js
-         *      ↓
-         * Firebase
-         */
+        /* ==================================================
+           ABRIR RASPADINHA
+        ================================================== */
 
         const resultado =
             await abrirRaspadinha(
-                numeroNormalizado
+                numero
             );
 
         /*
-         * Se o controlador retornar false,
-         * significa que a raspadinha não foi aberta.
+         * O controlador retorna false
+         * quando ocorre algum erro.
          */
 
-        if (
-            resultado === false
-        ) {
+        if (resultado === false) {
 
             escreverStatus(
                 "Não foi possível abrir a raspadinha."
@@ -687,280 +405,53 @@ async function processarParticipacao(
 
         }
 
-        /*
-         * Se chegou aqui, o resultado foi
-         * decidido pelo fluxo oficial.
-         */
-
         escreverStatus(
-            "Raspadinha liberada!"
+            "Raspadinha liberada! Raspe para descobrir."
         );
 
         console.log(
-            "Resultado recebido:",
+            "Raspadinha aberta:",
             resultado
         );
 
     } catch (erro) {
 
         console.error(
-            "Erro ao processar participação:",
+            "Erro ao participar:",
             erro
         );
 
         escreverStatus(
             erro?.message ||
-            "Não foi possível processar sua participação."
+            "Não foi possível iniciar sua raspadinha."
         );
 
     } finally {
 
-        alterarEstadoBotao(
-            false,
-            "🎲 QUERO RASPAR AGORA"
-        );
+        if (btnParticipar) {
 
-    }
-
-}
-
-/* ==========================================================
-   OBTER NÚMERO DA INTERFACE
-   ========================================================== */
-
-function obterNumeroDaInterface() {
-
-    /*
-     * 1 — Campo de entrada
-     */
-
-    if (numeroRifaInput) {
-
-        const valor =
-            numeroRifaInput.value;
-
-        if (
-            valor !== undefined &&
-            valor !== null &&
-            String(valor).trim() !== ""
-        ) {
-
-            return valor;
+            btnParticipar.disabled = false;
 
         }
 
     }
 
-    /*
-     * 2 — data-numero do botão
-     */
-
-    if (btnParticipar) {
-
-        const numero =
-            btnParticipar.dataset.numero;
-
-        if (numero) {
-
-            return numero;
-
-        }
-
-    }
-
-    /*
-     * 3 — parâmetro da URL
-     *
-     * Exemplo:
-     * ?numero=123
-     */
-
-    try {
-
-        const parametros =
-            new URLSearchParams(
-                window.location.search
-            );
-
-        const numeroURL =
-            parametros.get(
-                "numero"
-            );
-
-        if (numeroURL) {
-
-            return numeroURL;
-
-        }
-
-    } catch (erro) {
-
-        console.warn(
-            "Não foi possível ler número da URL."
-        );
-
-    }
-
-    return null;
-
 }
 
 /* ==========================================================
-   NORMALIZAR NÚMERO
-   ========================================================== */
-
-function normalizarNumero(numero) {
-
-    if (
-        numero === null ||
-        numero === undefined
-    ) {
-
-        return null;
-
-    }
-
-    const somenteNumeros =
-        String(numero)
-            .trim()
-            .replace(/\D/g, "");
-
-    if (!somenteNumeros) {
-
-        return null;
-
-    }
-
-    const valor =
-        parseInt(
-            somenteNumeros,
-            10
-        );
-
-    if (
-        !Number.isInteger(valor)
-    ) {
-
-        return null;
-
-    }
-
-    /*
-     * A base atual trabalha com
-     * números de 1 até 1000.
-     */
-
-    if (
-        valor < 1 ||
-        valor > 1000
-    ) {
-
-        return null;
-
-    }
-
-    /*
-     * IMPORTANTE:
-     *
-     * O firebase-raspadinha.js
-     * normaliza para 4 dígitos.
-     *
-     * Exemplo:
-     *
-     * 1    → 0001
-     * 25   → 0025
-     * 100  → 0100
-     * 1000 → 1000
-     */
-
-    return String(valor)
-        .padStart(4, "0");
-
-}
-
-/* ==========================================================
-   FOCAR CAMPO DO NÚMERO
-   ========================================================== */
-
-function focarNumero() {
-
-    if (!numeroRifaInput) {
-
-        return;
-
-    }
-
-    try {
-
-        numeroRifaInput.focus();
-
-        numeroRifaInput.select();
-
-    } catch (erro) {
-
-        console.warn(
-            "Não foi possível focar campo do número."
-        );
-
-    }
-
-}
-
-/* ==========================================================
-   ALTERAR ESTADO DO BOTÃO
-   ========================================================== */
-
-function alterarEstadoBotao(
-    desabilitado,
-    texto = null
-) {
-
-    if (!btnParticipar) {
-
-        return;
-
-    }
-
-    btnParticipar.disabled =
-        Boolean(desabilitado);
-
-    if (texto !== null) {
-
-        btnParticipar.textContent =
-            texto;
-
-    }
-
-    if (desabilitado) {
-
-        btnParticipar.classList.add(
-            "processando"
-        );
-
-    } else {
-
-        btnParticipar.classList.remove(
-            "processando"
-        );
-
-    }
-
-}
-
-/* ==========================================================
-   ESCREVER STATUS
+   STATUS
    ========================================================== */
 
 function escreverStatus(
     mensagem
 ) {
 
-    if (!statusSistema) {
+    console.log(
+        "[STATUS]",
+        mensagem
+    );
 
-        console.log(
-            "[STATUS]",
-            mensagem
-        );
+    if (!statusSistema) {
 
         return;
 
@@ -972,7 +463,7 @@ function escreverStatus(
 }
 
 /* ==========================================================
-   STATUS DO SISTEMA
+   STATUS PÚBLICO
    ========================================================== */
 
 export function obterStatusSistema() {
@@ -982,31 +473,18 @@ export function obterStatusSistema() {
         inicializado:
             sistemaInicializado,
 
-        inicializando,
-
         firebase:
             firebaseConectado,
 
-        campanha:
-            campanhaCarregada,
-
         raspadinha:
-            raspadinhaInicializada(),
-
-        versao:
-            CONFIG?.sistema?.versao ||
-            "6.0",
-
-        nome:
-            CONFIG?.sistema?.nome ||
-            "Raspadinha da Amizade"
+            obterStatusRaspadinha()
 
     };
 
 }
 
 /* ==========================================================
-   REINICIALIZAR SISTEMA
+   REINICIAR SISTEMA
    ========================================================== */
 
 export async function reiniciarSistema() {
@@ -1017,45 +495,32 @@ export async function reiniciarSistema() {
     firebaseConectado =
         false;
 
-    campanhaCarregada =
-        false;
-
-    inicializando =
-        false;
+    escreverStatus(
+        "Reiniciando sistema..."
+    );
 
     await iniciarSistema();
 
 }
 
 /* ==========================================================
-   GET CONFIG
+   EXPOR CONTROLE OPCIONAL
    ========================================================== */
 
-export function obterConfiguracao() {
+window.RaspadinhaApp = {
 
-    return CONFIG;
+    iniciar:
+        iniciarSistema,
 
-}
+    participar,
 
-/* ==========================================================
-   GET FIREBASE STATUS
-   ========================================================== */
+    fechar:
+        fecharRaspadinha,
 
-export function firebaseEstaConectado() {
+    status:
+        obterStatusSistema
 
-    return firebaseConectado;
-
-}
-
-/* ==========================================================
-   GET SISTEMA
-   ========================================================== */
-
-export function sistemaEstaPronto() {
-
-    return sistemaInicializado;
-
-}
+};
 
 /* ==========================================================
    FIM DO APP
