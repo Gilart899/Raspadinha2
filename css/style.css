@@ -207,7 +207,7 @@ body::after {
     animation:
         trevoFlutuante 7s ease-in-out infinite;
 
-    z-index: -1;
+    z-index: 0;
 }
 
 .pagina::before {
@@ -251,6 +251,11 @@ body::after {
 /* ==========================================================
    TOPO
 ========================================================== */
+
+.pagina > * {
+    position: relative;
+    z-index: 2;
+}
 
 .topo {
     width: min(1100px, 94%);
