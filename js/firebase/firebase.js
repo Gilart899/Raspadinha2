@@ -1,57 +1,60 @@
 /* ==========================================================
-   FIREBASE 5.0
-   Conexão Principal
+   RASPADINHA SOLIDÁRIA 6.0
+   FIREBASE — CONEXÃO PRINCIPAL
 ========================================================== */
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
+import {
+    initializeApp
+} from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
 
 import {
-
     getDatabase
-
 } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-database.js";
 
 /* ==========================================================
-   CONFIGURAÇÃO
+   CONFIGURAÇÃO REAL DO FIREBASE
 ========================================================== */
 
 const firebaseConfig = {
 
-    apiKey: "SUA_API_KEY",
+    apiKey:
+        "AIzaSyDrc6NkWKXBLKCczw3PiwH9Rt0NE0-DEXY",
 
-    authDomain: "SEU_PROJETO.firebaseapp.com",
+    authDomain:
+        "raspadinha2.firebaseapp.com",
 
-    databaseURL: "https://SEU_PROJETO-default-rtdb.firebaseio.com",
+    databaseURL:
+        "https://raspadinha2-default-rtdb.firebaseio.com",
 
-    projectId: "SEU_PROJETO",
+    projectId:
+        "raspadinha2",
 
-    storageBucket: "SEU_PROJETO.appspot.com",
+    storageBucket:
+        "raspadinha2.firebasestorage.app",
 
-    messagingSenderId: "000000000000",
+    messagingSenderId:
+        "421282276814",
 
-    appId: "1:000000000000:web:000000000000"
+    appId:
+        "1:421282276814:web:faa850a5817eadfb5a779f"
 
 };
 
 /* ==========================================================
-   APP
+   INICIALIZAÇÃO DO FIREBASE
 ========================================================== */
 
 const app = initializeApp(firebaseConfig);
 
 /* ==========================================================
-   DATABASE
+   REALTIME DATABASE
 ========================================================== */
 
 const db = getDatabase(app);
 
 /* ==========================================================
-   EXPORTAÇÕES
+   GET DATABASE
 ========================================================== */
-
-export { app };
-
-export { db };
 
 export function getDB() {
 
@@ -60,23 +63,37 @@ export function getDB() {
 }
 
 /* ==========================================================
-   STATUS
+   GET APP
+========================================================== */
+
+export function getFirebaseApp() {
+
+    return app;
+
+}
+
+/* ==========================================================
+   INFORMAÇÕES DO FIREBASE
 ========================================================== */
 
 export function firebaseInfo() {
 
     return {
 
-        engine: "Firebase",
+        conectado: true,
 
-        versao: "5.0",
+        projeto: "raspadinha2",
 
-        conectado: true
+        banco:
+            "raspadinha2-default-rtdb",
+
+        versaoSDK:
+            "10.13.2"
 
     };
 
 }
 
 /* ==========================================================
-   FIM
-=======================
+   FIM DO FIREBASE
+========================================================== */
