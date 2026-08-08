@@ -2,6 +2,7 @@
 <html lang="pt-BR">
 
 <head>
+
     <meta charset="UTF-8">
 
     <meta
@@ -19,607 +20,553 @@
         content="Raspadinha da Amizade - GilFest"
     >
 
-    <title>Raspadinha da Amizade | GILFEST</title>
+    <title>Raspadinha da Amizade | GilFest</title>
 
     <!-- =====================================================
-         CSS
-    ====================================================== -->
+         CSS PRINCIPAL
+         ===================================================== -->
 
     <link
         rel="stylesheet"
-        href="./style.css"
+        href="style.css"
     >
 
 </head>
 
+
 <body>
 
+<div class="pagina">
+
     <!-- =====================================================
-         PÁGINA PRINCIPAL
-    ====================================================== -->
+         TOPO
+         ===================================================== -->
 
-    <main class="pagina">
+    <header class="topo">
 
-        <!-- =================================================
-             TOPO
-        ================================================== -->
+        <div class="logo-area">
 
-        <header class="topo">
+            <!--
+                Coloque aqui o arquivo da sua logo.
+                Se o nome for diferente, altere somente o src.
+            -->
 
-            <div class="logo-area">
+            <img
+                src="img/logo-gilfest.png"
+                alt="GilFest"
+                class="logo"
+                onerror="this.style.display='none'; document.querySelector('.logo-fallback').style.display='flex';"
+            >
 
-                <!--
-                    Coloque sua logo em:
-                    img/logo.png
+            <div class="logo-fallback">
 
-                    Se o nome do arquivo for diferente,
-                    alteramos somente este caminho.
-                -->
+                <span class="logo-trevo">🍀</span>
 
-                <img
-                    src="./img/logo.png"
-                    alt="GILFEST"
-                    class="logo"
-                    onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
-                >
+                <div>
 
-                <!-- Fallback caso a logo não exista -->
+                    <strong>GILFEST</strong>
 
-                <div class="logo-fallback">
-
-                    <span class="logo-trevo">🍀</span>
-
-                    <div>
-
-                        <strong>GILFEST</strong>
-
-                        <small>
-                            SUA SORTE, NOSSA FESTA!
-                        </small>
-
-                    </div>
+                    <small>RASPADINHA DA AMIZADE</small>
 
                 </div>
 
             </div>
 
+        </div>
 
-            <!-- STATUS -->
 
-            <div
-                class="status-online"
-                id="statusOnline"
-            >
+        <!-- STATUS -->
 
-                <span class="status-bolinha"></span>
+        <div class="status-online">
 
-                <span>Online</span>
+            <span class="status-bolinha"></span>
 
-            </div>
+            <span>ONLINE</span>
 
-        </header>
+        </div>
+
+    </header>
+
+
+
+    <!-- =====================================================
+         CONTEÚDO PRINCIPAL
+         ===================================================== -->
+
+    <main class="conteudo">
 
 
         <!-- =================================================
-             CONTEÚDO
-        ================================================== -->
+             TREVO CENTRAL
+             ================================================= -->
 
-        <section class="conteudo">
+        <div class="trevo-central">
+            🍀
+        </div>
 
 
-            <!-- =================================================
-                 TREVO CENTRAL
-            ================================================== -->
+        <!-- =================================================
+             TÍTULO
+             ================================================= -->
 
-            <div
-                class="trevo-central"
-                aria-hidden="true"
-            >
+        <section class="titulo-area">
 
+            <h1>
+                RASPADINHA
+            </h1>
+
+            <h2>
+                DA AMIZADE
+            </h2>
+
+            <p>
+                <strong>🍀 Sua sorte pode aparecer aqui!</strong>
+            </p>
+
+            <p>
+                Raspe e descubra se hoje é o seu dia de ganhar.
+            </p>
+
+        </section>
+
+
+
+        <!-- =================================================
+             ÁREA PRINCIPAL DA RASPADINHA
+             ================================================= -->
+
+        <section class="area-raspadinha">
+
+            <div class="moldura-raspadinha">
+
+
+                <div class="raspadinha-preview">
+
+
+                    <!-- DECORAÇÃO -->
+
+                    <div class="pontos-decorativos">
+                        ✦ ✦ ✦
+                    </div>
+
+
+                    <!-- TREVO -->
+
+                    <div class="icone-trevo">
+                        🍀
+                    </div>
+
+
+                    <!-- TEXTO -->
+
+                    <div class="texto-raspe">
+
+                        RASPE AQUI
+
+                    </div>
+
+
+                    <!-- BRILHO ANIMADO -->
+
+                    <div class="brilho-raspadinha"></div>
+
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =================================================
+             BOTÃO
+             ================================================= -->
+
+        <button
+            type="button"
+            class="btn-raspar"
+        >
+
+            <span class="btn-icone">
                 🍀
+            </span>
+
+            <span>
+                RASPAR AGORA
+            </span>
+
+        </button>
+
+
+
+        <!-- =================================================
+             PRÊMIOS
+             ================================================= -->
+
+        <section class="premios-section">
+
+
+            <div class="linha-titulo">
+
+                <span></span>
+
+                <h3>
+                    🎁 PRÊMIOS DA RASPADINHA
+                </h3>
+
+                <span></span>
 
             </div>
 
 
-            <!-- =================================================
-                 TÍTULO
-            ================================================== -->
 
-            <div class="titulo-area">
-
-                <h1>
-                    RASPADINHA
-                </h1>
-
-                <h2>
-                    DA AMIZADE
-                </h2>
-
-                <p>
-                    Raspe e descubra
-                    <strong>
-                        se você ganhou!
-                    </strong>
-                </p>
-
-            </div>
+            <div class="premios-grid">
 
 
-            <!-- =================================================
-                 ÁREA PRINCIPAL DA RASPADINHA
-            ================================================== -->
+                <!-- =========================================
+                     PRÊMIO 1
+                     ========================================= -->
 
-            <section class="area-raspadinha">
+                <article class="premio-card">
 
+                    <div class="premio-imagem-area">
 
-                <div class="moldura-raspadinha">
-
-
-                    <div class="raspadinha-preview">
-
-
-                        <!-- brilho passando pelo painel -->
-
-                        <div
-                            class="brilho-raspadinha"
-                            aria-hidden="true"
-                        ></div>
-
-
-                        <!-- trevo -->
-
-                        <div
-                            class="icone-trevo"
-                            aria-hidden="true"
+                        <img
+                            src="img/liquidificador.png"
+                            alt="Liquidificador"
+                            class="premio-imagem"
                         >
-                            🍀
-                        </div>
-
-
-                        <!-- texto -->
-
-                        <div class="texto-raspe">
-
-                            RASPE AQUI
-
-                        </div>
-
-
-                        <!-- detalhes -->
-
-                        <div
-                            class="pontos-decorativos"
-                            aria-hidden="true"
-                        >
-
-                            ✦
-
-                        </div>
 
                     </div>
 
+                    <div class="premio-nome">
+
+                        <span>🍀</span>
+
+                        <span>
+                            Liquidificador
+                        </span>
+
+                    </div>
+
+                </article>
+
+
+
+                <!-- =========================================
+                     OU
+                     ========================================= -->
+
+                <div class="premio-ou">
+
+                    <span>
+                        OU
+                    </span>
+
                 </div>
 
-            </section>
 
 
-            <!-- =================================================
-                 BOTÃO PRINCIPAL
-            ================================================== -->
+                <!-- =========================================
+                     PRÊMIO 2
+                     ========================================= -->
 
-            <button
-                type="button"
-                class="btn-raspar"
-                id="btnAbrirRaspadinha"
-            >
+                <article class="premio-card">
 
-                <span
-                    class="btn-icone"
-                    aria-hidden="true"
-                >
+                    <div class="premio-imagem-area">
+
+                        <img
+                            src="img/ferro.png"
+                            alt="Ferro elétrico"
+                            class="premio-imagem"
+                        >
+
+                    </div>
+
+                    <div class="premio-nome">
+
+                        <span>🍀</span>
+
+                        <span>
+                            Ferro elétrico
+                        </span>
+
+                    </div>
+
+                </article>
+
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =================================================
+             BENEFÍCIOS
+             ================================================= -->
+
+        <section class="beneficios">
+
+
+            <div class="beneficio-card">
+
+                <div class="beneficio-icone">
                     🍀
-                </span>
-
-                <span>
-                    QUERO RASPAR AGORA!
-                </span>
-
-            </button>
-
-
-            <!-- =================================================
-                 FRASE DOS PRÊMIOS
-            ================================================== -->
-
-            <section class="premios-section">
-
-
-                <div class="linha-titulo">
-
-                    <span></span>
-
-                    <h3>
-                        🍀 A sorte favorece quem participa! 🍀
-                    </h3>
-
-                    <span></span>
-
                 </div>
 
+                <div class="beneficio-texto">
 
-                <p class="subtitulo-premios">
-
-                    Prêmios simples,
-                    momentos especiais!
-
-                </p>
-
-
-                <!-- =================================================
-                     PRÊMIOS
-                ================================================== -->
-
-                <div class="premios-grid">
-
-
-                    <!-- FERRO -->
-
-                    <article class="premio-card">
-
-                        <div class="premio-imagem-area">
-
-                            <img
-                                src="./img/ferro.png"
-                                alt="Ferro elétrico"
-                                class="premio-imagem"
-                            >
-
-                        </div>
-
-
-                        <div class="premio-nome">
-
-                            <span>🍀</span>
-
-                            <span>
-                                FERRO ELÉTRICO
-                            </span>
-
-                        </div>
-
-                    </article>
-
-
-                    <!-- OU -->
-
-                    <div class="premio-ou">
-
-                        <span>
-                            OU
-                        </span>
-
-                    </div>
-
-
-                    <!-- LIQUIDIFICADOR -->
-
-                    <article class="premio-card">
-
-                        <div class="premio-imagem-area">
-
-                            <img
-                                src="./img/liquidificador.png"
-                                alt="Liquidificador"
-                                class="premio-imagem"
-                            >
-
-                        </div>
-
-
-                        <div class="premio-nome">
-
-                            <span>🍀</span>
-
-                            <span>
-                                LIQUIDIFICADOR
-                            </span>
-
-                        </div>
-
-                    </article>
-
-                </div>
-
-            </section>
-
-
-            <!-- =================================================
-                 BENEFÍCIOS
-            ================================================== -->
-
-            <section class="beneficios">
-
-
-                <!-- SEGURANÇA -->
-
-                <article class="beneficio-card">
-
-                    <div
-                        class="beneficio-icone"
-                        aria-hidden="true"
-                    >
-                        🛡️
-                    </div>
-
-                    <div class="beneficio-texto">
-
-                        <strong>
-                            100% SEGURO
-                        </strong>
-
-                        <span>
-                            Seus dados protegidos
-                            com total segurança.
-                        </span>
-
-                    </div>
-
-                </article>
-
-
-                <!-- PRÊMIOS -->
-
-                <article class="beneficio-card">
-
-                    <div
-                        class="beneficio-icone"
-                        aria-hidden="true"
-                    >
-                        🎁
-                    </div>
-
-                    <div class="beneficio-texto">
-
-                        <strong>
-                            PRÊMIOS SIMPLES
-                        </strong>
-
-                        <span>
-                            Pequenos prêmios,
-                            grandes alegrias!
-                        </span>
-
-                    </div>
-
-                </article>
-
-
-                <!-- RAPIDEZ -->
-
-                <article class="beneficio-card">
-
-                    <div
-                        class="beneficio-icone"
-                        aria-hidden="true"
-                    >
-                        ⚡
-                    </div>
-
-                    <div class="beneficio-texto">
-
-                        <strong>
-                            RÁPIDO E FÁCIL
-                        </strong>
-
-                        <span>
-                            Raspe, descubra
-                            e celebre!
-                        </span>
-
-                    </div>
-
-                </article>
-
-
-            </section>
-
-
-            <!-- =================================================
-                 RODAPÉ
-            ================================================== -->
-
-            <footer class="rodape">
-
-                <span class="cadeado">
-                    🔒
-                </span>
-
-                <span>
-                    Transparência e
                     <strong>
-                        confiança
+                        É fácil
                     </strong>
-                    em primeiro lugar!
-                </span>
 
-            </footer>
+                    <span>
+                        Raspe e descubra seu resultado.
+                    </span>
+
+                </div>
+
+            </div>
+
+
+
+            <div class="beneficio-card">
+
+                <div class="beneficio-icone">
+                    🎁
+                </div>
+
+                <div class="beneficio-texto">
+
+                    <strong>
+                        Prêmios especiais
+                    </strong>
+
+                    <span>
+                        Uma pequena surpresa pode estar esperando por você.
+                    </span>
+
+                </div>
+
+            </div>
+
+
+
+            <div class="beneficio-card">
+
+                <div class="beneficio-icone">
+                    🔒
+                </div>
+
+                <div class="beneficio-texto">
+
+                    <strong>
+                        Sistema seguro
+                    </strong>
+
+                    <span>
+                        Seu resultado é registrado pelo sistema.
+                    </span>
+
+                </div>
+
+            </div>
 
 
         </section>
 
+
+
+        <!-- =================================================
+             RODAPÉ
+             ================================================= -->
+
+        <footer class="rodape">
+
+            <span class="cadeado">
+                🔒
+            </span>
+
+            <span>
+                Raspadinha da Amizade
+            </span>
+
+            <strong>
+                • GilFest
+            </strong>
+
+        </footer>
+
+
     </main>
 
-
-    <!-- =====================================================
-         MODAL DA RASPADINHA
-         
-         IMPORTANTE:
-         Os IDs abaixo são mantidos para não quebrar
-         o raspadinha.js / app.js.
-    ====================================================== -->
-
-    <div
-        id="modalRaspadinha"
-        class="modal-raspadinha hidden"
-    >
+</div>
 
 
-        <div class="modal-conteudo">
+
+<!-- =========================================================
+     MODAL DA RASPADINHA
+     ========================================================= -->
+
+<div
+    class="modal-raspadinha hidden"
+    id="modalRaspadinha"
+>
 
 
-            <!-- =================================================
-                 CABEÇALHO
-            ================================================== -->
+    <div class="modal-conteudo">
 
-            <header class="modal-header">
 
-                <div>
+        <!-- =================================================
+             CABEÇALHO
+             ================================================= -->
 
-                    <div class="modal-mini-titulo">
-                        🍀 GILFEST
-                    </div>
+        <div class="modal-header">
 
-                    <h2>
-                        Raspadinha da Amizade
-                    </h2>
+            <div>
 
+                <div class="modal-mini-titulo">
+                    🍀 RASPADINHA DA AMIZADE
                 </div>
 
+                <h2>
+                    Descubra sua sorte!
+                </h2>
 
-                <button
-                    type="button"
-                    id="btnFecharRaspadinha"
-                    class="btn-fechar"
-                    aria-label="Fechar raspadinha"
-                >
-
-                    ×
-
-                </button>
-
-            </header>
+            </div>
 
 
-            <!-- =================================================
-                 NÚMERO DA RIFA
-            ================================================== -->
+            <button
+                type="button"
+                class="btn-fechar"
+                aria-label="Fechar"
+            >
+                ×
+            </button>
 
-            <div class="numero-container">
+        </div>
+
+
+
+        <!-- =================================================
+             NÚMERO
+             ================================================= -->
+
+        <div class="numero-container">
+
+            <span>
+                SUA RASPADINHA
+            </span>
+
+            <strong id="numeroRaspadinha">
+                #0000
+            </strong>
+
+        </div>
+
+
+
+        <!-- =================================================
+             CANVAS
+             ================================================= -->
+
+        <div class="canvas-container">
+
+            <canvas
+                id="canvasRaspadinha"
+            ></canvas>
+
+        </div>
+
+
+
+        <!-- =================================================
+             INSTRUÇÃO
+             ================================================= -->
+
+        <div class="instrucao-raspadinha">
+
+            ✨ Passe o dedo ou o mouse sobre a área
+            para descobrir o resultado.
+
+        </div>
+
+
+
+        <!-- =================================================
+             RESULTADO
+             ================================================= -->
+
+        <div
+            class="resultado-container"
+            id="resultadoContainer"
+        >
+
+            <img
+                src="img/liquidificador.png"
+                alt="Prêmio"
+                class="imagem-resultado"
+                id="imagemResultado"
+            >
+
+            <div class="resultado-texto">
 
                 <span>
-                    SEU NÚMERO
+                    RESULTADO
                 </span>
 
-                <strong id="numeroRifa">
-                    Não informado
+                <strong id="resultadoPremio">
+                    Raspe para descobrir!
                 </strong>
 
             </div>
 
-
-            <!-- =================================================
-                 CANVAS
-            ================================================== -->
-
-            <div class="canvas-container">
-
-                <canvas
-                    id="canvasRaspadinha"
-                    tabindex="0"
-                ></canvas>
-
-            </div>
-
-
-            <!-- =================================================
-                 INSTRUÇÃO
-            ================================================== -->
-
-            <p class="instrucao-raspadinha">
-
-                ✨ Raspe toda a área para descobrir
-                o seu resultado!
-
-            </p>
-
-
-            <!-- =================================================
-                 RESULTADO
-            ================================================== -->
-
-            <div class="resultado-container">
-
-
-                <img
-                    id="imagemPremio"
-                    class="imagem-resultado"
-                    src="./img/ferro.png"
-                    alt="Resultado"
-                >
-
-
-                <div class="resultado-texto">
-
-                    <span>
-                        RESULTADO
-                    </span>
-
-                    <strong id="textoPremio">
-                        Aguardando raspagem...
-                    </strong>
-
-                </div>
-
-            </div>
-
-
-            <!-- =================================================
-                 CONTINUAR
-            ================================================== -->
-
-            <button
-                type="button"
-                class="btn-continuar"
-                id="btnContinuar"
-            >
-
-                CONTINUAR 🍀
-
-            </button>
-
-
         </div>
 
+
+
+        <!-- =================================================
+             CONTINUAR
+             ================================================= -->
+
+        <button
+            type="button"
+            class="btn-continuar"
+        >
+
+            CONTINUAR
+
+        </button>
+
+
     </div>
 
-
-    <!-- =====================================================
-         MENSAGEM DO SISTEMA
-    ====================================================== -->
-
-    <div
-        id="mensagemSistema"
-        class="mensagem-sistema"
-        role="status"
-        aria-live="polite"
-    >
-
-        <span id="mensagemSistemaTexto"></span>
-
-    </div>
+</div>
 
 
-    <!-- =====================================================
-         JAVASCRIPT
-         
-         NÃO estamos alterando a lógica.
-         Apenas carregando o aplicativo existente.
-    ====================================================== -->
 
-    <script
-        type="module"
-        src="./app.js"
-    ></script>
+<!-- =========================================================
+     MENSAGEM DO SISTEMA
+     ========================================================= -->
+
+<div
+    class="mensagem-sistema"
+    id="mensagemSistema"
+>
+</div>
+
+
+
+<!-- =========================================================
+     JAVASCRIPT
+     ========================================================= -->
+
+<script
+    type="module"
+    src="app.js"
+></script>
 
 
 </body>
