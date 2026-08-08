@@ -1,10 +1,11 @@
 /* ==========================================================
-   RASPADINHA SOLIDÁRIA 6.0
+   RASPADINHA DA AMIZADE 6.0
    RESULTADO
    Controle central do prêmio da raspadinha
 ========================================================== */
 
 import { CONFIG } from "../config.js";
+
 
 /* ==========================================================
    ESTADO
@@ -12,60 +13,109 @@ import { CONFIG } from "../config.js";
 
 let resultadoAtual = "perdeu";
 
+
+/* ==========================================================
+   NORMALIZAR RESULTADO
+========================================================== */
+
+function normalizarResultado(resultado) {
+
+    if (
+        resultado === null ||
+        resultado === undefined
+    ) {
+
+        return "perdeu";
+
+    }
+
+
+    const valor =
+        String(resultado)
+            .trim()
+            .toLowerCase();
+
+
+    /* ======================================================
+       PERDEU
+    ====================================================== */
+
+    if (
+        valor === "perdeu" ||
+        valor === "não ganhou" ||
+        valor === "nao ganhou" ||
+        valor === "não ganhou desta vez" ||
+        valor === "nao ganhou desta vez"
+    ) {
+
+        return "perdeu";
+
+    }
+
+
+    /* ======================================================
+       FERRO
+    ====================================================== */
+
+    if (
+        valor === "ferro" ||
+        valor === "ferro elétrico" ||
+        valor === "ferro eletrico"
+    ) {
+
+        return "ferro";
+
+    }
+
+
+    /* ======================================================
+       LIQUIDIFICADOR
+    ====================================================== */
+
+    if (
+        valor === "liquidificador"
+    ) {
+
+        return "liquidificador";
+
+    }
+
+
+    /* ======================================================
+       RESULTADO DESCONHECIDO
+    ====================================================== */
+
+    console.warn(
+        "Resultado desconhecido:",
+        resultado
+    );
+
+
+    return "perdeu";
+
+}
+
+
 /* ==========================================================
    DEFINIR RESULTADO
 ========================================================== */
 
 export function definirResultado(resultado) {
 
-    if (!resultado) {
-
-        resultadoAtual = "perdeu";
-
-        return resultadoAtual;
-
-    }
-
-    const resultadoNormalizado =
-        String(resultado)
-            .trim()
-            .toLowerCase();
-
-    const resultadosValidos = [
-
-        "perdeu",
-
-        "ferro",
-
-        "liquidificador"
-
-    ];
-
-    if (
-        !resultadosValidos.includes(
-            resultadoNormalizado
-        )
-    ) {
-
-        console.warn(
-
-            "Resultado inválido:",
-            resultado
-
-        );
-
-        resultadoAtual = "perdeu";
-
-        return resultadoAtual;
-
-    }
-
     resultadoAtual =
-        resultadoNormalizado;
+        normalizarResultado(resultado);
+
+
+    console.log(
+        "Resultado definido:",
+        resultadoAtual
+    );
+
 
     return resultadoAtual;
 
 }
+
 
 /* ==========================================================
    OBTER RESULTADO
@@ -77,6 +127,7 @@ export function obterResultado() {
 
 }
 
+
 /* ==========================================================
    VERIFICAR SE GANHOU
 ========================================================== */
@@ -84,13 +135,11 @@ export function obterResultado() {
 export function ganhouPremio() {
 
     return (
-
-        resultadoAtual !==
-        "perdeu"
-
+        resultadoAtual !== "perdeu"
     );
 
 }
+
 
 /* ==========================================================
    OBTER IMAGEM DO RESULTADO
@@ -98,29 +147,28 @@ export function ganhouPremio() {
 
 export function obterImagemResultado() {
 
-    switch (
-        resultadoAtual
-    ) {
+    switch (resultadoAtual) {
 
         case "ferro":
 
             return CONFIG.premios.ferro;
 
+
         case "liquidificador":
 
-            return CONFIG.premios
-                .liquidificador;
+            return CONFIG.premios.liquidificador;
+
 
         case "perdeu":
 
         default:
 
-            return CONFIG.premios
-                .perdeu;
+            return CONFIG.premios.perdeu;
 
     }
 
 }
+
 
 /* ==========================================================
    OBTER NOME DO PRÊMIO
@@ -128,17 +176,17 @@ export function obterImagemResultado() {
 
 export function obterNomePremio() {
 
-    switch (
-        resultadoAtual
-    ) {
+    switch (resultadoAtual) {
 
         case "ferro":
 
             return "Ferro Elétrico";
 
+
         case "liquidificador":
 
             return "Liquidificador";
+
 
         case "perdeu":
 
@@ -149,6 +197,18 @@ export function obterNomePremio() {
     }
 
 }
+
+
+/* ==========================================================
+   OBTER ID DO PRÊMIO
+========================================================== */
+
+export function obterIdPremio() {
+
+    return resultadoAtual;
+
+}
+
 
 /* ==========================================================
    LIMPAR RESULTADO
@@ -161,8 +221,9 @@ export function limparResultado() {
 
 }
 
+
 /* ==========================================================
-   STATUS
+   STATUS DO RESULTADO
 ========================================================== */
 
 export function obterStatusResultado() {
@@ -178,6 +239,9 @@ export function obterStatusResultado() {
         premio:
             obterNomePremio(),
 
+        premioId:
+            obterIdPremio(),
+
         imagem:
             obterImagemResultado()
 
@@ -185,6 +249,62 @@ export function obterStatusResultado() {
 
 }
 
+
 /* ==========================================================
-   FIM DO RESULTADO
+   CONFIGURAÇÃO DO PRÊMIO
+========================================================== */
+
+export function obterPremioAtual() {
+
+    switch (resultadoAtual) {
+
+        case "ferro":
+
+            return {
+
+                id: "ferro",
+
+                nome: "Ferro Elétrico",
+
+                imagem:
+                    CONFIG.premios.ferro
+
+            };
+
+
+        case "liquidificador":
+
+            return {
+
+                id: "liquidificador",
+
+                nome: "Liquidificador",
+
+                imagem:
+                    CONFIG.premios.liquidificador
+
+            };
+
+
+        default:
+
+            return {
+
+                id: "perdeu",
+
+                nome:
+                    "Não ganhou desta vez",
+
+                imagem:
+                    CONFIG.premios.perdeu
+
+            };
+
+    }
+
+}
+
+
+/* ==========================================================
+   FIM DO RESULTADO 6.0
 ========================================================== */
