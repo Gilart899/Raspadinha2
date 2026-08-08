@@ -12,658 +12,1459 @@
 
     <meta
         name="theme-color"
-        content="#0B7D2B"
+        content="#075e54"
     >
 
     <meta
         name="description"
-        content="Raspadinha da Amizade - Raspe e descubra seu prêmio!"
+        content="Raspadinha da Amizade - GilFest"
     >
 
     <title>
         Raspadinha da Amizade
     </title>
 
-    <!-- =====================================================
-         CSS PRINCIPAL
-    ====================================================== -->
+    <style>
 
-    <link
-        rel="stylesheet"
-        href="css/style.css"
-    >
+        /* ==================================================
+           RESET
+        ================================================== */
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+
+            min-height: 100vh;
+
+            font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #f4fff9 0%,
+                    #ffffff 45%,
+                    #e9fff4 100%
+                );
+
+            color: #18342d;
+
+            overflow-x: hidden;
+        }
+
+        button,
+        input {
+            font: inherit;
+        }
+
+        /* ==================================================
+           CONTAINER
+        ================================================== */
+
+        .container {
+
+            width: min(
+                100% - 30px,
+                1050px
+            );
+
+            margin: 0 auto;
+        }
+
+        /* ==================================================
+           TOPO
+        ================================================== */
+
+        header {
+
+            position: relative;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #075e54,
+                    #0a806d
+                );
+
+            color: white;
+
+            padding:
+                22px
+                0
+                28px;
+
+            box-shadow:
+                0 8px 25px
+                rgba(0, 80, 65, 0.20);
+        }
+
+        .topo {
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            gap: 20px;
+        }
+
+        .marca {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 13px;
+        }
+
+        .logo-circulo {
+
+            width: 54px;
+            height: 54px;
+
+            border-radius: 50%;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            background:
+                rgba(
+                    255,
+                    255,
+                    255,
+                    0.15
+                );
+
+            border:
+                1px solid
+                rgba(
+                    255,
+                    255,
+                    255,
+                    0.30
+                );
+
+            font-size: 28px;
+        }
+
+        .marca h1 {
+
+            font-size: 21px;
+
+            line-height: 1.1;
+
+            font-weight: 800;
+        }
+
+        .marca span {
+
+            display: block;
+
+            margin-top: 4px;
+
+            font-size: 12px;
+
+            opacity: 0.85;
+        }
+
+        .selo {
+
+            padding:
+                8px
+                12px;
+
+            border-radius: 30px;
+
+            background:
+                rgba(
+                    255,
+                    255,
+                    255,
+                    0.13
+                );
+
+            border:
+                1px solid
+                rgba(
+                    255,
+                    255,
+                    255,
+                    0.20
+                );
+
+            font-size: 12px;
+
+            white-space: nowrap;
+        }
+
+        /* ==================================================
+           HERO
+        ================================================== */
+
+        .hero {
+
+            padding:
+                42px
+                0
+                25px;
+
+            text-align: center;
+        }
+
+        .hero h2 {
+
+            font-size:
+                clamp(
+                    29px,
+                    6vw,
+                    48px
+                );
+
+            line-height: 1.05;
+
+            color: #075e54;
+
+            margin-bottom: 12px;
+        }
+
+        .hero p {
+
+            max-width: 620px;
+
+            margin: 0 auto;
+
+            color: #55716a;
+
+            font-size: 16px;
+
+            line-height: 1.6;
+        }
+
+        /* ==================================================
+           CARTÃO PRINCIPAL
+        ================================================== */
+
+        .card {
+
+            background: white;
+
+            border-radius: 25px;
+
+            box-shadow:
+                0 15px 45px
+                rgba(
+                    14,
+                    75,
+                    61,
+                    0.12
+                );
+
+            border:
+                1px solid
+                rgba(
+                    7,
+                    94,
+                    84,
+                    0.08
+                );
+
+            overflow: hidden;
+        }
+
+        /* ==================================================
+           PRÊMIO
+        ================================================== */
+
+        .premio-destaque {
+
+            padding: 30px;
+
+            text-align: center;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    #f0fff8,
+                    #ffffff
+                );
+        }
+
+        .etiqueta {
+
+            display: inline-block;
+
+            padding:
+                7px
+                15px;
+
+            border-radius: 30px;
+
+            background: #d9f8eb;
+
+            color: #075e54;
+
+            font-size: 12px;
+
+            font-weight: 800;
+
+            text-transform: uppercase;
+
+            letter-spacing: .5px;
+
+            margin-bottom: 12px;
+        }
+
+        .premio-destaque h3 {
+
+            font-size:
+                clamp(
+                    24px,
+                    5vw,
+                    34px
+                );
+
+            color: #18342d;
+
+            margin-bottom: 8px;
+        }
+
+        .premio-destaque p {
+
+            color: #668079;
+
+            font-size: 14px;
+        }
+
+        /* ==================================================
+           INFORMAÇÕES
+        ================================================== */
+
+        .informacoes {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(
+                    3,
+                    1fr
+                );
+
+            border-top:
+                1px solid
+                #e6f1ed;
+
+            border-bottom:
+                1px solid
+                #e6f1ed;
+        }
+
+        .info {
+
+            padding: 20px 15px;
+
+            text-align: center;
+
+            border-right:
+                1px solid
+                #e6f1ed;
+        }
+
+        .info:last-child {
+            border-right: none;
+        }
+
+        .info .icone {
+
+            font-size: 23px;
+
+            margin-bottom: 7px;
+        }
+
+        .info .titulo {
+
+            display: block;
+
+            font-size: 11px;
+
+            text-transform: uppercase;
+
+            color: #789088;
+
+            font-weight: 700;
+
+            margin-bottom: 5px;
+        }
+
+        .info .valor {
+
+            display: block;
+
+            color: #075e54;
+
+            font-size: 15px;
+
+            font-weight: 800;
+        }
+
+        /* ==================================================
+           ÁREA DE PARTICIPAÇÃO
+        ================================================== */
+
+        .participacao {
+
+            padding: 32px;
+
+            text-align: center;
+        }
+
+        .participacao h3 {
+
+            font-size: 23px;
+
+            margin-bottom: 8px;
+
+            color: #18342d;
+        }
+
+        .participacao .subtitulo {
+
+            color: #6d827b;
+
+            font-size: 14px;
+
+            margin-bottom: 23px;
+        }
+
+        .campo-numero {
+
+            max-width: 430px;
+
+            margin:
+                0 auto
+                16px;
+        }
+
+        .campo-numero label {
+
+            display: block;
+
+            text-align: left;
+
+            margin-bottom: 7px;
+
+            font-size: 13px;
+
+            font-weight: 700;
+
+            color: #45635a;
+        }
+
+        .campo-numero input {
+
+            width: 100%;
+
+            height: 55px;
+
+            padding:
+                0
+                17px;
+
+            border:
+                2px solid
+                #d9e9e3;
+
+            border-radius: 14px;
+
+            outline: none;
+
+            text-align: center;
+
+            font-size: 20px;
+
+            font-weight: 800;
+
+            color: #075e54;
+
+            transition:
+                border .2s,
+                box-shadow .2s;
+        }
+
+        .campo-numero input:focus {
+
+            border-color: #0a806d;
+
+            box-shadow:
+                0 0 0 4px
+                rgba(
+                    10,
+                    128,
+                    109,
+                    0.10
+                );
+        }
+
+        /* ==================================================
+           BOTÃO
+        ================================================== */
+
+        .btn-principal {
+
+            width: 100%;
+
+            max-width: 430px;
+
+            height: 58px;
+
+            border: none;
+
+            border-radius: 15px;
+
+            cursor: pointer;
+
+            color: white;
+
+            font-size: 16px;
+
+            font-weight: 900;
+
+            letter-spacing: .2px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #075e54,
+                    #0a806d
+                );
+
+            box-shadow:
+                0 9px 20px
+                rgba(
+                    7,
+                    94,
+                    84,
+                    0.22
+                );
+
+            transition:
+                transform .2s,
+                box-shadow .2s,
+                opacity .2s;
+        }
+
+        .btn-principal:hover {
+
+            transform:
+                translateY(-2px);
+
+            box-shadow:
+                0 13px 25px
+                rgba(
+                    7,
+                    94,
+                    84,
+                    0.28
+                );
+        }
+
+        .btn-principal:active {
+
+            transform:
+                translateY(0);
+        }
+
+        .btn-principal:disabled {
+
+            opacity: .55;
+
+            cursor: not-allowed;
+
+            transform: none;
+        }
+
+        /* ==================================================
+           STATUS
+        ================================================== */
+
+        .status-box {
+
+            max-width: 430px;
+
+            margin:
+                17px auto
+                0;
+
+            padding:
+                11px
+                15px;
+
+            border-radius: 10px;
+
+            background: #f3faf7;
+
+            color: #55716a;
+
+            font-size: 12px;
+
+            min-height: 38px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            text-align: center;
+        }
+
+        /* ==================================================
+           INSTRUÇÕES
+        ================================================== */
+
+        .instrucoes {
+
+            margin-top: 25px;
+
+            padding: 22px;
+
+            background:
+                #f8fcfa;
+
+            border-radius: 16px;
+
+            text-align: left;
+        }
+
+        .instrucoes h4 {
+
+            color: #075e54;
+
+            margin-bottom: 12px;
+
+            font-size: 15px;
+        }
+
+        .passo {
+
+            display: flex;
+
+            align-items: flex-start;
+
+            gap: 10px;
+
+            margin-bottom: 10px;
+
+            color: #637a72;
+
+            font-size: 13px;
+
+            line-height: 1.45;
+        }
+
+        .passo:last-child {
+            margin-bottom: 0;
+        }
+
+        .numero-passo {
+
+            flex: 0 0 25px;
+
+            width: 25px;
+            height: 25px;
+
+            border-radius: 50%;
+
+            background: #d9f8eb;
+
+            color: #075e54;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            font-size: 11px;
+
+            font-weight: 900;
+        }
+
+        /* ==================================================
+           RODAPÉ
+        ================================================== */
+
+        footer {
+
+            text-align: center;
+
+            padding:
+                30px
+                15px;
+
+            color: #789088;
+
+            font-size: 12px;
+        }
+
+        footer strong {
+
+            color: #075e54;
+        }
+
+        /* ==================================================
+           MODAL
+        ================================================== */
+
+        #modalRaspadinha {
+
+            position: fixed;
+
+            inset: 0;
+
+            z-index: 9999;
+
+            display: none;
+
+            align-items: center;
+
+            justify-content: center;
+
+            padding: 15px;
+
+            background:
+                rgba(
+                    0,
+                    35,
+                    29,
+                    0.78
+                );
+
+            backdrop-filter:
+                blur(7px);
+        }
+
+        #modalRaspadinha.hidden {
+            display: none !important;
+        }
+
+        .modal-conteudo {
+
+            position: relative;
+
+            width: min(
+                100%,
+                480px
+            );
+
+            max-height: 95vh;
+
+            overflow-y: auto;
+
+            background: white;
+
+            border-radius: 25px;
+
+            padding: 22px;
+
+            box-shadow:
+                0 25px 70px
+                rgba(
+                    0,
+                    0,
+                    0,
+                    0.30
+                );
+
+            animation:
+                aparecer .25s ease;
+        }
+
+        @keyframes aparecer {
+
+            from {
+
+                opacity: 0;
+
+                transform:
+                    translateY(20px)
+                    scale(.96);
+
+            }
+
+            to {
+
+                opacity: 1;
+
+                transform:
+                    translateY(0)
+                    scale(1);
+
+            }
+
+        }
+
+        .btn-fechar {
+
+            position: absolute;
+
+            top: 12px;
+
+            right: 12px;
+
+            z-index: 20;
+
+            width: 38px;
+            height: 38px;
+
+            border: none;
+
+            border-radius: 50%;
+
+            background:
+                #edf5f2;
+
+            color: #34564c;
+
+            cursor: pointer;
+
+            font-size: 21px;
+
+            line-height: 1;
+        }
+
+        .modal-titulo {
+
+            text-align: center;
+
+            padding:
+                5px
+                35px
+                18px;
+        }
+
+        .modal-titulo h3 {
+
+            color: #075e54;
+
+            font-size: 23px;
+
+            margin-bottom: 5px;
+        }
+
+        .modal-titulo p {
+
+            color: #789088;
+
+            font-size: 13px;
+        }
+
+        /* ==================================================
+           CANVAS
+        ================================================== */
+
+        .canvas-area {
+
+            width: 100%;
+
+            display: flex;
+
+            justify-content: center;
+
+            align-items: center;
+
+            padding: 5px;
+        }
+
+        #canvasRaspadinha {
+
+            display: block;
+
+            width: min(
+                380px,
+                100%
+            );
+
+            height: auto;
+
+            max-width: 380px;
+
+            border-radius: 16px;
+
+            box-shadow:
+                0 8px 25px
+                rgba(
+                    0,
+                    0,
+                    0,
+                    0.12
+                );
+
+            touch-action: none;
+
+            cursor: crosshair;
+
+            outline: none;
+        }
+
+        /* ==================================================
+           RESULTADO
+        ================================================== */
+
+        .resultado-area {
+
+            margin-top: 18px;
+
+            padding: 18px;
+
+            border-radius: 16px;
+
+            background: #f5fbf8;
+
+            text-align: center;
+        }
+
+        .resultado-area img {
+
+            width: 100%;
+
+            max-width: 150px;
+
+            max-height: 110px;
+
+            object-fit: contain;
+
+            margin-bottom: 10px;
+        }
+
+        .resultado-area .rotulo {
+
+            display: block;
+
+            color: #789088;
+
+            font-size: 11px;
+
+            text-transform: uppercase;
+
+            margin-bottom: 4px;
+        }
+
+        #textoPremio {
+
+            display: block;
+
+            color: #075e54;
+
+            font-size: 20px;
+
+            font-weight: 900;
+        }
+
+        .numero-modal {
+
+            margin-top: 8px;
+
+            color: #789088;
+
+            font-size: 12px;
+        }
+
+        /* ==================================================
+           RESPONSIVO
+        ================================================== */
+
+        @media (max-width: 650px) {
+
+            .container {
+                width:
+                    min(
+                        100% - 20px,
+                        1050px
+                    );
+            }
+
+            header {
+                padding:
+                    17px
+                    0
+                    22px;
+            }
+
+            .selo {
+                display: none;
+            }
+
+            .hero {
+                padding:
+                    30px
+                    0
+                    20px;
+            }
+
+            .premio-destaque,
+            .participacao {
+                padding: 24px 18px;
+            }
+
+            .informacoes {
+                grid-template-columns:
+                    1fr;
+            }
+
+            .info {
+
+                border-right: none;
+
+                border-bottom:
+                    1px solid
+                    #e6f1ed;
+
+            }
+
+            .info:last-child {
+                border-bottom: none;
+            }
+
+            .modal-conteudo {
+
+                padding:
+                    16px;
+
+                border-radius:
+                    20px;
+            }
+
+            .modal-titulo {
+                padding-bottom: 12px;
+            }
+
+        }
+
+        @media (max-width: 400px) {
+
+            .marca h1 {
+                font-size: 18px;
+            }
+
+            .logo-circulo {
+                width: 47px;
+                height: 47px;
+                font-size: 23px;
+            }
+
+            .hero h2 {
+                font-size: 28px;
+            }
+
+            .participacao h3 {
+                font-size: 20px;
+            }
+
+        }
+
+    </style>
 
 </head>
 
-
 <body>
 
+    <!-- ==================================================
+         CABEÇALHO
+    =================================================== -->
 
-<!-- ========================================================
-     FUNDO ANIMADO
-========================================================= -->
+    <header>
 
-<div
-    class="fundo-animado"
-    aria-hidden="true"
->
+        <div class="container topo">
 
-    <span>🍀</span>
-    <span>🍀</span>
-    <span>🍀</span>
-    <span>🍀</span>
-    <span>🍀</span>
-    <span>🍀</span>
-    <span>🍀</span>
-    <span>🍀</span>
-    <span>🍀</span>
-    <span>🍀</span>
+            <div class="marca">
 
-</div>
-
-
-<!-- ========================================================
-     CABEÇALHO
-========================================================= -->
-
-<header class="topo">
-
-    <div class="logo-area">
-
-        <div class="logo-trevo">
-            🍀
-        </div>
-
-        <h1>
-            RASPADINHA DA AMIZADE
-        </h1>
-
-        <p>
-            Raspe e descubra se você ganhou!
-        </p>
-
-    </div>
-
-</header>
-
-
-<!-- ========================================================
-     CONTEÚDO PRINCIPAL
-========================================================= -->
-
-<main class="principal">
-
-
-    <!-- ====================================================
-         CARD PRINCIPAL
-    ===================================================== -->
-
-    <section class="card-principal">
-
-
-        <div class="selo-seguranca">
-
-            🔒
-            100% SEGURO
-
-        </div>
-
-
-        <h2>
-            Sua sorte pode mudar hoje!
-        </h2>
-
-
-        <p class="descricao">
-
-            Participe da Raspadinha da Amizade
-            e descubra na hora se você ganhou
-            um dos nossos prêmios.
-
-        </p>
-
-
-        <!-- =================================================
-             PRÊMIOS
-        ================================================== -->
-
-        <div class="premios">
-
-
-            <!-- FERRO -->
-
-            <article class="premio-card">
-
-                <div class="premio-imagem">
-
-                    <img
-                        src="img/ferro.png"
-                        alt="Ferro elétrico"
-                    >
-
+                <div class="logo-circulo">
+                    🍀
                 </div>
 
-                <div class="premio-info">
+                <div>
+
+                    <h1>
+                        Raspadinha da Amizade
+                    </h1>
 
                     <span>
-                        PRÊMIO
+                        Uma experiência GilFest
                     </span>
 
-                    <h3>
-                        Ferro Elétrico
-                    </h3>
-
                 </div>
-
-            </article>
-
-
-            <!-- OU -->
-
-            <div class="premio-ou">
-
-                OU
 
             </div>
 
-
-            <!-- LIQUIDIFICADOR -->
-
-            <article class="premio-card">
-
-                <div class="premio-imagem">
-
-                    <img
-                        src="img/liquidificador.png"
-                        alt="Liquidificador"
-                    >
-
-                </div>
-
-                <div class="premio-info">
-
-                    <span>
-                        PRÊMIO
-                    </span>
-
-                    <h3>
-                        Liquidificador
-                    </h3>
-
-                </div>
-
-            </article>
-
+            <div class="selo">
+                ✨ Boa sorte!
+            </div>
 
         </div>
 
-
-        <!-- =================================================
-             INFORMAÇÕES
-        ================================================== -->
-
-        <div class="informacoes">
+    </header>
 
 
-            <div class="informacao">
+    <!-- ==================================================
+         CONTEÚDO
+    =================================================== -->
 
-                <strong>
-                    📅 Sorteio
-                </strong>
+    <main class="container">
 
-                <span id="dataSorteio">
-                    Carregando...
-                </span>
-
-            </div>
-
-
-            <div class="informacao">
-
-                <strong>
-                    🏆 Resultado
-                </strong>
-
-                <span id="resultadoSorteio">
-                    Carregando...
-                </span>
-
-            </div>
-
-
-            <div class="informacao">
-
-                <strong>
-                    🎟️ Número da Rifa
-                </strong>
-
-                <span id="numeroRifaPrincipal">
-                    Não informado
-                </span>
-
-            </div>
-
-
-        </div>
-
-
-        <!-- =================================================
-             CHAMADA
-        ================================================== -->
-
-        <div class="chamada">
-
-            <div class="chamada-icone">
-                ✨
-            </div>
+        <section class="hero">
 
             <h2>
-                SUA SORTE PODE MUDAR HOJE!
+                Raspe e descubra! 🎉
             </h2>
 
             <p>
-                Raspe a área abaixo para descobrir
-                seu prêmio.
+                Sua sorte pode mudar hoje.
+                Informe seu número, participe
+                e raspe a área para descobrir
+                seu resultado.
             </p>
 
-        </div>
+        </section>
 
 
-        <!-- =================================================
-             BOTÃO
-        ================================================== -->
+        <!-- ==================================================
+             CARTÃO PRINCIPAL
+        =================================================== -->
 
-        <button
-            id="btnParticipar"
-            class="btn-participar"
-            type="button"
-        >
-
-            🎲
-            QUERO RASPAR AGORA
-
-        </button>
+        <section class="card">
 
 
-        <!-- =================================================
-             STATUS
-        ================================================== -->
+            <!-- PRÊMIO -->
 
-        <div
-            id="statusSistema"
-            class="status-sistema"
-            role="status"
-            aria-live="polite"
-        >
+            <div class="premio-destaque">
 
-            Carregando sistema...
-
-        </div>
-
-
-    </section>
-
-
-</main>
-
-
-<!-- ========================================================
-     MODAL DA RASPADINHA
-========================================================= -->
-
-<div
-    id="modalRaspadinha"
-    class="modal hidden"
-    role="dialog"
-    aria-modal="true"
-    aria-labelledby="tituloRaspadinha"
->
-
-
-    <!-- ====================================================
-         JANELA
-    ===================================================== -->
-
-    <div class="janela-raspadinha">
-
-
-        <!-- =================================================
-             CABEÇALHO DO MODAL
-        ================================================== -->
-
-        <div class="modal-topo">
-
-            <div>
-
-                <span class="modal-subtitulo">
-                    🍀 RASPADINHA DA AMIZADE
+                <span class="etiqueta">
+                    🎁 Prêmio Principal
                 </span>
 
-                <h2 id="tituloRaspadinha">
-                    Raspe aqui!
-                </h2>
+                <h3>
+                    Ferro Elétrico
+                </h3>
+
+                <p>
+                    Concorra também ao
+                    Liquidificador.
+                </p>
 
             </div>
 
 
+            <!-- INFORMAÇÕES -->
+
+            <div class="informacoes">
+
+                <div class="info">
+
+                    <div class="icone">
+                        🎁
+                    </div>
+
+                    <span class="titulo">
+                        Prêmio
+                    </span>
+
+                    <span class="valor">
+                        Ferro Elétrico
+                    </span>
+
+                </div>
+
+
+                <div class="info">
+
+                    <div class="icone">
+                        📅
+                    </div>
+
+                    <span class="titulo">
+                        Campanha
+                    </span>
+
+                    <span class="valor">
+                        Campanha01
+                    </span>
+
+                </div>
+
+
+                <div class="info">
+
+                    <div class="icone">
+                        🏆
+                    </div>
+
+                    <span class="titulo">
+                        Resultado
+                    </span>
+
+                    <span class="valor">
+                        Raspadinha
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <!-- PARTICIPAÇÃO -->
+
+            <div class="participacao">
+
+                <h3>
+                    🍀 Sua vez de tentar!
+                </h3>
+
+                <p class="subtitulo">
+                    Digite o número da sua rifa
+                    para começar.
+                </p>
+
+
+                <div class="campo-numero">
+
+                    <label
+                        for="numeroRifa"
+                    >
+                        Número da Rifa
+                    </label>
+
+                    <input
+                        type="text"
+                        id="numeroRifa"
+                        name="numeroRifa"
+                        inputmode="numeric"
+                        autocomplete="off"
+                        maxlength="4"
+                        placeholder="Digite seu número"
+                    >
+
+                </div>
+
+
+                <button
+                    type="button"
+                    id="btnParticipar"
+                    class="btn-principal"
+                >
+
+                    🎲 QUERO RASPAR AGORA
+
+                </button>
+
+
+                <div
+                    id="statusSistema"
+                    class="status-box"
+                    aria-live="polite"
+                >
+
+                    Carregando sistema...
+
+                </div>
+
+
+                <!-- INSTRUÇÕES -->
+
+                <div class="instrucoes">
+
+                    <h4>
+                        Como participar?
+                    </h4>
+
+
+                    <div class="passo">
+
+                        <span class="numero-passo">
+                            1
+                        </span>
+
+                        <span>
+                            Digite o número da sua
+                            rifa no campo acima.
+                        </span>
+
+                    </div>
+
+
+                    <div class="passo">
+
+                        <span class="numero-passo">
+                            2
+                        </span>
+
+                        <span>
+                            Clique em
+                            <strong>
+                                QUERO RASPAR AGORA
+                            </strong>.
+                        </span>
+
+                    </div>
+
+
+                    <div class="passo">
+
+                        <span class="numero-passo">
+                            3
+                        </span>
+
+                        <span>
+                            Raspe a área cinza
+                            até revelar seu resultado.
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- ==================================================
+         RODAPÉ
+    =================================================== -->
+
+    <footer>
+
+        © 2026
+        <strong>GilFest</strong>
+        · Raspadinha da Amizade
+
+    </footer>
+
+
+    <!-- ==================================================
+         MODAL DA RASPADINHA
+    =================================================== -->
+
+    <div
+        id="modalRaspadinha"
+        class="hidden"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="tituloModalRaspadinha"
+    >
+
+        <div class="modal-conteudo">
+
+
             <button
+                type="button"
                 id="btnFecharRaspadinha"
                 class="btn-fechar"
-                type="button"
                 aria-label="Fechar raspadinha"
             >
-
                 ×
-
-            </button>
-
-        </div>
-
-
-        <!-- =================================================
-             NÚMERO
-        ================================================== -->
-
-        <div class="numero-modal">
-
-            <span>
-                Número da Rifa
-            </span>
-
-            <strong id="numeroRifa">
-                Não informado
-            </strong>
-
-        </div>
-
-
-        <!-- =================================================
-             ÁREA DA RASPADINHA
-        ================================================== -->
-
-        <div class="areaRaspadinha">
-
-
-            <!-- ---------------------------------------------
-                 IMAGEM DO PRÊMIO
-            ---------------------------------------------- -->
-
-            <img
-                id="imagemPremio"
-                src="img/perdeu.png"
-                alt="Resultado da raspadinha"
-            >
-
-
-            <!-- ---------------------------------------------
-                 CANVAS
-            ---------------------------------------------- -->
-
-            <canvas
-                id="canvasRaspadinha"
-                width="380"
-                height="380"
-                tabindex="0"
-                aria-label="Área para raspar"
-            >
-            </canvas>
-
-
-        </div>
-
-
-        <!-- =================================================
-             TEXTO DO PRÊMIO
-        ================================================== -->
-
-        <div class="resultado-texto">
-
-            <span>
-                Resultado
-            </span>
-
-            <strong id="textoPremio">
-                Raspe para descobrir!
-            </strong>
-
-        </div>
-
-
-        <!-- =================================================
-             INSTRUÇÃO
-        ================================================== -->
-
-        <p class="instrucao">
-
-            ✨ Passe o dedo ou o mouse
-            sobre a área prateada.
-
-        </p>
-
-
-        <!-- =================================================
-             RODAPÉ DO MODAL
-        ================================================== -->
-
-        <div class="modal-rodape">
-
-            Boa sorte! 🍀
-
-        </div>
-
-
-    </div>
-
-</div>
-
-
-<!-- ========================================================
-     CADASTRO DO GANHADOR
-========================================================= -->
-
-<div
-    id="modalCadastro"
-    class="modal hidden"
-    role="dialog"
-    aria-modal="true"
-    aria-labelledby="tituloCadastro"
->
-
-
-    <div class="janela-cadastro">
-
-
-        <h2 id="tituloCadastro">
-            🎉 PARABÉNS!
-        </h2>
-
-
-        <p>
-            Você encontrou um prêmio.
-        </p>
-
-
-        <form
-            id="formCadastro"
-        >
-
-
-            <label for="nomeCompleto">
-                Nome completo
-            </label>
-
-            <input
-                id="nomeCompleto"
-                name="nome"
-                type="text"
-                placeholder="Digite seu nome completo"
-                autocomplete="name"
-                required
-            >
-
-
-            <label for="whatsapp">
-                WhatsApp
-            </label>
-
-            <input
-                id="whatsapp"
-                name="whatsapp"
-                type="tel"
-                placeholder="(79) 99999-9999"
-                autocomplete="tel"
-                required
-            >
-
-
-            <label for="cidade">
-                Cidade
-            </label>
-
-            <input
-                id="cidade"
-                name="cidade"
-                type="text"
-                placeholder="Digite sua cidade"
-                autocomplete="address-level2"
-                required
-            >
-
-
-            <button
-                id="btnSalvarDados"
-                type="submit"
-            >
-
-                Salvar Dados
-
             </button>
 
 
-        </form>
+            <div class="modal-titulo">
 
+                <h3 id="tituloModalRaspadinha">
+
+                    🍀 Raspadinha da Amizade
+
+                </h3>
+
+                <p>
+
+                    Raspe a área para descobrir
+                    seu resultado!
+
+                </p>
+
+            </div>
+
+
+            <!-- CANVAS -->
+
+            <div class="canvas-area">
+
+                <canvas
+                    id="canvasRaspadinha"
+                    width="380"
+                    height="380"
+                    tabindex="0"
+                ></canvas>
+
+            </div>
+
+
+            <!-- RESULTADO -->
+
+            <div class="resultado-area">
+
+                <img
+                    id="imagemPremio"
+                    src="img/perdeu.png"
+                    alt="Resultado da raspadinha"
+                >
+
+                <span class="rotulo">
+                    Seu resultado
+                </span>
+
+                <strong id="textoPremio">
+                    Raspe para descobrir
+                </strong>
+
+                <div class="numero-modal">
+
+                    Número da Rifa:
+                    <strong id="numeroRifaModal">
+                        <span id="numeroRifaModalValor">
+                            --
+                        </span>
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <!-- ELEMENTO UTILIZADO PELO CONTROLLER -->
+
+            <span
+                id="numeroRifa"
+                style="display:none;"
+            ></span>
+
+        </div>
 
     </div>
 
-</div>
 
+    <!-- ==================================================
+         JAVASCRIPT PRINCIPAL
+    =================================================== -->
 
-<!-- ========================================================
-     MENSAGEM
-========================================================= -->
-
-<div
-    id="modalMensagem"
-    class="modal hidden"
-    role="dialog"
-    aria-modal="true"
->
-
-
-    <div class="janela-mensagem">
-
-
-        <h2>
-            Mensagem
-        </h2>
-
-
-        <p id="textoMensagem">
-            ...
-        </p>
-
-
-        <button
-            id="btnFecharMensagem"
-            type="button"
-        >
-
-            Fechar
-
-        </button>
-
-
-    </div>
-
-</div>
-
-
-<!-- ========================================================
-     RODAPÉ
-========================================================= -->
-
-<footer class="rodape">
-
-    <p>
-        © 2026 GilFest
-    </p>
-
-    <p>
-        Raspadinha da Amizade
-    </p>
-
-</footer>
-
-
-<!-- ========================================================
-     APP JAVASCRIPT
-========================================================= -->
-
-<script
-    type="module"
-    src="js/app.js"
-></script>
-
-
-<!-- ========================================================
-     CONFIGURAÇÕES INICIAIS DA PÁGINA
-========================================================= -->
-
-<script>
-
-document.addEventListener(
-    "DOMContentLoaded",
-    function () {
-
-        /*
-         * Estes valores são apenas
-         * informações visuais iniciais.
-         *
-         * O Firebase poderá atualizá-los
-         * posteriormente.
-         */
-
-        const data =
-            document.getElementById(
-                "dataSorteio"
-            );
-
-        const resultado =
-            document.getElementById(
-                "resultadoSorteio"
-            );
-
-
-        if (data) {
-
-            data.textContent =
-                "Consulte a campanha";
-
-        }
-
-
-        if (resultado) {
-
-            resultado.textContent =
-                "Aguardando";
-
-        }
-
-    }
-);
-
-</script>
-
+    <script
+        type="module"
+        src="./app.js"
+    ></script>
 
 </body>
 
